@@ -1,0 +1,88 @@
+@model spatc.Models.NhanVien
+@{
+    ViewData["Title"] = "Sửa thông tin nhân viên";
+}
+
+<div class="container mt-4">
+    <h2>Sửa thông tin nhân viên</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="NgayTao" />
+                
+                <div class="mb-3">
+                    <label asp-for="HoTen" class="form-label">Họ tên *</label>
+                    <input asp-for="HoTen" class="form-control" />
+                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ViTri" class="form-label">Vị trí *</label>
+                    <select asp-for="ViTri" class="form-select" required>
+                        <option value="">-- Chọn vị trí --</option>
+                        <option value="Groomer">Groomer (Tỉa lông)</option>
+                        <option value="Tắm">Nhân viên tắm</option>
+                        <option value="Cắt tỉa">Cắt tỉa</option>
+                        <option value="Chăm sóc">Chăm sóc</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                    <span asp-validation-for="ViTri" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+                            <input asp-for="SoDienThoai" class="form-control" />
+                            <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" class="form-control" type="email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AnhNhanVien" class="form-label">URL Ảnh nhân viên</label>
+                    <input asp-for="AnhNhanVien" class="form-control" placeholder="https://..." />
+                    <span asp-validation-for="AnhNhanVien" class="text-danger"></span>
+                    @if (!string.IsNullOrEmpty(Model.AnhNhanVien))
+                    {
+                        <img src="@Model.AnhNhanVien" alt="@Model.HoTen" class="mt-2" style="max-width: 200px;">
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LichLamViec" class="form-label">Lịch làm việc</label>
+                    <textarea asp-for="LichLamViec" class="form-control" rows="3" placeholder="Ví dụ: Thứ 2-6: 8:00-17:00"></textarea>
+                    <span asp-validation-for="LichLamViec" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input asp-for="TrangThai" class="form-check-input" type="checkbox" />
+                        <label asp-for="TrangThai" class="form-check-label">Đang làm việc</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

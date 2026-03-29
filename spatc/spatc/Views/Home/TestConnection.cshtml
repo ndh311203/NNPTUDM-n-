@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Kiểm tra kết nối Database";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Kiểm tra kết nối Database</h3>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Message != null)
+                    {
+                        <div class="alert @(ViewBag.Message.Contains("✅") ? "alert-success" : "alert-danger")" role="alert">
+                            <h5>@ViewBag.Message</h5>
+                        </div>
+                    }
+
+                    @if (ViewBag.Message != null && ViewBag.Message.Contains("✅"))
+                    {
+                        <div class="mt-4">
+                            <h5>Thông tin kết nối:</h5>
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="width: 200px;">Server:</th>
+                                        <td>@ViewBag.DataSource</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Database Name:</th>
+                                        <td>@ViewBag.DatabaseName</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Server Version:</th>
+                                        <td>@ViewBag.ServerVersion</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Connection String:</th>
+                                        <td><code class="small">@ViewBag.ConnectionString</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                    @if (ViewBag.ErrorDetails != null)
+                    {
+                        <div class="mt-4">
+                            <h5>Chi tiết lỗi:</h5>
+                            <pre class="bg-light p-3 border rounded"><code>@ViewBag.ErrorDetails</code></pre>
+                        </div>
+                    }
+
+                    <div class="mt-4">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Quay lại trang chủ</a>
+                        <a href="@Url.Action("TestConnection", "Home")" class="btn btn-primary">Kiểm tra lại</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

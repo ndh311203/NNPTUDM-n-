@@ -1,0 +1,78 @@
+@model spatc.Models.LichPhanCong
+@{
+    ViewData["Title"] = "Sửa phân công";
+}
+
+<div class="container mt-4">
+    <h2>Sửa phân công</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="NgayTao" />
+                
+                <div class="mb-3">
+                    <label asp-for="NhanVienId" class="form-label">Nhân viên *</label>
+                    <select asp-for="NhanVienId" class="form-select" asp-items="ViewBag.NhanVienId"></select>
+                    <span asp-validation-for="NhanVienId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CongViecId" class="form-label">Công việc *</label>
+                    <select asp-for="CongViecId" class="form-select" asp-items="ViewBag.CongViecId"></select>
+                    <span asp-validation-for="CongViecId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NgayLam" class="form-label">Ngày làm *</label>
+                    <input asp-for="NgayLam" type="date" class="form-control" />
+                    <span asp-validation-for="NgayLam" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CaLam" class="form-label">Ca làm</label>
+                    <select asp-for="CaLam" class="form-select">
+                        <option value="Ca sáng">Ca sáng</option>
+                        <option value="Ca chiều">Ca chiều</option>
+                        <option value="Full-time">Full-time</option>
+                    </select>
+                    <span asp-validation-for="CaLam" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TrangThai" class="form-label">Trạng thái</label>
+                    <select asp-for="TrangThai" class="form-select">
+                        <option value="Chưa làm">Chưa làm</option>
+                        <option value="Đang làm">Đang làm</option>
+                        <option value="Hoàn thành">Hoàn thành</option>
+                        <option value="Nghỉ">Nghỉ</option>
+                    </select>
+                    <span asp-validation-for="TrangThai" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="GhiChu" class="form-label">Ghi chú</label>
+                    <textarea asp-for="GhiChu" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="GhiChu" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Lưu
+                    </button>
+                    <a href="/Admin/PhanCong" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

@@ -1,0 +1,93 @@
+@{
+    ViewData["Title"] = "Thêm thú cưng mới";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Thêm thú cưng mới</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            @ViewBag.Error
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="mb-3">
+                            <label for="tenThuCung" class="form-label">Tên thú cưng *</label>
+                            <input type="text" class="form-control" id="tenThuCung" name="tenThuCung" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="loai" class="form-label">Loại *</label>
+                                    <select class="form-select" id="loai" name="loai" required>
+                                        <option value="">-- Chọn loại --</option>
+                                        <option value="Chó">🐕 Chó</option>
+                                        <option value="Mèo">🐱 Mèo</option>
+                                        <option value="Hamster">🐹 Hamster</option>
+                                        <option value="Thỏ">🐰 Thỏ</option>
+                                        <option value="Chim">🐦 Chim</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="giong" class="form-label">Giống</label>
+                                    <input type="text" class="form-control" id="giong" name="giong" 
+                                           placeholder="Ví dụ: Golden Retriever, Persian">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tuoi" class="form-label">Tuổi (tháng)</label>
+                                    <input type="number" class="form-control" id="tuoi" name="tuoi" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="canNang" class="form-label">Cân nặng (kg)</label>
+                                    <input type="number" class="form-control" id="canNang" name="canNang" 
+                                           step="0.01" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ghiChuSucKhoe" class="form-label">Ghi chú sức khỏe</label>
+                            <textarea class="form-control" id="ghiChuSucKhoe" name="ghiChuSucKhoe" rows="3" 
+                                      placeholder="Ví dụ: Đã tiêm phòng đầy đủ, khỏe mạnh..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="hinhAnh" class="form-label">URL Hình ảnh</label>
+                            <input type="url" class="form-control" id="hinhAnh" name="hinhAnh" 
+                                   placeholder="https://...">
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Thêm thú cưng
+                            </button>
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

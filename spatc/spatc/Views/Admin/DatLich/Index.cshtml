@@ -1,0 +1,145 @@
+@model IEnumerable<spatc.Models.DatLich>
+@{
+    ViewData["Title"] = "Quản lý Đặt lịch";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Quản lý Đặt lịch</h2>
+        </div>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Thêm đặt lịch mới
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Lọc theo trạng thái -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Lọc theo trạng thái:</label>
+                    <select name="trangThai" class="form-select" onchange="this.form.submit()">
+                        <option value="">Tất cả</option>
+                        <option value="Chờ" selected="@(ViewBag.TrangThai == "Chờ")">Chờ</option>
+                        <option value="Đang làm" selected="@(ViewBag.TrangThai == "Đang làm")">Đang làm</option>
+                        <option value="Hoàn thành" selected="@(ViewBag.TrangThai == "Hoàn thành")">Hoàn thành</option>
+                        <option value="Hủy" selected="@(ViewBag.TrangThai == "Hủy")">Hủy</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Thời gian hẹn</th>
+                            <th>Khách hàng</th>
+                            <th>Thú cưng</th>
+                            <th>Dịch vụ</th>
+                            <th>Nhân viên</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.ThoiGianHen.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.ThuCung?.KhachHang?.HoTen</td>
+                                <td>@item.ThuCung?.TenThuCung</td>
+                                    <td>
+                                        @{
+                                            var hasHotel = item.PhongKhachSan != null;
+                                            var hasGrooming = item.DatLichDichVuGroomings != null && item.DatLichDichVuGroomings.Any();
+                                            var hasOldService = item.DichVu != null;
+                                        }
+                                        
+                                        @if (hasHotel)
+                                        {
+                                            <span class="badge bg-info">🏨 @item.PhongKhachSan.TenPhong</span>
+                                        }
+                                        
+                                        @if (hasGrooming)
+                                        {
+                                            var groomingServices = item.DatLichDichVuGroomings
+                                                .Select(dlg => dlg.DichVuGrooming?.TenDichVu)
+                                                .Where(x => !string.IsNullOrEmpty(x))
+                                                .ToList();
+                                            
+                                            if (groomingServices.Any())
+                                            {
+                                                <div>
+                                                    <span class="badge bg-success">✂️ Grooming:</span>
+                                                    <small>@string.Join(", ", groomingServices)</small>
+                                                </div>
+                                            }
+                                        }
+                                        
+                                        @if (hasOldService)
+                                        {
+                                            <span class="badge bg-secondary">📋 @item.DichVu.TenDichVu</span>
+                                        }
+                                        
+                                        @if (!hasHotel && !hasGrooming && !hasOldService)
+                                        {
+                                            <span class="text-muted">Chưa có dịch vụ</span>
+                                        }
+                                    </td>
+                                <td>@(item.NhanVien?.HoTen ?? "Chưa gán")</td>
+                                <td>
+                                    <span class="badge bg-@(item.TrangThai == "Chờ" ? "warning" : item.TrangThai == "Đang làm" ? "info" : item.TrangThai == "Hoàn thành" ? "success" : "danger")">
+                                        @item.TrangThai
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info">
+                                        <i class="bi bi-search"></i> Chi tiết
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox"></i> Chưa có đặt lịch nào
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

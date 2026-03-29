@@ -1,0 +1,401 @@
+@model List<spatc.Controllers.Admin.PhanCongGridViewModel>
+@{
+    ViewData["Title"] = "Lịch phân công công việc";
+    var selectedMonth = ViewBag.SelectedMonth as int? ?? DateTime.Now.Month;
+    var selectedYear = ViewBag.SelectedYear as int? ?? DateTime.Now.Year;
+    var selectedNhanVienId = ViewBag.SelectedNhanVienId as int?;
+    var startDate = ViewBag.StartDate as DateTime? ?? new DateTime(selectedYear, selectedMonth, 1);
+    var endDate = ViewBag.EndDate as DateTime? ?? startDate.AddMonths(1).AddDays(-1);
+    var daysInMonth = ViewBag.DaysInMonth as int? ?? DateTime.DaysInMonth(selectedYear, selectedMonth);
+    var nhanViens = ViewBag.NhanViens as SelectList;
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-calendar-check"></i> Lịch phân công công việc
+        </h2>
+        <div>
+            <a href="/Admin/CongViec" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-list-task"></i> Quản lý công việc
+            </a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                <i class="bi bi-plus-circle"></i> Thêm phân công
+            </button>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Bộ lọc -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="/Admin/PhanCong" class="row g-3">
+                <div class="col-md-2">
+                    <label class="form-label">Nhân viên</label>
+                    <select name="nhanVienId" class="form-select">
+                        <option value="">Tất cả</option>
+                        @if (nhanViens != null)
+                        {
+                            @foreach (var item in nhanViens)
+                            {
+                                <option value="@item.Value" selected="@(item.Value == selectedNhanVienId?.ToString())">@item.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Tháng</label>
+                    <select name="month" class="form-select">
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            <option value="@i" selected="@(i == selectedMonth)">Tháng @i</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Năm</label>
+                    <input type="number" name="year" class="form-control" value="@selectedYear" min="2020" max="2030">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel"></i> Lọc
+                    </button>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-success w-100" onclick="showCopyWeekModal()">
+                        <i class="bi bi-copy"></i> Copy tuần
+                    </button>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <a href="/Admin/PhanCong/ExportExcel?month=@selectedMonth&year=@selectedYear&nhanVienId=@(selectedNhanVienId ?? 0)" class="btn btn-info w-100 text-white">
+                        <i class="bi bi-file-earmark-excel"></i> Xuất Excel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lịch dạng grid -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="table table-bordered table-sm" style="min-width: 2000px;">
+                    <thead class="table-light sticky-top">
+                        <tr>
+                            <th style="min-width: 150px; position: sticky; left: 0; background: white; z-index: 10;">Nhân viên</th>
+                            @for (int day = 1; day <= daysInMonth; day++)
+                            {
+                                var date = new DateTime(selectedYear, selectedMonth, day);
+                                var dayOfWeek = date.DayOfWeek;
+                                var isWeekend = dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday;
+                                <th class="text-center @(isWeekend ? "bg-light" : "")" style="min-width: 100px;">
+                                    <div>@day</div>
+                                    <small class="text-muted">@date.ToString("ddd", new System.Globalization.CultureInfo("vi-VN"))</small>
+                                </th>
+                            }
+                            <th class="text-center" style="min-width: 100px;">Tổng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in Model)
+                        {
+                            <tr>
+                                <td style="position: sticky; left: 0; background: white; z-index: 9; font-weight: bold;">
+                                    @row.TenNhanVien
+                                </td>
+                                @for (int day = 1; day <= daysInMonth; day++)
+                                {
+                                    var date = new DateTime(selectedYear, selectedMonth, day);
+                                    var phanCong = row.PhanCongs.ContainsKey(date) ? row.PhanCongs[date] : null;
+                                    var dayOfWeek = date.DayOfWeek;
+                                    var isWeekend = dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday;
+                                    
+                                    <td class="text-center @(isWeekend ? "bg-light" : "")" 
+                                        style="cursor: pointer; @(phanCong != null ? GetStatusColor(phanCong.TrangThai) : "")"
+                                        onclick="openEditModal(@(phanCong?.Id ?? 0), @row.NhanVienId, '@date.ToString("yyyy-MM-dd")')"
+                                        title="@(phanCong != null ? $"{phanCong.CongViec?.TenCongViec} - {phanCong.CaLam}" : "Click để thêm phân công")"
+                                        oncontextmenu="event.preventDefault(); if(@(phanCong?.Id ?? 0) > 0) deletePhanCong(@(phanCong?.Id ?? 0));">
+                                        @if (phanCong != null)
+                                        {
+                                            <div class="small fw-bold">@phanCong.CongViec?.TenCongViec</div>
+                                            <div class="small text-muted">@phanCong.CaLam</div>
+                                            <span class="badge bg-@GetStatusBadge(phanCong.TrangThai)">@phanCong.TrangThai</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                }
+                                <td class="text-center fw-bold">
+                                    @{
+                                        var total = row.PhanCongs.Values.Count(p => p != null);
+                                    }
+                                    @total
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusColor(string? trangThai)
+    {
+        return trangThai switch
+        {
+            "Hoàn thành" => "background-color: #d4edda;",
+            "Đang làm" => "background-color: #fff3cd;",
+            "Nghỉ" => "background-color: #f8d7da;",
+            _ => ""
+        };
+    }
+
+    string GetStatusBadge(string? trangThai)
+    {
+        return trangThai switch
+        {
+            "Hoàn thành" => "success",
+            "Đang làm" => "warning",
+            "Nghỉ" => "danger",
+            _ => "secondary"
+        };
+    }
+}
+
+<!-- Modal Create/Edit -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Thêm phân công mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="phanCongForm" method="post" action="/Admin/PhanCong/Create">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" id="Id" name="Id" value="0">
+                    <div class="mb-3">
+                        <label class="form-label">Nhân viên *</label>
+                        <select id="NhanVienId" name="NhanVienId" class="form-select" required>
+                            <option value="">-- Chọn nhân viên --</option>
+                            @if (nhanViens != null)
+                            {
+                                @foreach (var item in nhanViens)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Công việc *</label>
+                        <select id="CongViecId" name="CongViecId" class="form-select" required>
+                            <option value="">-- Chọn công việc --</option>
+                            @if (ViewBag.CongViecs != null)
+                            {
+                                @foreach (var cv in ViewBag.CongViecs as List<spatc.Models.CongViec>)
+                                {
+                                    <option value="@cv.Id">@cv.TenCongViec</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ngày làm *</label>
+                        <input type="date" id="NgayLam" name="NgayLam" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ca làm</label>
+                        <select id="CaLam" name="CaLam" class="form-select">
+                            <option value="Ca sáng">Ca sáng</option>
+                            <option value="Ca chiều">Ca chiều</option>
+                            <option value="Full-time">Full-time</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select id="TrangThai" name="TrangThai" class="form-select">
+                            <option value="Chưa làm">Chưa làm</option>
+                            <option value="Đang làm">Đang làm</option>
+                            <option value="Hoàn thành">Hoàn thành</option>
+                            <option value="Nghỉ">Nghỉ</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea id="GhiChu" name="GhiChu" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openEditModal(id, nhanVienId, ngayLam) {
+        const modal = new bootstrap.Modal(document.getElementById('createModal'));
+        const form = document.getElementById('phanCongForm');
+        
+        if (id > 0) {
+            // Edit mode - load data
+            document.getElementById('modalTitle').textContent = 'Sửa phân công';
+            document.getElementById('Id').value = id;
+            form.action = '/Admin/PhanCong/Edit/' + id;
+            
+            // Load data via AJAX
+            fetch('/Admin/PhanCong/GetByMonth?month=@selectedMonth&year=@selectedYear')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const phanCong = data.data.find(p => p.id === id);
+                        if (phanCong) {
+                            document.getElementById('NhanVienId').value = phanCong.nhanVienId;
+                            document.getElementById('CongViecId').value = phanCong.congViecId;
+                            const ngayLamStr = phanCong.ngayLam.includes('T') ? phanCong.ngayLam.split('T')[0] : phanCong.ngayLam.split(' ')[0];
+                            document.getElementById('NgayLam').value = ngayLamStr;
+                            document.getElementById('CaLam').value = phanCong.caLam;
+                            document.getElementById('TrangThai').value = phanCong.trangThai;
+                            document.getElementById('GhiChu').value = phanCong.ghiChu || '';
+                        }
+                    }
+                });
+        } else {
+            // Create mode
+            document.getElementById('modalTitle').textContent = 'Thêm phân công mới';
+            document.getElementById('Id').value = '0';
+            form.action = '/Admin/PhanCong/Create';
+            form.reset();
+            document.getElementById('NhanVienId').value = nhanVienId || '';
+            document.getElementById('NgayLam').value = ngayLam || '';
+            document.getElementById('TrangThai').value = 'Chưa làm';
+            document.getElementById('CaLam').value = 'Ca sáng';
+        }
+        
+        modal.show();
+    }
+
+    // Handle form submit via AJAX
+    document.getElementById('phanCongForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const formData = new FormData(form);
+        const action = form.action;
+        const method = form.method;
+        
+        fetch(action, {
+            method: method,
+            body: formData,
+            headers: {
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                // If redirected, reload the page
+                window.location.href = response.url;
+            } else if (response.ok) {
+                // If successful, reload the page
+                window.location.reload();
+            } else {
+                // If error, show message
+                alert('Có lỗi xảy ra khi lưu phân công!');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi lưu phân công!');
+        });
+    });
+
+    // Reset form when modal is closed
+    document.getElementById('createModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('phanCongForm').reset();
+        document.getElementById('Id').value = '0';
+        document.getElementById('phanCongForm').action = '/Admin/PhanCong/Create';
+    });
+
+    function deletePhanCong(id) {
+        if (confirm('Bạn có chắc muốn xóa phân công này? (Click chuột phải để xóa)')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/Admin/PhanCong/Delete/' + id;
+            
+            // Get anti-forgery token from page
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (tokenInput) {
+                const token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '__RequestVerificationToken';
+                token.value = tokenInput.value;
+                form.appendChild(token);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    function showCopyWeekModal() {
+        const today = new Date();
+        const currentWeekStart = new Date(today);
+        currentWeekStart.setDate(today.getDate() - today.getDay() + 1); // Monday
+        
+        const nextWeekStart = new Date(currentWeekStart);
+        nextWeekStart.setDate(currentWeekStart.getDate() + 7);
+        
+        const fromDate = currentWeekStart.toISOString().split('T')[0];
+        const toDate = nextWeekStart.toISOString().split('T')[0];
+        
+        if (confirm(`Copy lịch từ tuần này (${fromDate}) sang tuần sau (${toDate})?`)) {
+            fetch('/Admin/PhanCong/CopyWeek', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fromDate: fromDate,
+                    toDate: toDate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi copy lịch');
+            });
+        }
+    }
+</script>
+
+<style>
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+

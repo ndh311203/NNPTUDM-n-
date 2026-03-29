@@ -1,0 +1,107 @@
+@model IEnumerable<spatc.Models.PetProduct>
+@{
+    ViewData["Title"] = "Thú Cưng";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">🐕 Thú Cưng</h2>
+
+    <!-- Thanh tìm kiếm với gợi ý -->
+    @await Html.PartialAsync("_SearchBar")
+
+    <!-- Bộ lọc -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="@Url.Action("Pets")" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Giống loài</label>
+                    <select name="species" class="form-select">
+                        <option value="">Tất cả</option>
+                        @foreach (var s in ViewBag.Species as List<string>)
+                        {
+                            <option value="@s" selected="@(ViewBag.SelectedSpecies == s)">@s</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Giá từ (VNĐ)</label>
+                    <input type="number" name="minPrice" class="form-control" value="@ViewBag.MinPrice" placeholder="0">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Giá đến (VNĐ)</label>
+                    <input type="number" name="maxPrice" class="form-control" value="@ViewBag.MaxPrice" placeholder="999999999">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Sắp xếp</label>
+                    <select name="sortBy" class="form-select">
+                        <option value="">Mới nhất</option>
+                        <option value="price_asc" selected="@(ViewBag.SortBy == "price_asc")">Giá tăng dần</option>
+                        <option value="price_desc" selected="@(ViewBag.SortBy == "price_desc")">Giá giảm dần</option>
+                        <option value="name_asc" selected="@(ViewBag.SortBy == "name_asc")">Tên A-Z</option>
+                        <option value="name_desc" selected="@(ViewBag.SortBy == "name_desc")">Tên Z-A</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Danh sách sản phẩm -->
+    <div class="row g-4">
+        @foreach (var pet in Model)
+        {
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="position-relative">
+                        @if (!string.IsNullOrEmpty(pet.Images))
+                        {
+                            var images = pet.Images.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                            if (images.Length > 0)
+                            {
+                                <img src="@images[0].Trim()" class="card-img-top" alt="@pet.Name" style="height: 250px; object-fit: cover;">
+                            }
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                                <span class="text-muted">Chưa có hình ảnh</span>
+                            </div>
+                        }
+                        <span class="badge bg-primary position-absolute top-0 end-0 m-2">@pet.Species</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@pet.Name</h5>
+                        <p class="card-text text-muted small">
+                            @if (!string.IsNullOrEmpty(pet.Age))
+                            {
+                                <span>Tuổi: @pet.Age</span>
+                            }
+                            @if (!string.IsNullOrEmpty(pet.Gender))
+                            {
+                                <span> | Giới tính: @pet.Gender</span>
+                            }
+                        </p>
+                        @if (!string.IsNullOrEmpty(pet.HealthStatus))
+                        {
+                            <p class="card-text"><small class="text-success">✓ @pet.HealthStatus</small></p>
+                        }
+                        <h4 class="text-primary fw-bold">@pet.Price.ToString("N0") đ</h4>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a href="@Url.Action("PetDetails", new { id = pet.Id })" class="btn btn-primary w-100">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <p class="mb-0">Không tìm thấy thú cưng nào phù hợp với bộ lọc của bạn.</p>
+        </div>
+    }
+</div>
+

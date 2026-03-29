@@ -1,0 +1,540 @@
+@{
+    ViewData["Title"] = "Cửa Hàng Thú Cưng";
+}
+
+<style>
+    .product-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(173, 216, 230, 0.3);
+        border-color: #ADD8E6;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .product-info {
+        padding: 12px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-name {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 40px;
+    }
+
+    .product-price {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .current-price {
+        color: #654321;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .old-price {
+        color: #999;
+        font-size: 14px;
+        text-decoration: line-through;
+    }
+
+    .discount-badge {
+        background: #ADD8E6;
+        color: #654321;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 8px;
+        font-size: 12px;
+    }
+
+    .star {
+        color: #ffc107;
+    }
+
+    .sold-count {
+        color: #666;
+        font-size: 12px;
+    }
+
+    .filter-sidebar {
+        background: white;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .filter-section {
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .filter-section:last-child {
+        border-bottom: none;
+    }
+
+    .filter-title {
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #333;
+    }
+
+    .price-range-btn {
+        width: 100%;
+        text-align: left;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        border: 1px solid #e0e0e0;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .price-range-btn:hover {
+        border-color: #ADD8E6;
+        color: #654321;
+        background: #FFE5E5;
+    }
+
+    .price-range-btn.active {
+        border-color: #ADD8E6;
+        background: #FFE5E5;
+        color: #654321;
+    }
+
+    .sort-bar {
+        background: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .sort-select {
+        border: 1px solid #e0e0e0;
+        padding: 6px 12px;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar Filter -->
+        <div class="col-md-3">
+            <div class="filter-sidebar sticky-top" style="top: 20px;">
+                <h5 class="mb-4">🔍 Bộ lọc</h5>
+
+                <!-- Filter by Category -->
+                <div class="filter-section">
+                    <div class="filter-title">Danh mục</div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="categoryFilter" id="catAll" value="all" checked>
+                        <label class="form-check-label" for="catAll">Tất cả</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="categoryFilter" id="catPet" value="pet">
+                        <label class="form-check-label" for="catPet">🐕 Thú Cưng</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="categoryFilter" id="catFood" value="food">
+                        <label class="form-check-label" for="catFood">🍖 Thức Ăn</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="categoryFilter" id="catAccessory" value="accessory">
+                        <label class="form-check-label" for="catAccessory">🎁 Phụ Kiện</label>
+                    </div>
+                </div>
+
+                <!-- Filter by Price Range -->
+                <div class="filter-section">
+                    <div class="filter-title">Khoảng giá</div>
+                    <button class="price-range-btn" data-min="0" data-max="100000">Dưới 100.000 đ</button>
+                    <button class="price-range-btn" data-min="100000" data-max="300000">100.000 - 300.000 đ</button>
+                    <button class="price-range-btn" data-min="300000" data-max="1000000">300.000 - 1.000.000 đ</button>
+                    <button class="price-range-btn" data-min="1000000" data-max="999999999">Trên 1.000.000 đ</button>
+                    <div class="mt-3">
+                        <label class="small text-muted">Từ</label>
+                        <input type="number" class="form-control form-control-sm mb-2" id="customMinPrice" placeholder="0">
+                        <label class="small text-muted">Đến</label>
+                        <input type="number" class="form-control form-control-sm" id="customMaxPrice" placeholder="999999999">
+                    </div>
+                </div>
+
+                <!-- Filter by Rating -->
+                <div class="filter-section">
+                    <div class="filter-title">Đánh giá</div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="rating4" value="4">
+                        <label class="form-check-label" for="rating4">
+                            <span class="star">★★★★</span>☆ trở lên
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Filter by Brand (for foods) -->
+                <div class="filter-section" id="brandFilter" style="display: none;">
+                    <div class="filter-title">Thương hiệu</div>
+                    <div id="brandList">
+                        <!-- Brands will be loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Filter by Species (for pets) -->
+                <div class="filter-section" id="speciesFilter" style="display: none;">
+                    <div class="filter-title">Giống loài</div>
+                    <div id="speciesList">
+                        <!-- Species will be loaded dynamically -->
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button class="btn btn-primary" id="applyFilterBtn">Áp dụng</button>
+                    <button class="btn btn-outline-secondary" id="resetFilterBtn">Xóa bộ lọc</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <!-- Sort Bar -->
+            <div class="sort-bar">
+                <div>
+                    <span class="text-muted me-2">Sắp xếp theo:</span>
+                    <select class="sort-select" id="sortSelect">
+                        <option value="newest">Mới nhất</option>
+                        <option value="price_asc">Giá tăng dần</option>
+                        <option value="price_desc">Giá giảm dần</option>
+                        <option value="bestseller">Bán chạy</option>
+                        <option value="rating">Đánh giá cao</option>
+                    </select>
+                </div>
+                <div>
+                    <span class="text-muted" id="productCount">0 sản phẩm</span>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="row g-3" id="productGrid">
+                <!-- Products will be loaded here by JavaScript -->
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center" id="pagination">
+                    <!-- Pagination will be generated by JavaScript -->
+                </ul>
+            </nav>
+
+            <!-- Loading -->
+            <div id="loading" class="text-center py-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Đang tải...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentPage = 1;
+        let currentFilters = {
+            category: 'all',
+            minPrice: null,
+            maxPrice: null,
+            minRating: null,
+            sortBy: 'newest',
+            brand: null,
+            species: null
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Category filter change
+            document.querySelectorAll('input[name="categoryFilter"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    currentFilters.category = this.value;
+                    toggleCategoryFilters();
+                });
+            });
+
+            // Price range buttons
+            document.querySelectorAll('.price-range-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.price-range-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilters.minPrice = parseFloat(this.dataset.min);
+                    currentFilters.maxPrice = parseFloat(this.dataset.max);
+                });
+            });
+
+            // Rating filter
+            document.getElementById('rating4')?.addEventListener('change', function() {
+                currentFilters.minRating = this.checked ? 4 : null;
+            });
+
+            // Sort change
+            document.getElementById('sortSelect')?.addEventListener('change', function() {
+                currentFilters.sortBy = this.value;
+                currentPage = 1;
+                loadProducts();
+            });
+
+            // Apply filter button
+            document.getElementById('applyFilterBtn')?.addEventListener('click', function() {
+                // Get custom price range
+                const customMin = document.getElementById('customMinPrice').value;
+                const customMax = document.getElementById('customMaxPrice').value;
+                if (customMin) currentFilters.minPrice = parseFloat(customMin);
+                if (customMax) currentFilters.maxPrice = parseFloat(customMax);
+
+                currentPage = 1;
+                loadProducts();
+            });
+
+            // Reset filter button
+            document.getElementById('resetFilterBtn')?.addEventListener('click', function() {
+                currentFilters = {
+                    category: 'all',
+                    minPrice: null,
+                    maxPrice: null,
+                    minRating: null,
+                    sortBy: 'newest',
+                    brand: null,
+                    species: null
+                };
+                document.getElementById('catAll').checked = true;
+                document.querySelectorAll('.price-range-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById('rating4').checked = false;
+                document.getElementById('customMinPrice').value = '';
+                document.getElementById('customMaxPrice').value = '';
+                document.getElementById('sortSelect').value = 'newest';
+                currentPage = 1;
+                loadProducts();
+            });
+
+            // Initial load
+            loadProducts();
+        });
+
+        function toggleCategoryFilters() {
+            const brandFilter = document.getElementById('brandFilter');
+            const speciesFilter = document.getElementById('speciesFilter');
+            
+            if (currentFilters.category === 'food') {
+                brandFilter.style.display = 'block';
+                speciesFilter.style.display = 'none';
+                loadBrands();
+            } else if (currentFilters.category === 'pet') {
+                brandFilter.style.display = 'none';
+                speciesFilter.style.display = 'block';
+                loadSpecies();
+            } else {
+                brandFilter.style.display = 'none';
+                speciesFilter.style.display = 'none';
+            }
+        }
+
+        async function loadBrands() {
+            // Load brands from API or use existing data
+            // This would need an API endpoint
+        }
+
+        async function loadSpecies() {
+            // Load species from API or use existing data
+        }
+
+        async function loadProducts() {
+            const loading = document.getElementById('loading');
+            const productGrid = document.getElementById('productGrid');
+            
+            loading.style.display = 'block';
+            productGrid.innerHTML = '';
+
+            try {
+                const response = await fetch('@Url.Action("GetProducts", "PetShop")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...currentFilters,
+                        page: currentPage,
+                        pageSize: 20
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('productCount').textContent = `${result.total} sản phẩm`;
+
+                    if (result.products && result.products.length > 0) {
+                        result.products.forEach(product => {
+                            const discount = product.oldPrice && product.oldPrice > product.price 
+                                ? Math.round((1 - product.price / product.oldPrice) * 100) 
+                                : 0;
+                            
+                            const card = createProductCard(product, discount);
+                            productGrid.appendChild(card);
+                        });
+
+                        // Generate pagination
+                        generatePagination(result.totalPages, result.page);
+                    } else {
+                        productGrid.innerHTML = '<div class="col-12"><div class="alert alert-info text-center">Không tìm thấy sản phẩm nào</div></div>';
+                    }
+                } else {
+                    productGrid.innerHTML = '<div class="col-12"><div class="alert alert-danger text-center">Lỗi: ' + result.message + '</div></div>';
+                }
+            } catch (error) {
+                productGrid.innerHTML = '<div class="col-12"><div class="alert alert-danger text-center">Có lỗi xảy ra: ' + error.message + '</div></div>';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function createProductCard(product, discount) {
+            const col = document.createElement('div');
+            col.className = 'col-md-3 col-sm-6 mb-3';
+
+            const ratingStars = generateStars(product.rating || 0);
+            const discountBadge = discount > 0 ? `<span class="discount-badge">-${discount}%</span>` : '';
+            const oldPriceHtml = product.oldPrice && product.oldPrice > product.price 
+                ? `<span class="old-price">${formatPrice(product.oldPrice)} đ</span>` 
+                : '';
+
+            const detailUrl = product.type === 'pet' 
+                ? `@Url.Action("PetDetails", "PetShop")/${product.id}`
+                : product.type === 'food'
+                ? `@Url.Action("FoodDetails", "PetShop")/${product.id}`
+                : `@Url.Action("AccessoryDetails", "PetShop")/${product.id}`;
+
+            col.innerHTML = `
+                <div class="product-card">
+                    <a href="${detailUrl}" style="text-decoration: none; color: inherit;">
+                        <div style="position: relative; overflow: hidden;">
+                            <img src="${product.image || '/images/placeholder.jpg'}" 
+                                 alt="${product.name}" 
+                                 class="product-image"
+                                 onerror="this.src='/images/placeholder.jpg'">
+                            ${discountBadge ? `<div style="position: absolute; top: 8px; left: 8px;">${discountBadge}</div>` : ''}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">
+                                <span class="current-price">${formatPrice(product.price)} đ</span>
+                                ${oldPriceHtml}
+                            </div>
+                            <div class="product-rating">
+                                ${ratingStars}
+                                <span class="sold-count">Đã bán ${product.soldCount || 0}</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+
+            return col;
+        }
+
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            let html = '';
+            
+            for (let i = 0; i < 5; i++) {
+                if (i < fullStars) {
+                    html += '<span class="star">★</span>';
+                } else if (i === fullStars && hasHalfStar) {
+                    html += '<span class="star">☆</span>';
+                } else {
+                    html += '<span style="color: #ddd;">★</span>';
+                }
+            }
+            
+            return html;
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN').format(price);
+        }
+
+        function generatePagination(totalPages, currentPageNum) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            // Previous button
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${currentPageNum === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPageNum - 1}); return false;">Trước</a>`;
+            pagination.appendChild(prevLi);
+
+            // Page numbers
+            for (let i = 1; i <= totalPages && i <= 10; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPageNum ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>`;
+                pagination.appendChild(li);
+            }
+
+            // Next button
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${currentPageNum === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPageNum + 1}); return false;">Sau</a>`;
+            pagination.appendChild(nextLi);
+        }
+
+        function changePage(page) {
+            if (page < 1) return;
+            currentPage = page;
+            loadProducts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+}
+

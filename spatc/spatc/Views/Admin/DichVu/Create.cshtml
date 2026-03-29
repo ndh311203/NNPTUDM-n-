@@ -1,0 +1,252 @@
+@model spatc.Models.DichVu
+@{
+    ViewData["Title"] = "Thêm dịch vụ mới";
+}
+
+<div class="container mt-4">
+    <h2>Thêm dịch vụ mới</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-10">
+            <form asp-action="Create" id="createForm">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <!-- Chọn loại dịch vụ -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Chọn loại dịch vụ</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="LoaiDichVu" class="form-label">Loại dịch vụ *</label>
+                            <select asp-for="LoaiDichVu" class="form-select" id="loaiDichVu" required>
+                                <option value="">-- Chọn loại dịch vụ --</option>
+                                <option value="Grooming">✂️ Grooming Thú Cưng</option>
+                                <option value="KhachSan">🏨 Khách Sạn Thú Cưng</option>
+                            </select>
+                            <span asp-validation-for="LoaiDichVu" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin cơ bản -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Thông tin cơ bản</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="TenDichVu" class="form-label">Tên dịch vụ *</label>
+                            <input asp-for="TenDichVu" class="form-control" id="tenDichVu" placeholder="VD: Tắm thú cưng, Khách sạn cho chó (phòng thường)" />
+                            <span asp-validation-for="TenDichVu" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Gia" class="form-label" id="giaLabel">Giá *</label>
+                            <input asp-for="Gia" class="form-control" type="number" step="0.01" min="0" placeholder="VD: 100000" />
+                            <small class="form-text text-muted" id="giaHint">Nhập giá dịch vụ</small>
+                            <span asp-validation-for="Gia" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MoTa" class="form-label" id="moTaLabel">Mô tả</label>
+                            <textarea asp-for="MoTa" class="form-control" rows="4" id="moTa" placeholder="Nhập mô tả dịch vụ"></textarea>
+                            <small class="form-text text-muted" id="moTaHint">Mô tả chi tiết dịch vụ</small>
+                            <span asp-validation-for="MoTa" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phần dành cho Grooming -->
+                <div id="groomingSection" style="display: none;">
+                    <div class="card mb-3">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">✂️ Chi tiết dịch vụ Grooming</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="ThoiGianThucHien" class="form-label">Thời gian thực hiện (phút)</label>
+                                    <input asp-for="ThoiGianThucHien" class="form-control" type="number" min="0" placeholder="VD: 30-60 phút" />
+                                    <small class="form-text text-muted">Thời gian ước tính để hoàn thành dịch vụ</small>
+                                    <span asp-validation-for="ThoiGianThucHien" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="KichThuocThuCung" class="form-label">Kích thước thú cưng</label>
+                                    <select asp-for="KichThuocThuCung" class="form-select">
+                                        <option value="">-- Chọn kích thước --</option>
+                                        <option value="Nhỏ">🐾 Nhỏ (dưới 10kg)</option>
+                                        <option value="Trung">🐕 Trung (10-25kg)</option>
+                                        <option value="Lớn">🐕‍🦺 Lớn (trên 25kg)</option>
+                                    </select>
+                                    <small class="form-text text-muted">Phân loại theo kích thước thú cưng</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="LoaiDichVuGrooming" class="form-label">Loại dịch vụ Grooming</label>
+                                <select asp-for="LoaiDichVuGrooming" class="form-select">
+                                    <option value="">-- Chọn loại --</option>
+                                    <option value="Cơ bản">Cơ bản (Tắm, sấy, chải lông)</option>
+                                    <option value="Combo">Combo (Tắm + cắt lông + vệ sinh tai)</option>
+                                    <option value="Nâng cao">Nâng cao (Spa, massage, nhuộm lông nhẹ)</option>
+                                    <option value="Spa">Spa toàn thân</option>
+                                </select>
+                                <small class="form-text text-muted">Phân loại mức độ dịch vụ</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phần dành cho Khách Sạn -->
+                <div id="khachSanSection" style="display: none;">
+                    <div class="card mb-3">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">🏨 Chi tiết dịch vụ Khách Sạn</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="LoaiPhong" class="form-label">Loại phòng</label>
+                                    <select asp-for="LoaiPhong" class="form-select">
+                                        <option value="">-- Chọn loại phòng --</option>
+                                        <option value="Basic">Basic (Phòng thường)</option>
+                                        <option value="VIP">VIP (Phòng cao cấp)</option>
+                                        <option value="SieuVIP">Siêu VIP (Phòng đặc biệt)</option>
+                                    </select>
+                                    <small class="form-text text-muted">Phân loại mức độ dịch vụ</small>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="SucChua" class="form-label">Sức chứa / Giới hạn kích thước</label>
+                                    <input asp-for="SucChua" class="form-control" placeholder="VD: dành cho thú < 25kg, Tối đa 2 thú cưng" />
+                                    <small class="form-text text-muted">Mô tả sức chứa và giới hạn kích thước</small>
+                                    <span asp-validation-for="SucChua" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="ThoiGianNhanTra" class="form-label">Thời gian nhận – trả thú cưng</label>
+                                <input asp-for="ThoiGianNhanTra" class="form-control" placeholder="VD: Nhận: 8h-18h, Trả: 8h-20h" />
+                                <small class="form-text text-muted">Quy định thời gian nhận và trả thú cưng</small>
+                                <span asp-validation-for="ThoiGianNhanTra" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="DichVuBoSung" class="form-label">Dịch vụ bổ sung</label>
+                                <textarea asp-for="DichVuBoSung" class="form-control" rows="3" placeholder="VD: tắm, dắt đi dạo, chăm sóc y tế, chơi đùa..."></textarea>
+                                <small class="form-text text-muted">Các dịch vụ bổ sung được cung cấp</small>
+                                <span asp-validation-for="DichVuBoSung" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="BaoGomBuaAn" value="true" class="form-check-input" />
+                                    <input type="hidden" name="BaoGomBuaAn" value="false" />
+                                    <label class="form-check-label">Bao gồm bữa ăn</label>
+                                    <small class="form-text text-muted d-block">Đánh dấu nếu dịch vụ bao gồm bữa ăn cho thú cưng</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hình ảnh & Trạng thái -->
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Hình ảnh & Trạng thái</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="HinhAnh" class="form-label" id="hinhAnhLabel">URL Hình ảnh</label>
+                            <input asp-for="HinhAnh" class="form-control" placeholder="https://..." />
+                            <small class="form-text text-muted" id="hinhAnhHint">Link hình ảnh dịch vụ</small>
+                            <span asp-validation-for="HinhAnh" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="TrangThai" value="true" class="form-check-input" checked />
+                                <input type="hidden" name="TrangThai" value="false" />
+                                <label class="form-check-label">Hoạt động</label>
+                                <small class="form-text text-muted d-block">Dịch vụ sẽ hiển thị ở trang công khai</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Thêm dịch vụ
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loaiDichVu = document.getElementById('loaiDichVu');
+            const groomingSection = document.getElementById('groomingSection');
+            const khachSanSection = document.getElementById('khachSanSection');
+            const giaLabel = document.getElementById('giaLabel');
+            const giaHint = document.getElementById('giaHint');
+            const moTaLabel = document.getElementById('moTaLabel');
+            const moTaHint = document.getElementById('moTaHint');
+            const moTa = document.getElementById('moTa');
+            const hinhAnhLabel = document.getElementById('hinhAnhLabel');
+            const hinhAnhHint = document.getElementById('hinhAnhHint');
+            const tenDichVu = document.getElementById('tenDichVu');
+
+            function updateForm() {
+                const selectedValue = loaiDichVu.value;
+                
+                if (selectedValue === 'Grooming') {
+                    groomingSection.style.display = 'block';
+                    khachSanSection.style.display = 'none';
+                    giaLabel.textContent = 'Giá (VNĐ) *';
+                    giaHint.textContent = 'VD: 100.000đ – 500.000đ tuỳ gói';
+                    moTaLabel.textContent = 'Mô tả chi tiết gói dịch vụ *';
+                    moTaHint.textContent = 'VD: Bao gồm tắm, sấy, chải lông, khử mùi, cắt móng, vệ sinh tai...';
+                    moTa.placeholder = 'VD: Bao gồm tắm, sấy, chải lông, khử mùi...';
+                    hinhAnhLabel.textContent = 'URL Hình ảnh minh họa';
+                    hinhAnhHint.textContent = 'Link hình ảnh minh họa dịch vụ';
+                    tenDichVu.placeholder = 'VD: Tắm thú cưng, Cắt lông, Spa toàn thân, Vệ sinh tai – cắt móng';
+                } else if (selectedValue === 'KhachSan') {
+                    groomingSection.style.display = 'none';
+                    khachSanSection.style.display = 'block';
+                    giaLabel.textContent = 'Giá theo ngày (VNĐ) *';
+                    giaHint.textContent = 'VD: 300.000đ / ngày';
+                    moTaLabel.textContent = 'Mô tả ngắn';
+                    moTaHint.textContent = 'VD: Tiện ích phòng, điều hòa, camera giám sát, nệm êm, không gian rộng rãi...';
+                    moTa.placeholder = 'VD: Tiện ích phòng, điều hòa, camera...';
+                    hinhAnhLabel.textContent = 'URL Ảnh phòng / tiện ích';
+                    hinhAnhHint.textContent = 'Link hình ảnh phòng và các tiện ích';
+                    tenDichVu.placeholder = 'VD: Khách sạn cho chó (phòng thường), Phòng VIP cho mèo';
+                } else {
+                    groomingSection.style.display = 'none';
+                    khachSanSection.style.display = 'none';
+                    giaLabel.textContent = 'Giá *';
+                    giaHint.textContent = 'Nhập giá dịch vụ';
+                    moTaLabel.textContent = 'Mô tả';
+                    moTaHint.textContent = 'Mô tả chi tiết dịch vụ';
+                    moTa.placeholder = 'Nhập mô tả dịch vụ';
+                    hinhAnhLabel.textContent = 'URL Hình ảnh';
+                    hinhAnhHint.textContent = 'Link hình ảnh dịch vụ';
+                    tenDichVu.placeholder = 'Nhập tên dịch vụ';
+                }
+            }
+
+            loaiDichVu.addEventListener('change', updateForm);
+            updateForm(); // Gọi lần đầu để set trạng thái ban đầu
+        });
+    </script>
+}

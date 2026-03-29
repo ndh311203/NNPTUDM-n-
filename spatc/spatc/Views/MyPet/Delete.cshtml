@@ -1,0 +1,43 @@
+@model spatc.Models.ThuCung
+@{
+    ViewData["Title"] = "Xóa thú cưng";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Xác nhận xóa</h4>
+                </div>
+                <div class="card-body">
+                    <p class="alert alert-warning">
+                        <strong>Bạn có chắc chắn muốn xóa thú cưng này không?</strong>
+                    </p>
+                    
+                    <div class="mb-3">
+                        <strong>Tên thú cưng:</strong> @Model.TenThuCung<br>
+                        <strong>Loại:</strong> @Model.Loai<br>
+                        @if (!string.IsNullOrEmpty(Model.Giong))
+                        {
+                            <strong>Giống:</strong> @Model.Giong<br>
+                        }
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Xóa
+                            </button>
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

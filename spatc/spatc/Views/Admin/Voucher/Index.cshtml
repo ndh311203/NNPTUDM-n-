@@ -1,0 +1,99 @@
+@model IEnumerable<spatc.Models.Voucher>
+@{
+    ViewData["Title"] = "Quản lý Voucher";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Quản lý Voucher / Mã giảm giá</h2>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Thêm voucher mới
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mã voucher</th>
+                            <th>Loại</th>
+                            <th>Giá trị</th>
+                            <th>Đơn tối thiểu</th>
+                            <th>Giảm tối đa</th>
+                            <th>Ngày bắt đầu</th>
+                            <th>Ngày kết thúc</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td><strong class="text-primary">@item.Code</strong></td>
+                                <td>
+                                    @if (item.Type == "percent")
+                                    {
+                                        <span class="badge bg-info">%</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">VNĐ</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Type == "percent")
+                                    {
+                                        <span>@item.Value%</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@item.Value.ToString("N0") đ</span>
+                                    }
+                                </td>
+                                <td>@item.MinOrderAmount.ToString("N0") đ</td>
+                                <td>@(item.MaxDiscount?.ToString("N0") ?? "-") đ</td>
+                                <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                                <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (item.Status == "active")
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Ngừng</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info">
+                                        <i class="bi bi-search"></i> Chi tiết
+                                    </a>
+                                    <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> Sửa
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

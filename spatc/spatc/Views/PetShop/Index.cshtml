@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "Cửa Hàng Thú Cưng";
+}
+
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">🛒 Cửa Hàng Thú Cưng</h1>
+        <p class="lead text-muted">Mua sắm cho thú cưng của bạn</p>
+    </div>
+
+    <!-- 3 Cards để chọn danh mục -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-lg border-primary" style="cursor: pointer;" onclick="window.location.href='@Url.Action("Pets")'">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-heart" style="font-size: 5rem; color: #0d6efd;"></i>
+                    </div>
+                    <h2 class="card-title fw-bold mb-3">🐕 Thú Cưng</h2>
+                    <p class="card-text text-muted mb-4">
+                        Chó, Mèo, Hamster, Thỏ, Chim, Cá<br>
+                        Thú cưng khỏe mạnh, đã tiêm phòng
+                    </p>
+                    <a href="@Url.Action("Pets")" class="btn btn-primary btn-lg">
+                        <i class="bi bi-arrow-right-circle"></i> Xem thú cưng
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-lg border-success" style="cursor: pointer;" onclick="window.location.href='@Url.Action("Foods")'">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-basket" style="font-size: 5rem; color: #198754;"></i>
+                    </div>
+                    <h2 class="card-title fw-bold mb-3">🍖 Thức Ăn</h2>
+                    <p class="card-text text-muted mb-4">
+                        Hạt, Pate, Snack, Thức ăn tươi<br>
+                        Đầy đủ dinh dưỡng cho thú cưng
+                    </p>
+                    <a href="@Url.Action("Foods")" class="btn btn-success btn-lg">
+                        <i class="bi bi-arrow-right-circle"></i> Xem thức ăn
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-lg border-info" style="cursor: pointer;" onclick="window.location.href='@Url.Action("Accessories")'">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-gift" style="font-size: 5rem; color: #0dcaf0;"></i>
+                    </div>
+                    <h2 class="card-title fw-bold mb-3">🎁 Phụ Kiện</h2>
+                    <p class="card-text text-muted mb-4">
+                        Lồng, Vòng cổ, Dây dắt, Đồ chơi<br>
+                        Đồ tắm, Bát ăn, Giường ngủ
+                    </p>
+                    <a href="@Url.Action("Accessories")" class="btn btn-info btn-lg">
+                        <i class="bi bi-arrow-right-circle"></i> Xem phụ kiện
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+    }
+</style>
+

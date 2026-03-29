@@ -1,0 +1,78 @@
+@model spatc.Models.TaiKhoan
+@{
+    ViewData["Title"] = "Chi tiết tài khoản";
+}
+
+<div class="container mt-4">
+    <h2>Chi tiết tài khoản</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Họ tên:</dt>
+                <dd class="col-sm-9">@(Model.HoTen ?? "-")</dd>
+
+                <dt class="col-sm-3">Vai trò:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.VaiTro == "Admin")
+                    {
+                        <span class="badge bg-danger">Admin</span>
+                    }
+                    else if (Model.VaiTro == "NhanVien")
+                    {
+                        <span class="badge bg-primary">Nhân viên</span>
+                    }
+                    else if (Model.VaiTro == "User")
+                    {
+                        <span class="badge bg-info">Người dùng</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Model.VaiTro</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Phương thức đăng nhập:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Provider == "Google")
+                    {
+                        <span class="badge bg-danger"><i class="bi bi-google"></i> Google</span>
+                    }
+                    else if (Model.Provider == "Facebook")
+                    {
+                        <span class="badge bg-primary"><i class="bi bi-facebook"></i> Facebook</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Local (Email/Password)</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Trạng thái:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.TrangThai)
+                    {
+                        <span class="badge bg-success">Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Khóa</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Ngày tạo:</dt>
+                <dd class="col-sm-9">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+
+            <div class="mt-4">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">Sửa</a>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </div>
+    </div>
+</div>
+

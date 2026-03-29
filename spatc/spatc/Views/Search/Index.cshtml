@@ -1,0 +1,251 @@
+@{
+    ViewData["Title"] = "Tìm kiếm sản phẩm và dịch vụ";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="bi bi-search"></i> Tìm kiếm
+            </h2>
+            
+            <!-- Search Bar -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control" id="searchKeyword" 
+                               placeholder="Nhập từ khóa tìm kiếm..." 
+                               value="@ViewBag.Keyword">
+                        <select class="form-select" id="searchType" style="max-width: 150px;">
+                            <option value="all">Tất cả</option>
+                            <option value="product">Sản phẩm</option>
+                            <option value="service">Dịch vụ</option>
+                        </select>
+                        <button class="btn btn-primary" type="button" onclick="performSearch()">
+                            <i class="bi bi-search"></i> Tìm kiếm
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="searchResults">
+                <div class="text-center py-5">
+                    <i class="bi bi-search" style="font-size: 4rem; color: #ccc;"></i>
+                    <p class="text-muted mt-3">Nhập từ khóa để bắt đầu tìm kiếm</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const keyword = document.getElementById('searchKeyword').value;
+        if (keyword) {
+            performSearch();
+        }
+
+        // Enter key to search
+        document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    });
+
+    function performSearch(page = 1) {
+        const keyword = document.getElementById('searchKeyword').value.trim();
+        const type = document.getElementById('searchType').value;
+
+        if (!keyword) {
+            alert('Vui lòng nhập từ khóa tìm kiếm!');
+            return;
+        }
+
+        const resultsContainer = document.getElementById('searchResults');
+        resultsContainer.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Đang tìm kiếm...</span>
+                </div>
+                <p class="mt-3">Đang tìm kiếm...</p>
+            </div>
+        `;
+
+        fetch(`/Search/SearchAll?keyword=${encodeURIComponent(keyword)}&type=${type}&page=${page}&pageSize=20`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displaySearchResults(data, keyword, type, page);
+                } else {
+                    resultsContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i> ${data.message || 'Có lỗi xảy ra khi tìm kiếm'}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                resultsContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Có lỗi xảy ra khi tìm kiếm
+                    </div>
+                `;
+            });
+    }
+
+    function displaySearchResults(data, keyword, type, page) {
+        const container = document.getElementById('searchResults');
+        let html = '';
+
+        // Summary
+        html += `
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> 
+                Tìm thấy <strong>${data.total}</strong> kết quả cho từ khóa "<strong>${keyword}</strong>"
+                ${data.totalProducts > 0 ? `(${data.totalProducts} sản phẩm` : ''}
+                ${data.totalServices > 0 ? `, ${data.totalServices} dịch vụ` : ''}
+                ${data.totalProducts > 0 || data.totalServices > 0 ? ')' : ''}
+            </div>
+        `;
+
+        // Products
+        if (data.products && data.products.length > 0) {
+            html += `
+                <div class="mb-5">
+                    <h4 class="mb-3">
+                        <i class="bi bi-box-seam text-primary"></i> Sản phẩm (${data.totalProducts})
+                    </h4>
+                    <div class="row g-4">
+            `;
+
+            data.products.forEach(product => {
+                html += `
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card h-100 shadow-sm">
+                            ${product.image ? `
+                                <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
+                            ` : `
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            `}
+                            <div class="card-body d-flex flex-column">
+                                <h6 class="card-title">${product.name}</h6>
+                                <p class="card-text text-muted small">
+                                    <span class="badge bg-info">${product.category}</span>
+                                </p>
+                                <div class="mt-auto">
+                                    <h5 class="text-danger mb-3">${formatPrice(product.price)} đ</h5>
+                                    <a href="/PetShop/${getProductTypeUrl(product.type)}Details/${product.id}" class="btn btn-outline-primary btn-sm w-100">
+                                        Xem chi tiết
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+        }
+
+        // Services
+        if (data.services && data.services.length > 0) {
+            html += `
+                <div class="mb-5">
+                    <h4 class="mb-3">
+                        <i class="bi bi-star text-warning"></i> Dịch vụ (${data.totalServices})
+                    </h4>
+                    <div class="row g-4">
+            `;
+
+            data.services.forEach(service => {
+                html += `
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card h-100 shadow-sm">
+                            ${service.image ? `
+                                <img src="${service.image}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
+                            ` : `
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            `}
+                            <div class="card-body d-flex flex-column">
+                                <h6 class="card-title">${service.name}</h6>
+                                <p class="card-text text-muted small">
+                                    <span class="badge bg-${service.type === 'grooming' ? 'primary' : 'warning'}">${service.category}</span>
+                                </p>
+                                <div class="mt-auto">
+                                    <h5 class="text-primary mb-3">${formatPrice(service.price)} đ</h5>
+                                    <a href="/DichVu/Details/${service.id}" class="btn btn-outline-primary btn-sm w-100">
+                                        Xem chi tiết
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+        }
+
+        // No results
+        if ((!data.products || data.products.length === 0) && 
+            (!data.services || data.services.length === 0)) {
+            html += `
+                <div class="text-center py-5">
+                    <i class="bi bi-search" style="font-size: 4rem; color: #ccc;"></i>
+                    <p class="text-muted mt-3">Không tìm thấy kết quả nào cho từ khóa "<strong>${keyword}</strong>"</p>
+                    <p class="text-muted">Vui lòng thử với từ khóa khác</p>
+                </div>
+            `;
+        }
+
+        // Pagination
+        if (data.totalPages > 1) {
+            html += `
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+            `;
+
+            for (let i = 1; i <= data.totalPages; i++) {
+                html += `
+                    <li class="page-item ${i === page ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="performSearch(${i}); return false;">${i}</a>
+                    </li>
+                `;
+            }
+
+            html += `
+                    </ul>
+                </nav>
+            `;
+        }
+
+        container.innerHTML = html;
+    }
+
+    function getProductTypeUrl(type) {
+        const typeMap = {
+            'pet': 'Pet',
+            'food': 'Food',
+            'accessory': 'Accessory'
+        };
+        return typeMap[type] || 'Pet';
+    }
+
+    function formatPrice(price) {
+        return new Intl.NumberFormat('vi-VN').format(price);
+    }
+</script>
+

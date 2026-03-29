@@ -1,0 +1,496 @@
+@model spatc.Models.DichVu
+@{
+    ViewData["Title"] = "Chi tiết dịch vụ";
+    var averageRating = Model.AverageRating ?? 0;
+    var reviewCount = Model.ReviewCount;
+}
+
+<div class="container mt-4">
+    <h2>Chi tiết dịch vụ</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Thông tin cơ bản -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Thông tin cơ bản</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Tên dịch vụ:</dt>
+                        <dd class="col-sm-8"><strong>@Model.TenDichVu</strong></dd>
+
+                        <dt class="col-sm-4">Loại dịch vụ:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.LoaiDichVu == "Grooming")
+                            {
+                                <span class="badge bg-info fs-6">✂️ Grooming Thú Cưng</span>
+                            }
+                            else if (Model.LoaiDichVu == "KhachSan")
+                            {
+                                <span class="badge bg-warning text-dark fs-6">🏨 Khách Sạn Thú Cưng</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary fs-6">@Model.LoaiDichVu</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Giá:</dt>
+                        <dd class="col-sm-8">
+                            <strong class="text-primary fs-5">@Model.Gia.ToString("N0") ₫</strong>
+                            @if (Model.LoaiDichVu == "KhachSan")
+                            {
+                                <small class="text-muted d-block">/ ngày</small>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Đánh giá:</dt>
+                        <dd class="col-sm-8">
+                            @if (reviewCount > 0)
+                            {
+                                <div class="d-flex align-items-center gap-2">
+                                    @for (int i = 0; i < 5; i++)
+                                    {
+                                        if (i < Math.Floor((double)averageRating))
+                                        {
+                                            <span style="color: #ffc107; font-size: 18px;">★</span>
+                                        }
+                                        else if (i == Math.Floor((double)averageRating) && averageRating % 1 >= 0.5m)
+                                        {
+                                            <span style="color: #ffc107; font-size: 18px;">☆</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #ddd; font-size: 18px;">★</span>
+                                        }
+                                    }
+                                    <strong class="ms-2">@averageRating.ToString("F1")</strong>
+                                    <span class="text-muted">(@reviewCount đánh giá)</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa có đánh giá</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Mô tả:</dt>
+                        <dd class="col-sm-8">
+                            @if (!string.IsNullOrEmpty(Model.MoTa))
+                            {
+                                <div>@Html.Raw(Model.MoTa?.Replace("\n", "<br>"))</div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa có mô tả</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Hình ảnh:</dt>
+                        <dd class="col-sm-8">
+                            @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                            {
+                                <img src="@Model.HinhAnh" alt="@Model.TenDichVu" class="img-fluid rounded" style="max-width: 400px; max-height: 300px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa có hình ảnh</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Trạng thái:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.TrangThai)
+                            {
+                                <span class="badge bg-success fs-6">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary fs-6">Ngừng</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Ngày tạo:</dt>
+                        <dd class="col-sm-8">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Chi tiết dịch vụ Grooming -->
+            @if (Model.LoaiDichVu == "Grooming")
+            {
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">✂️ Chi tiết dịch vụ Grooming</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            @if (Model.ThoiGianThucHien.HasValue)
+                            {
+                                <dt class="col-sm-4">Thời gian thực hiện:</dt>
+                                <dd class="col-sm-8">
+                                    <strong>@Model.ThoiGianThucHien.Value phút</strong>
+                                </dd>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.KichThuocThuCung))
+                            {
+                                <dt class="col-sm-4">Kích thước thú cưng:</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.KichThuocThuCung == "Nhỏ")
+                                    {
+                                        <span class="badge bg-primary">🐾 Nhỏ (dưới 10kg)</span>
+                                    }
+                                    else if (Model.KichThuocThuCung == "Trung")
+                                    {
+                                        <span class="badge bg-info">🐕 Trung (10-25kg)</span>
+                                    }
+                                    else if (Model.KichThuocThuCung == "Lớn")
+                                    {
+                                        <span class="badge bg-warning text-dark">🐕‍🦺 Lớn (trên 25kg)</span>
+                                    }
+                                    else
+                                    {
+                                        @Model.KichThuocThuCung
+                                    }
+                                </dd>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.LoaiDichVuGrooming))
+                            {
+                                <dt class="col-sm-4">Loại dịch vụ Grooming:</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.LoaiDichVuGrooming == "Cơ bản")
+                                    {
+                                        <span class="badge bg-secondary">Cơ bản (Tắm, sấy, chải lông)</span>
+                                    }
+                                    else if (Model.LoaiDichVuGrooming == "Combo")
+                                    {
+                                        <span class="badge bg-info">Combo (Tắm + cắt lông + vệ sinh tai)</span>
+                                    }
+                                    else if (Model.LoaiDichVuGrooming == "Nâng cao")
+                                    {
+                                        <span class="badge bg-warning text-dark">Nâng cao (Spa, massage, nhuộm lông nhẹ)</span>
+                                    }
+                                    else if (Model.LoaiDichVuGrooming == "Spa")
+                                    {
+                                        <span class="badge bg-success">Spa toàn thân</span>
+                                    }
+                                    else
+                                    {
+                                        @Model.LoaiDichVuGrooming
+                                    }
+                                </dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+            }
+
+            <!-- Chi tiết dịch vụ Khách Sạn -->
+            @if (Model.LoaiDichVu == "KhachSan")
+            {
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">🏨 Chi tiết dịch vụ Khách Sạn</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            @if (!string.IsNullOrEmpty(Model.LoaiPhong))
+                            {
+                                <dt class="col-sm-4">Loại phòng:</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.LoaiPhong == "Basic")
+                                    {
+                                        <span class="badge bg-secondary">Basic (Phòng thường)</span>
+                                    }
+                                    else if (Model.LoaiPhong == "VIP")
+                                    {
+                                        <span class="badge bg-info">VIP (Phòng cao cấp)</span>
+                                    }
+                                    else if (Model.LoaiPhong == "SieuVIP")
+                                    {
+                                        <span class="badge bg-warning text-dark">Siêu VIP (Phòng đặc biệt)</span>
+                                    }
+                                    else
+                                    {
+                                        @Model.LoaiPhong
+                                    }
+                                </dd>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.SucChua))
+                            {
+                                <dt class="col-sm-4">Sức chứa / Giới hạn:</dt>
+                                <dd class="col-sm-8">@Model.SucChua</dd>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.ThoiGianNhanTra))
+                            {
+                                <dt class="col-sm-4">Thời gian nhận – trả:</dt>
+                                <dd class="col-sm-8">@Model.ThoiGianNhanTra</dd>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.DichVuBoSung))
+                            {
+                                <dt class="col-sm-4">Dịch vụ bổ sung:</dt>
+                                <dd class="col-sm-8">
+                                    <div>@Html.Raw(Model.DichVuBoSung?.Replace("\n", "<br>"))</div>
+                                </dd>
+                            }
+
+                            <dt class="col-sm-4">Bao gồm bữa ăn:</dt>
+                            <dd class="col-sm-8">
+                                @if (Model.BaoGomBuaAn == true)
+                                {
+                                    <span class="badge bg-success">✓ Có</span>
+                                }
+                                else if (Model.BaoGomBuaAn == false)
+                                {
+                                    <span class="badge bg-secondary">✗ Không</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Chưa xác định</span>
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            }
+
+            <!-- Phần đánh giá dịch vụ -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">⭐ Đánh giá dịch vụ</h5>
+                </div>
+                <div class="card-body">
+                    @if (reviewCount > 0)
+                    {
+                        <div class="mb-4">
+                            <div id="reviewsContainer">
+                                <!-- Reviews will be loaded by JavaScript -->
+                                <p class="text-muted">Đang tải đánh giá...</p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-4">
+                            <p class="text-muted">Chưa có đánh giá nào cho dịch vụ này.</p>
+                            <div id="reviewsContainer"></div>
+                        </div>
+                    }
+                    
+                    <hr>
+                    <h6>Viết đánh giá (Test)</h6>
+                    <form id="reviewFormElement">
+                        <div class="mb-3">
+                            <label class="form-label">Đánh giá *</label>
+                            <div class="d-flex gap-2">
+                                <input type="radio" name="rating" id="star5" value="5" checked>
+                                <label for="star5" style="font-size: 24px; color: #ffc107; cursor: pointer;">★</label>
+                                <input type="radio" name="rating" id="star4" value="4">
+                                <label for="star4" style="font-size: 24px; color: #ddd; cursor: pointer;">★</label>
+                                <input type="radio" name="rating" id="star3" value="3">
+                                <label for="star3" style="font-size: 24px; color: #ddd; cursor: pointer;">★</label>
+                                <input type="radio" name="rating" id="star2" value="2">
+                                <label for="star2" style="font-size: 24px; color: #ddd; cursor: pointer;">★</label>
+                                <input type="radio" name="rating" id="star1" value="1">
+                                <label for="star1" style="font-size: 24px; color: #ddd; cursor: pointer;">★</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên của bạn *</label>
+                            <input type="text" class="form-control" id="reviewCustomerName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="reviewCustomerEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Bình luận</label>
+                            <textarea class="form-control" id="reviewComment" rows="4"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hình ảnh (tối đa 3 ảnh)</label>
+                            <input type="text" class="form-control" id="reviewImages" placeholder="URL ảnh, cách nhau bằng dấu phẩy">
+                            <small class="text-muted">Nhập URL hình ảnh, cách nhau bằng dấu phẩy</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Nút hành động -->
+            <div class="mt-4">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">
+                    <i class="bi bi-pencil-square"></i> Sửa
+                </a>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const dichVuId = @Model.Id;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadReviews();
+            
+            // Handle review form submission
+            document.getElementById('reviewFormElement')?.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await submitReview();
+            });
+            
+            // Update star colors on rating change
+            document.querySelectorAll('input[name="rating"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateStarColors();
+                });
+            });
+            updateStarColors();
+        });
+        
+        function updateStarColors() {
+            const selectedRating = parseInt(document.querySelector('input[name="rating"]:checked')?.value || 5);
+            for (let i = 1; i <= 5; i++) {
+                const label = document.querySelector(`label[for="star${i}"]`);
+                if (label) {
+                    label.style.color = i <= selectedRating ? '#ffc107' : '#ddd';
+                }
+            }
+        }
+        
+        async function submitReview() {
+            const ratingInput = document.querySelector('input[name="rating"]:checked');
+            if (!ratingInput) {
+                alert('Vui lòng chọn đánh giá (sao)');
+                return;
+            }
+
+            const rating = parseInt(ratingInput.value);
+            const customerName = document.getElementById('reviewCustomerName')?.value?.trim();
+            const customerEmail = document.getElementById('reviewCustomerEmail')?.value?.trim();
+            const comment = document.getElementById('reviewComment')?.value?.trim();
+            const images = document.getElementById('reviewImages')?.value?.trim();
+
+            if (!customerName) {
+                alert('Vui lòng nhập tên của bạn');
+                return;
+            }
+
+            if (rating < 1 || rating > 5) {
+                alert('Đánh giá phải từ 1 đến 5 sao');
+                return;
+            }
+
+            try {
+                const reviewData = {
+                    dichVuId: dichVuId,
+                    rating: rating,
+                    comment: comment || null,
+                    images: images || null,
+                    customerName: customerName,
+                    customerEmail: customerEmail || null
+                };
+
+                const response = await fetch('/ServiceReview/Create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Đánh giá của bạn đã được gửi thành công!');
+                    document.getElementById('reviewFormElement').reset();
+                    updateStarColors();
+                    await loadReviews();
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + (result.message || 'Không thể gửi đánh giá'));
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert('Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại sau.');
+            }
+        }
+
+        async function loadReviews() {
+            try {
+                const response = await fetch(`/ServiceReview/GetReviews?dichVuId=${dichVuId}`);
+                const result = await response.json();
+                
+                if (result.success && result.reviews.length > 0) {
+                    let html = '';
+                    result.reviews.forEach(review => {
+                        const stars = generateReviewStars(review.rating);
+                        const imagesHtml = review.images && review.images.length > 0
+                            ? `<div class="mt-2"><small class="text-muted">Hình ảnh:</small><div class="d-flex gap-2 mt-1">${review.images.map(img => `<img src="${img}" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;" onclick="showImageModal('${img}')">`).join('')}</div></div>`
+                            : '';
+                        
+                        html += `
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong>${review.customerName}</strong>
+                                        <div class="mt-1">${stars}</div>
+                                    </div>
+                                    <small class="text-muted">${review.createdAt}</small>
+                                </div>
+                                ${review.comment ? `<p class="mb-2">${review.comment}</p>` : ''}
+                                ${imagesHtml}
+                            </div>
+                        `;
+                    });
+                    document.getElementById('reviewsContainer').innerHTML = html;
+                } else {
+                    document.getElementById('reviewsContainer').innerHTML = '<p class="text-muted">Chưa có đánh giá nào</p>';
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+                document.getElementById('reviewsContainer').innerHTML = '<p class="text-danger">Có lỗi xảy ra khi tải đánh giá</p>';
+            }
+        }
+
+        function generateReviewStars(rating) {
+            let html = '';
+            for (let i = 0; i < 5; i++) {
+                html += i < rating 
+                    ? '<span style="color: #ffc107; font-size: 16px;">★</span>' 
+                    : '<span style="color: #ddd; font-size: 16px;">★</span>';
+            }
+            return html;
+        }
+
+        function showImageModal(imageUrl) {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer;';
+            modal.onclick = function() { document.body.removeChild(modal); };
+            
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.style.cssText = 'max-width: 90%; max-height: 90%; object-fit: contain;';
+            modal.appendChild(img);
+            
+            document.body.appendChild(modal);
+        }
+    </script>
+}
+

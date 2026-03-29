@@ -1,0 +1,257 @@
+@model spatc.Models.HoaDon
+@{
+    ViewData["Title"] = "Tạo hóa đơn mới";
+    var loaiHoaDon = ViewBag.LoaiHoaDon as string ?? "TuDatLich";
+    var groomingServices = ViewBag.GroomingServices as IEnumerable<spatc.Models.DichVu> ?? new List<spatc.Models.DichVu>();
+    var phongKhachSans = ViewBag.PhongKhachSans as IEnumerable<spatc.Models.DichVu> ?? new List<spatc.Models.DichVu>();
+}
+
+<div class="container mt-4">
+    <h2>Tạo hóa đơn mới</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-10">
+            <form asp-action="Create" id="hoaDonForm">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <!-- Chọn loại hóa đơn -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Loại hóa đơn</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="LoaiHoaDon" id="loaiTuDatLich" value="TuDatLich" @(loaiHoaDon == "TuDatLich" ? "checked" : "")>
+                                    <label class="form-check-label" for="loaiTuDatLich">
+                                        <i class="bi bi-calendar-check"></i> Từ đặt lịch
+                                    </label>
+                                </div>
+                                <small class="text-muted">Hóa đơn từ lịch đặt trước</small>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="LoaiHoaDon" id="loaiKhachDenQuan" value="KhachDenQuan" @(loaiHoaDon == "KhachDenQuan" ? "checked" : "")>
+                                    <label class="form-check-label" for="loaiKhachDenQuan">
+                                        <i class="bi bi-person-walking"></i> Khách hàng đến quán
+                                    </label>
+                                </div>
+                                <small class="text-muted">Khách hàng đến trực tiếp không đặt lịch</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phần Từ đặt lịch -->
+                <div id="sectionTuDatLich" style="display: @(loaiHoaDon == "TuDatLich" ? "block" : "none");">
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Thông tin từ đặt lịch</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label asp-for="DatLichId" class="form-label">Đặt lịch *</label>
+                                <select asp-for="DatLichId" class="form-select" asp-items="ViewBag.DatLichId">
+                                    <option value="">-- Chọn đặt lịch --</option>
+                                </select>
+                                <span asp-validation-for="DatLichId" class="text-danger"></span>
+                                <small class="form-text text-muted">Chỉ hiển thị các đặt lịch đã hoàn thành và chưa có hóa đơn</small>
+                            </div>
+                            @if (ViewBag.DichVuGia != null)
+                            {
+                                <div class="alert alert-info">
+                                    <strong>Giá dịch vụ:</strong> @(((decimal)ViewBag.DichVuGia).ToString("N0")) đ
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phần Khách hàng đến quán -->
+                <div id="sectionKhachDenQuan" style="display: @(loaiHoaDon == "KhachDenQuan" ? "block" : "none");">
+                    <div class="card mb-3">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Thông tin khách hàng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="KhachHangTen" class="form-label">Tên khách hàng *</label>
+                                    <input asp-for="KhachHangTen" class="form-control" placeholder="Nhập tên khách hàng" />
+                                    <span asp-validation-for="KhachHangTen" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="KhachHangSoDienThoai" class="form-label">Số điện thoại *</label>
+                                    <input asp-for="KhachHangSoDienThoai" class="form-control" placeholder="Nhập số điện thoại" />
+                                    <span asp-validation-for="KhachHangSoDienThoai" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="KhachHangEmail" class="form-label">Email</label>
+                                <input asp-for="KhachHangEmail" type="email" class="form-control" placeholder="Nhập email (tùy chọn)" />
+                                <span asp-validation-for="KhachHangEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">Dịch vụ sử dụng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Chọn dịch vụ Grooming</label>
+                                <select name="DichVuGroomingId" id="dichVuGroomingId" class="form-select">
+                                    <option value="">-- Chọn dịch vụ Grooming --</option>
+                                    @foreach (var service in groomingServices)
+                                    {
+                                        <option value="@service.Id" data-gia="@service.Gia">@service.TenDichVu - @service.Gia.ToString("N0") đ</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Hoặc chọn phòng Khách sạn</label>
+                                <select name="PhongKhachSanId" id="phongKhachSanId" class="form-select">
+                                    <option value="">-- Chọn phòng Khách sạn --</option>
+                                    @foreach (var phong in phongKhachSans)
+                                    {
+                                        <option value="@phong.Id" data-gia="@phong.Gia">@phong.TenDichVu @(phong.LoaiPhong != null ? $"({phong.LoaiPhong})" : "") - @phong.Gia.ToString("N0") đ</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="TenDichVu" class="form-label">Hoặc nhập tên dịch vụ khác</label>
+                                <input asp-for="TenDichVu" class="form-control" placeholder="Nhập tên dịch vụ (nếu không chọn ở trên)" />
+                                <span asp-validation-for="TenDichVu" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin chung -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Thông tin thanh toán</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="TongTien" class="form-label">Tổng tiền *</label>
+                            <input asp-for="TongTien" class="form-control" type="number" step="0.01" min="0" id="tongTien" required />
+                            <span asp-validation-for="TongTien" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhuongThucThanhToan" class="form-label">Phương thức thanh toán</label>
+                            <select asp-for="PhuongThucThanhToan" class="form-select">
+                                <option value="Tiền mặt">Tiền mặt</option>
+                                <option value="Chuyển khoản">Chuyển khoản</option>
+                                <option value="Thẻ">Thẻ</option>
+                                <option value="VietQR">VietQR</option>
+                            </select>
+                            <span asp-validation-for="PhuongThucThanhToan" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="GhiChu" class="form-label">Ghi chú</label>
+                            <textarea asp-for="GhiChu" class="form-control" rows="3" placeholder="Ghi chú thêm về hóa đơn..."></textarea>
+                            <span asp-validation-for="GhiChu" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-receipt"></i> Tạo hóa đơn
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Xử lý chuyển đổi giữa 2 loại hóa đơn
+        document.querySelectorAll('input[name="LoaiHoaDon"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const isTuDatLich = this.value === 'TuDatLich';
+                document.getElementById('sectionTuDatLich').style.display = isTuDatLich ? 'block' : 'none';
+                document.getElementById('sectionKhachDenQuan').style.display = isTuDatLich ? 'none' : 'block';
+                
+                // Clear required attributes
+                const datLichSelect = document.querySelector('#DatLichId');
+                const khachHangTen = document.querySelector('#KhachHangTen');
+                const khachHangSoDienThoai = document.querySelector('#KhachHangSoDienThoai');
+                
+                if (isTuDatLich) {
+                    datLichSelect?.setAttribute('required', 'required');
+                    khachHangTen?.removeAttribute('required');
+                    khachHangSoDienThoai?.removeAttribute('required');
+                } else {
+                    datLichSelect?.removeAttribute('required');
+                    khachHangTen?.setAttribute('required', 'required');
+                    khachHangSoDienThoai?.setAttribute('required', 'required');
+                }
+            });
+        });
+
+        // Tự động điền giá khi chọn dịch vụ Grooming
+        document.getElementById('dichVuGroomingId')?.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.value) {
+                const gia = parseFloat(selectedOption.getAttribute('data-gia'));
+                document.getElementById('tongTien').value = gia;
+                // Clear phòng khách sạn
+                document.getElementById('phongKhachSanId').value = '';
+            }
+        });
+
+        // Tự động điền giá khi chọn phòng Khách sạn
+        document.getElementById('phongKhachSanId')?.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.value) {
+                const gia = parseFloat(selectedOption.getAttribute('data-gia'));
+                document.getElementById('tongTien').value = gia;
+                // Clear dịch vụ Grooming
+                document.getElementById('dichVuGroomingId').value = '';
+            }
+        });
+
+        // Validate form trước khi submit
+        document.getElementById('hoaDonForm')?.addEventListener('submit', function(e) {
+            const loaiHoaDon = document.querySelector('input[name="LoaiHoaDon"]:checked')?.value;
+            
+            if (loaiHoaDon === 'TuDatLich') {
+                const datLichId = document.getElementById('DatLichId').value;
+                if (!datLichId) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn đặt lịch!');
+                    return false;
+                }
+            } else if (loaiHoaDon === 'KhachDenQuan') {
+                const khachHangTen = document.getElementById('KhachHangTen').value;
+                const khachHangSoDienThoai = document.getElementById('KhachHangSoDienThoai').value;
+                const tongTien = document.getElementById('tongTien').value;
+                
+                if (!khachHangTen || !khachHangSoDienThoai) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập đầy đủ thông tin khách hàng!');
+                    return false;
+                }
+                
+                if (!tongTien || parseFloat(tongTien) <= 0) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập tổng tiền hợp lệ!');
+                    return false;
+                }
+            }
+        });
+    </script>
+}
+

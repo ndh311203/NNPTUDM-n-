@@ -1,0 +1,137 @@
+@model spatc.Models.DichVu
+@{
+    ViewData["Title"] = "Thêm dịch vụ Khách Sạn mới";
+}
+
+<div class="container mt-4">
+    <h2>🏨 Thêm dịch vụ Khách Sạn Thú Cưng mới</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-10">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Thông tin cơ bản</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="TenDichVu" class="form-label">Tên dịch vụ *</label>
+                            <input asp-for="TenDichVu" class="form-control" placeholder="VD: Khách sạn cho chó (phòng thường), Phòng VIP cho mèo" />
+                            <span asp-validation-for="TenDichVu" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Gia" class="form-label">Giá theo ngày (VNĐ) *</label>
+                            <input asp-for="Gia" class="form-control" type="number" step="0.01" min="0" placeholder="VD: 300000" />
+                            <small class="form-text text-muted">VD: 300.000đ / ngày</small>
+                            <span asp-validation-for="Gia" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MoTa" class="form-label">Mô tả ngắn</label>
+                            <textarea asp-for="MoTa" class="form-control" rows="4" placeholder="VD: Tiện ích phòng, điều hòa, camera giám sát, nệm êm, không gian rộng rãi..."></textarea>
+                            <small class="form-text text-muted">Mô tả các tiện ích và đặc điểm của phòng</small>
+                            <span asp-validation-for="MoTa" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Thông tin phòng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LoaiPhong" class="form-label">Loại phòng</label>
+                                <select asp-for="LoaiPhong" class="form-select">
+                                    <option value="">-- Chọn loại phòng --</option>
+                                    <option value="Basic">Basic (Phòng thường)</option>
+                                    <option value="VIP">VIP (Phòng cao cấp)</option>
+                                    <option value="SieuVIP">Siêu VIP (Phòng đặc biệt)</option>
+                                </select>
+                                <small class="form-text text-muted">Phân loại mức độ dịch vụ</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SucChua" class="form-label">Sức chứa / Giới hạn kích thước</label>
+                                <input asp-for="SucChua" class="form-control" placeholder="VD: dành cho thú < 25kg, Tối đa 2 thú cưng" />
+                                <small class="form-text text-muted">Mô tả sức chứa và giới hạn kích thước</small>
+                                <span asp-validation-for="SucChua" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ThoiGianNhanTra" class="form-label">Thời gian nhận – trả thú cưng</label>
+                            <input asp-for="ThoiGianNhanTra" class="form-control" placeholder="VD: Nhận: 8h-18h, Trả: 8h-20h" />
+                            <small class="form-text text-muted">Quy định thời gian nhận và trả thú cưng</small>
+                            <span asp-validation-for="ThoiGianNhanTra" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Dịch vụ bổ sung</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="DichVuBoSung" class="form-label">Dịch vụ bổ sung</label>
+                            <textarea asp-for="DichVuBoSung" class="form-control" rows="3" placeholder="VD: tắm, dắt đi dạo, chăm sóc y tế, chơi đùa..."></textarea>
+                            <small class="form-text text-muted">Các dịch vụ bổ sung được cung cấp (mỗi dịch vụ cách nhau bởi dấu phẩy)</small>
+                            <span asp-validation-for="DichVuBoSung" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="BaoGomBuaAn" value="true" class="form-check-input" @(Model?.BaoGomBuaAn == true ? "checked" : "") />
+                                <input type="hidden" name="BaoGomBuaAn" value="false" />
+                                <label class="form-check-label">Bao gồm bữa ăn</label>
+                                <small class="form-text text-muted d-block">Đánh dấu nếu dịch vụ bao gồm bữa ăn cho thú cưng</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Hình ảnh & Trạng thái</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="HinhAnh" class="form-label">URL Ảnh phòng / tiện ích</label>
+                            <input asp-for="HinhAnh" class="form-control" placeholder="https://..." />
+                            <small class="form-text text-muted">Link hình ảnh phòng và các tiện ích</small>
+                            <span asp-validation-for="HinhAnh" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="TrangThai" value="true" class="form-check-input" @(Model?.TrangThai == true ? "checked" : "checked") />
+                                <input type="hidden" name="TrangThai" value="false" />
+                                <label class="form-check-label">Hoạt động</label>
+                                <small class="form-text text-muted d-block">Dịch vụ sẽ hiển thị ở trang công khai</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Thêm dịch vụ
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

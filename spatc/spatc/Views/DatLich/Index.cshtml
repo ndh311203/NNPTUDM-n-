@@ -1,0 +1,421 @@
+@{
+    ViewData["Title"] = "Đặt lịch Spa";
+    var groomingServices = ViewBag.GroomingServices as List<spatc.Models.DichVuGrooming> ?? new List<spatc.Models.DichVuGrooming>();
+    var phongKhachSans = ViewBag.PhongKhachSans as List<spatc.Models.PhongKhachSan> ?? new List<spatc.Models.PhongKhachSan>();
+    var selectedGroomingIds = ViewBag.SelectedGroomingIds as List<int> ?? new List<int>();
+}
+
+<div class="container mt-4">
+    <h2>📅 Đặt lịch Spa cho thú cưng</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-10">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (selectedGroomingIds.Any())
+            {
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle"></i> <strong>Dịch vụ đã được chọn:</strong> Một hoặc nhiều dịch vụ đã được tự động chọn từ trang chủ. Bạn có thể thay đổi lựa chọn nếu cần.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form action="/DatLich/Create" id="createForm" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Thông tin cơ bản -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Thông tin cơ bản</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Thời gian hẹn (Ngày + Giờ) *</label>
+                                <input type="datetime-local" id="thoiGianHen" name="ThoiGianHen" class="form-control" required />
+                                <small class="form-text text-muted">VD: 10/12/2025 – 09:00</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Thời gian kết thúc (cho khách sạn)</label>
+                                <input type="datetime-local" id="thoiGianKetThuc" name="ThoiGianKetThuc" class="form-control" style="display: none;" />
+                                <small class="form-text text-muted" id="thoiGianKetThucHint" style="display: none;">Chỉ cần điền khi chọn dịch vụ khách sạn</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin khách hàng -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-circle"></i> Thông tin khách hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Họ tên khách hàng *</label>
+                                <input type="text" name="HoTen" class="form-control" required />
+                                <small class="form-text text-muted">Nhập họ tên khách hàng</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số điện thoại *</label>
+                                <input type="tel" name="SoDienThoai" class="form-control" required />
+                                <small class="form-text text-muted">Số điện thoại liên hệ</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="Email" class="form-control" />
+                                <small class="form-text text-muted">Email (không bắt buộc)</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Địa chỉ</label>
+                                <input type="text" name="DiaChi" class="form-control" />
+                                <small class="form-text text-muted">Địa chỉ (không bắt buộc)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin thú cưng -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-heart"></i> Thông tin thú cưng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tên thú cưng *</label>
+                                <input type="text" name="TenThuCung" class="form-control" required />
+                                <small class="form-text text-muted">Tên thú cưng</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Loài *</label>
+                                <select name="Loai" class="form-select" required>
+                                    <option value="">-- Chọn loài --</option>
+                                    <option value="Chó">Chó</option>
+                                    <option value="Mèo">Mèo</option>
+                                </select>
+                                <small class="form-text text-muted">Chó hoặc Mèo</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giống</label>
+                                <input type="text" name="Giong" class="form-control" placeholder="VD: Golden, Persian, Husky..." />
+                                <small class="form-text text-muted">Giống thú cưng (không bắt buộc)</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Tuổi</label>
+                                <input type="number" name="Tuoi" class="form-control" min="0" placeholder="Tuổi" />
+                                <small class="form-text text-muted">Tuổi (năm)</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Cân nặng (kg)</label>
+                                <input type="number" name="CanNang" class="form-control" min="0" step="0.1" placeholder="Kg" />
+                                <small class="form-text text-muted">Cân nặng</small>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Ghi chú sức khỏe</label>
+                                <textarea name="GhiChuSucKhoe" class="form-control" rows="3" placeholder="VD: Đã tiêm phòng, dị ứng thuốc, bệnh lý đặc biệt..."></textarea>
+                                <small class="form-text text-muted">Thông tin sức khỏe cần lưu ý (không bắt buộc)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dịch vụ - GIỮ NGUYÊN -->
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Dịch vụ</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <strong>✂️ Dịch vụ Grooming (Spa - Làm đẹp)</strong>
+                                    <small class="text-muted">(Có thể chọn nhiều dịch vụ)</small>
+                                </div>
+                                <div class="card-body">
+                                    @if (groomingServices.Any())
+                                    {
+                                        <div class="row g-3">
+                                            @foreach (var dv in groomingServices)
+                                            {
+                                                <div class="col-md-6 col-lg-4">
+                                                    <div class="card border-primary h-100">
+                                                        <div class="card-body">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input grooming-checkbox" 
+                                                                       type="checkbox" 
+                                                                       name="DichVuGroomingIds" 
+                                                                       value="@dv.Id" 
+                                                                       id="grooming_@dv.Id"
+                                                                       data-gia="@dv.Gia" 
+                                                                       data-thoigian="@(dv.ThoiGianThucHien ?? 0)"
+                                                                       @(selectedGroomingIds.Contains(dv.Id) ? "checked" : "")>
+                                                                <label class="form-check-label w-100" for="grooming_@dv.Id">
+                                                                    <strong>@dv.TenDichVu</strong>
+                                                                    <br>
+                                                                    <small class="text-muted">
+                                                                        @if (dv.ThoiGianThucHien.HasValue)
+                                                                        {
+                                                                            <text><i class="bi bi-clock"></i> @dv.ThoiGianThucHien phút</text>
+                                                                        }
+                                                                    </small>
+                                                                    <br>
+                                                                    <span class="text-primary fw-bold">@dv.Gia.ToString("N0") đ</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="mt-3">
+                                            <small class="text-muted">
+                                                <i class="bi bi-info-circle"></i> Tổng giá: <span id="tongGiaGrooming" class="fw-bold text-primary">0 đ</span>
+                                            </small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle"></i> Chưa có dịch vụ Grooming nào. Vui lòng liên hệ admin.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <strong>🏨 Khách Sạn Thú Cưng (Lưu trú)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <select name="PhongKhachSanId" class="form-select" id="phongKhachSanSelect">
+                                        <option value="">-- Chọn phòng khách sạn --</option>
+                                        @foreach (var phong in phongKhachSans)
+                                        {
+                                            <option value="@phong.Id" data-gia-gio="@phong.GiaTheoGio" data-gia-ngay="@phong.GiaTheoNgay" data-loai="@phong.LoaiPhong">
+                                                @phong.TenPhong (@phong.LoaiPhong) - @phong.GiaTheoGio.ToString("N0") đ/giờ - @phong.GiaTheoNgay.ToString("N0") đ/ngày
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ghi chú -->
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Ghi chú</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3" id="ghiChuDacBietGroup" style="display: none;">
+                            <label class="form-label">Ghi chú đặc biệt (thuốc, ăn uống, tính cách...)</label>
+                            <textarea name="GhiChuDacBiet" class="form-control" rows="3" placeholder="VD: Thú cưng cần uống thuốc vào 8h sáng, ăn 2 bữa/ngày, tính cách nhút nhát..."></textarea>
+                            <small class="form-text text-muted">Ghi chú đặc biệt cho dịch vụ khách sạn</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú thêm</label>
+                            <textarea name="GhiChu" class="form-control" rows="4" placeholder="VD: Chó nhát, cần thời gian làm quen. Yêu cầu dùng dầu tắm riêng. Lưu trú 1 đêm + tắm trước khi trả..."></textarea>
+                            <small class="form-text text-muted">Ghi chú đặc biệt về thú cưng hoặc yêu cầu dịch vụ</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" id="submitBtn" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Xác nhận đặt lịch
+                    </button>
+                    <a href="/" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Set min date cho datetime-local
+        document.addEventListener('DOMContentLoaded', function() {
+            const thoiGianHenInput = document.getElementById('thoiGianHen');
+            const thoiGianKetThucInput = document.getElementById('thoiGianKetThuc');
+            
+            if (thoiGianHenInput) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                thoiGianHenInput.min = now.toISOString().slice(0, 16);
+            }
+            
+            if (thoiGianKetThucInput) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                thoiGianKetThucInput.min = now.toISOString().slice(0, 16);
+            }
+
+            // Tính tổng giá Grooming khi chọn/bỏ chọn
+            function tinhTongGiaGrooming() {
+                const checkboxes = document.querySelectorAll('.grooming-checkbox:checked');
+                let tongGia = 0;
+                checkboxes.forEach(function(checkbox) {
+                    tongGia += parseFloat(checkbox.getAttribute('data-gia')) || 0;
+                });
+                const tongGiaElement = document.getElementById('tongGiaGrooming');
+                if (tongGiaElement) {
+                    tongGiaElement.textContent = tongGia.toLocaleString('vi-VN') + ' đ';
+                }
+            }
+
+            // Gắn sự kiện cho tất cả checkbox Grooming
+            document.querySelectorAll('.grooming-checkbox').forEach(function(checkbox) {
+                checkbox.addEventListener('change', tinhTongGiaGrooming);
+            });
+
+            // Tính tổng giá ban đầu khi trang được load
+            tinhTongGiaGrooming();
+
+            // Hiển thị/ẩn các trường cho khách sạn
+            const phongKhachSanSelect = document.getElementById('phongKhachSanSelect');
+            if (phongKhachSanSelect) {
+                phongKhachSanSelect.addEventListener('change', function() {
+                    const selected = this.value !== '';
+                    const thoiGianKetThucGroup = document.getElementById('thoiGianKetThuc');
+                    const thoiGianKetThucHint = document.getElementById('thoiGianKetThucHint');
+                    const ghiChuDacBietGroup = document.getElementById('ghiChuDacBietGroup');
+                    
+                    if (thoiGianKetThucGroup) {
+                        thoiGianKetThucGroup.style.display = selected ? 'block' : 'none';
+                        if (selected) {
+                            thoiGianKetThucGroup.required = true;
+                        } else {
+                            thoiGianKetThucGroup.required = false;
+                            thoiGianKetThucGroup.value = '';
+                        }
+                    }
+                    
+                    if (thoiGianKetThucHint) {
+                        thoiGianKetThucHint.style.display = selected ? 'block' : 'none';
+                    }
+                    
+                    if (ghiChuDacBietGroup) {
+                        ghiChuDacBietGroup.style.display = selected ? 'block' : 'none';
+                    }
+                });
+            }
+
+            // Validate form - Đơn giản hóa tối đa để đảm bảo form submit được
+            const form = document.getElementById('createForm');
+            if (form) {
+                // Chỉ xử lý khi submit, không chặn
+                form.addEventListener('submit', function(e) {
+                    console.log('=== FORM SUBMIT BẮT ĐẦU ===');
+                    
+                    // Xóa các hidden inputs cũ (nếu có)
+                    const oldHiddenInputs = form.querySelectorAll('input[type="hidden"][name="DichVuGroomingIds"]');
+                    oldHiddenInputs.forEach(input => input.remove());
+                    
+                    // Kiểm tra đã chọn ít nhất 1 dịch vụ
+                    const groomingCheckboxes = document.querySelectorAll('.grooming-checkbox:checked');
+                    const phongKhachSanId = document.getElementById('phongKhachSanSelect')?.value;
+                    
+                    console.log('Grooming checkboxes checked:', groomingCheckboxes.length);
+                    console.log('PhongKhachSanId:', phongKhachSanId);
+                    
+                    // Tạo mảng DichVuGroomingIds từ checkboxes
+                    const groomingIds = Array.from(groomingCheckboxes).map(cb => cb.value);
+                    console.log('DichVuGroomingIds:', groomingIds);
+                    
+                    // Thêm DichVuGroomingIds vào form (chỉ khi có giá trị)
+                    if (groomingIds.length > 0) {
+                        groomingIds.forEach((id) => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'DichVuGroomingIds';
+                            input.value = id;
+                            form.appendChild(input);
+                        });
+                    }
+                    
+                    // Validation - Chỉ chặn nếu thực sự thiếu dữ liệu
+                    if (groomingCheckboxes.length === 0 && !phongKhachSanId) {
+                        e.preventDefault();
+                        alert('Vui lòng chọn ít nhất một dịch vụ Grooming hoặc phòng khách sạn!');
+                        console.log('❌ Validation failed: No service selected');
+                        return false;
+                    }
+
+                    // Nếu chọn khách sạn, cần thời gian kết thúc
+                    if (phongKhachSanId) {
+                        const thoiGianKetThuc = document.getElementById('thoiGianKetThuc')?.value;
+                        if (!thoiGianKetThuc) {
+                            e.preventDefault();
+                            alert('Vui lòng chọn thời gian kết thúc cho dịch vụ khách sạn!');
+                            console.log('❌ Validation failed: Missing end time for hotel');
+                            return false;
+                        }
+                    }
+                    
+                    console.log('✅ Validation passed, submitting form...');
+                    console.log('Form action:', form.action || form.getAttribute('action'));
+                    console.log('Form method:', form.method);
+                    
+                    // Đảm bảo form có thể submit
+                    const submitBtn = document.getElementById('submitBtn');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
+                    }
+                    
+                    // KHÔNG preventDefault - cho phép form submit
+                    // Form sẽ submit bình thường
+                });
+            } else {
+                console.error('❌ Không tìm thấy form với id="createForm"');
+            }
+        });
+        
+        // Test function để kiểm tra form submit
+        function testSubmit() {
+            console.log('=== TEST SUBMIT ===');
+            const form = document.getElementById('createForm');
+            if (form) {
+                console.log('Form action:', form.action);
+                console.log('Form method:', form.method);
+                
+                // Test submit đến endpoint test
+                fetch('/DatLich/TestSubmit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'test=1'
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log('✅ Test submit response:', data);
+                    alert('Test submit thành công! Kiểm tra console và Visual Studio Output để xem log.');
+                })
+                .catch(error => {
+                    console.error('❌ Test submit error:', error);
+                    alert('Test submit thất bại: ' + error.message);
+                });
+            } else {
+                alert('Không tìm thấy form!');
+            }
+        }
+    </script>
+}

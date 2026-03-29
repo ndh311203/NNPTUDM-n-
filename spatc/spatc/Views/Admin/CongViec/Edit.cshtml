@@ -1,0 +1,45 @@
+@model spatc.Models.CongViec
+@{
+    ViewData["Title"] = "Sửa công việc";
+}
+
+<div class="container mt-4">
+    <h2>Sửa công việc</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="NgayTao" />
+                
+                <div class="mb-3">
+                    <label asp-for="TenCongViec" class="form-label">Tên công việc *</label>
+                    <input asp-for="TenCongViec" class="form-control" />
+                    <span asp-validation-for="TenCongViec" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MoTa" class="form-label">Mô tả</label>
+                    <textarea asp-for="MoTa" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="MoTa" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Lưu
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

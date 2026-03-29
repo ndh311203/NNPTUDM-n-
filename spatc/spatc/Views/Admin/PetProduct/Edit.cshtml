@@ -1,0 +1,115 @@
+@model spatc.Models.PetProduct
+@{
+    ViewData["Title"] = "Sửa thú cưng";
+}
+
+<div class="container mt-4">
+    <h2>Sửa thú cưng</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CreatedAt" />
+                
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Tên thú cưng *</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Species" class="form-label">Giống loài *</label>
+                    <select asp-for="Species" class="form-select" required>
+                        <option value="">-- Chọn giống loài --</option>
+                        <option value="Dog">🐕 Chó (Dog)</option>
+                        <option value="Cat">🐱 Mèo (Cat)</option>
+                        <option value="Hamster">🐹 Hamster</option>
+                        <option value="Rabbit">🐰 Thỏ (Rabbit)</option>
+                        <option value="Bird">🐦 Chim (Bird)</option>
+                        <option value="Fish">🐠 Cá (Fish)</option>
+                        <option value="Other">Khác</option>
+                    </select>
+                    <span asp-validation-for="Species" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Age" class="form-label">Tuổi</label>
+                            <input asp-for="Age" class="form-control" placeholder="Ví dụ: 2 tháng, 1 năm" />
+                            <span asp-validation-for="Age" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Gender" class="form-label">Giới tính</label>
+                            <select asp-for="Gender" class="form-select">
+                                <option value="">-- Chọn giới tính --</option>
+                                <option value="Đực">Đực</option>
+                                <option value="Cái">Cái</option>
+                            </select>
+                            <span asp-validation-for="Gender" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="HealthStatus" class="form-label">Tình trạng sức khỏe</label>
+                    <input asp-for="HealthStatus" class="form-control" placeholder="Ví dụ: Khỏe mạnh, Đã tiêm phòng đầy đủ" />
+                    <span asp-validation-for="HealthStatus" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Price" class="form-label">Giá bán *</label>
+                    <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Images" class="form-label">Hình ảnh (tối thiểu 4 ảnh, cách nhau bằng dấu phẩy) *</label>
+                    <textarea asp-for="Images" class="form-control" rows="4" placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg, ..."></textarea>
+                    <small class="form-text text-muted">Nhập các URL hình ảnh, cách nhau bằng dấu phẩy. Tối thiểu 4 ảnh.</small>
+                    <span asp-validation-for="Images" class="text-danger"></span>
+                    @if (!string.IsNullOrEmpty(Model.Images))
+                    {
+                        <div class="mt-2">
+                            <strong>Hình ảnh hiện tại:</strong>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                @foreach (var img in Model.Images.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <img src="@img.Trim()" alt="@Model.Name" style="width: 100px; height: 100px; object-fit: cover;" class="rounded border">
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input asp-for="TrangThai" class="form-check-input" type="checkbox" />
+                        <label asp-for="TrangThai" class="form-check-label">Còn bán</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

@@ -1,0 +1,378 @@
+@{
+    ViewData["Title"] = "Thêm đặt lịch mới";
+    var groomingServices = ViewBag.GroomingServices as List<spatc.Models.DichVuGrooming> ?? new List<spatc.Models.DichVuGrooming>();
+    var phongKhachSans = ViewBag.PhongKhachSans as List<spatc.Models.PhongKhachSan> ?? new List<spatc.Models.PhongKhachSan>();
+    var nhanViens = ViewData["NhanVienId"] as SelectList ?? new SelectList(Enumerable.Empty<object>());
+    
+    // Xử lý SelectedGroomingIds - có thể là List<int> hoặc int[]
+    var selectedGroomingIdsList = new List<int>();
+    if (ViewBag.SelectedGroomingIds != null)
+    {
+        if (ViewBag.SelectedGroomingIds is List<int> list)
+        {
+            selectedGroomingIdsList = list;
+        }
+        else if (ViewBag.SelectedGroomingIds is int[] array)
+        {
+            selectedGroomingIdsList = array.ToList();
+        }
+    }
+}
+
+<div class="container mt-4">
+    <h2>📅 Thêm đặt lịch mới</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-10">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+            <form asp-action="Create" id="createForm" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Thông tin cơ bản -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Thông tin cơ bản</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Thời gian hẹn (Ngày + Giờ) *</label>
+                                <input type="datetime-local" id="thoiGianHen" name="ThoiGianHen" class="form-control" value="@ViewBag.ThoiGianHen" required />
+                                <small class="form-text text-muted">VD: 10/12/2025 – 09:00</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Trạng thái *</label>
+                                <select name="TrangThai" class="form-select" required>
+                                    <option value="">-- Chọn trạng thái --</option>
+                                    <option value="Chờ" selected="@(ViewBag.TrangThai == "Chờ" || string.IsNullOrEmpty(ViewBag.TrangThai?.ToString()))">Chờ</option>
+                                    <option value="Đang làm" selected="@(ViewBag.TrangThai == "Đang làm")">Đang làm</option>
+                                    <option value="Hoàn thành" selected="@(ViewBag.TrangThai == "Hoàn thành")">Hoàn thành</option>
+                                    <option value="Hủy" selected="@(ViewBag.TrangThai == "Hủy")">Hủy</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Thời gian kết thúc (cho khách sạn)</label>
+                                <input type="datetime-local" id="thoiGianKetThuc" name="ThoiGianKetThuc" class="form-control" value="@ViewBag.ThoiGianKetThuc" style="display: none;" />
+                                <small class="form-text text-muted" id="thoiGianKetThucHint" style="display: none;">Chỉ cần điền khi chọn dịch vụ khách sạn</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nhân viên xử lý</label>
+                                <select name="NhanVienId" class="form-select">
+                                    <option value="">-- Chưa gán --</option>
+                                    @foreach (var nhanVien in nhanViens)
+                                    {
+                                        <option value="@nhanVien.Value" selected="@(ViewBag.NhanVienId != null && ViewBag.NhanVienId.ToString() == nhanVien.Value)">@nhanVien.Text</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Có thể gán sau khi tạo lịch hẹn</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin khách hàng -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-person-circle"></i> Thông tin khách hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Họ tên khách hàng *</label>
+                                <input type="text" name="khachHangHoTen" class="form-control" value="@ViewBag.KhachHangHoTen" required />
+                                <small class="form-text text-muted">Nhập họ tên khách hàng</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số điện thoại *</label>
+                                <input type="tel" name="khachHangSoDienThoai" class="form-control" value="@ViewBag.KhachHangSoDienThoai" required />
+                                <small class="form-text text-muted">Số điện thoại liên hệ</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="khachHangEmail" class="form-control" value="@ViewBag.KhachHangEmail" />
+                                <small class="form-text text-muted">Email (không bắt buộc)</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Địa chỉ</label>
+                                <input type="text" name="khachHangDiaChi" class="form-control" value="@ViewBag.KhachHangDiaChi" />
+                                <small class="form-text text-muted">Địa chỉ (không bắt buộc)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin thú cưng -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-heart"></i> Thông tin thú cưng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tên thú cưng *</label>
+                                <input type="text" name="thuCungTen" class="form-control" value="@ViewBag.ThuCungTen" required />
+                                <small class="form-text text-muted">Tên thú cưng</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Loài *</label>
+                                <select name="thuCungLoai" class="form-select" required>
+                                    <option value="">-- Chọn loài --</option>
+                                    <option value="Chó" selected="@(ViewBag.ThuCungLoai == "Chó")">Chó</option>
+                                    <option value="Mèo" selected="@(ViewBag.ThuCungLoai == "Mèo")">Mèo</option>
+                                </select>
+                                <small class="form-text text-muted">Chó hoặc Mèo</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giống</label>
+                                <input type="text" name="thuCungGiong" class="form-control" value="@ViewBag.ThuCungGiong" placeholder="VD: Golden, Persian, Husky..." />
+                                <small class="form-text text-muted">Giống thú cưng (không bắt buộc)</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Tuổi</label>
+                                <input type="number" name="thuCungTuoi" class="form-control" min="0" value="@ViewBag.ThuCungTuoi" placeholder="Tuổi" />
+                                <small class="form-text text-muted">Tuổi (năm)</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Cân nặng (kg)</label>
+                                <input type="number" name="thuCungCanNang" class="form-control" min="0" step="0.1" value="@ViewBag.ThuCungCanNang" placeholder="Kg" />
+                                <small class="form-text text-muted">Cân nặng</small>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Ghi chú sức khỏe</label>
+                                <textarea name="thuCungGhiChu" class="form-control" rows="3" placeholder="VD: Đã tiêm phòng, dị ứng thuốc, bệnh lý đặc biệt...">@ViewBag.ThuCungGhiChu</textarea>
+                                <small class="form-text text-muted">Thông tin sức khỏe cần lưu ý (không bắt buộc)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dịch vụ - GIỐNG TRANG KHÁCH HÀNG -->
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Dịch vụ</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <strong>✂️ Dịch vụ Grooming (Spa - Làm đẹp)</strong>
+                                    <small class="text-muted">(Có thể chọn nhiều dịch vụ)</small>
+                                </div>
+                                <div class="card-body">
+                                    @if (groomingServices.Any())
+                                    {
+                                        <div class="row g-3">
+                                            @foreach (var dv in groomingServices)
+                                            {
+                                                <div class="col-md-6 col-lg-4">
+                                                    <div class="card border-primary h-100">
+                                                        <div class="card-body">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input grooming-checkbox" 
+                                                                       type="checkbox" 
+                                                                       name="DichVuGroomingIds" 
+                                                                       value="@dv.Id" 
+                                                                       id="grooming_@dv.Id"
+                                                                       data-gia="@dv.Gia" 
+                                                                       data-thoigian="@(dv.ThoiGianThucHien ?? 0)"
+                                                                       @(selectedGroomingIdsList.Contains(dv.Id) ? "checked" : "")>
+                                                                <label class="form-check-label w-100" for="grooming_@dv.Id">
+                                                                    <strong>@dv.TenDichVu</strong>
+                                                                    <br>
+                                                                    <small class="text-muted">
+                                                                        @if (dv.ThoiGianThucHien.HasValue)
+                                                                        {
+                                                                            <text><i class="bi bi-clock"></i> @dv.ThoiGianThucHien phút</text>
+                                                                        }
+                                                                    </small>
+                                                                    <br>
+                                                                    <span class="text-primary fw-bold">@dv.Gia.ToString("N0") đ</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="mt-3">
+                                            <small class="text-muted">
+                                                <i class="bi bi-info-circle"></i> Tổng giá: <span id="tongGiaGrooming" class="fw-bold text-primary">0 đ</span>
+                                            </small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle"></i> Chưa có dịch vụ Grooming nào. Vui lòng liên hệ admin.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <strong>🏨 Khách Sạn Thú Cưng (Lưu trú)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <select name="PhongKhachSanId" class="form-select" id="phongKhachSanSelect">
+                                        <option value="">-- Chọn phòng khách sạn --</option>
+                                        @foreach (var phong in phongKhachSans)
+                                        {
+                                            <option value="@phong.Id" 
+                                                    data-gia-gio="@phong.GiaTheoGio" 
+                                                    data-gia-ngay="@phong.GiaTheoNgay" 
+                                                    data-loai="@phong.LoaiPhong"
+                                                    selected="@(ViewBag.SelectedPhongKhachSanId != null && ViewBag.SelectedPhongKhachSanId == phong.Id)">
+                                                @phong.TenPhong (@phong.LoaiPhong) - @phong.GiaTheoGio.ToString("N0") đ/giờ - @phong.GiaTheoNgay.ToString("N0") đ/ngày
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ghi chú -->
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Ghi chú</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3" id="ghiChuDacBietGroup" style="display: none;">
+                            <label class="form-label">Ghi chú đặc biệt (thuốc, ăn uống, tính cách...)</label>
+                            <textarea name="GhiChuDacBiet" class="form-control" rows="3" placeholder="VD: Thú cưng cần uống thuốc vào 8h sáng, ăn 2 bữa/ngày, tính cách nhút nhát...">@ViewBag.GhiChuDacBiet</textarea>
+                            <small class="form-text text-muted">Ghi chú đặc biệt cho dịch vụ khách sạn</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú thêm</label>
+                            <textarea name="GhiChu" class="form-control" rows="4" placeholder="VD: Chó nhát, cần thời gian làm quen. Yêu cầu dùng dầu tắm riêng. Lưu trú 1 đêm + tắm trước khi trả...">@ViewBag.GhiChu</textarea>
+                            <small class="form-text text-muted">Ghi chú đặc biệt về thú cưng hoặc yêu cầu dịch vụ</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Tạo đặt lịch
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Set min date cho datetime-local
+        document.addEventListener('DOMContentLoaded', function() {
+            const thoiGianHenInput = document.getElementById('thoiGianHen');
+            const thoiGianKetThucInput = document.getElementById('thoiGianKetThuc');
+            
+            if (thoiGianHenInput) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                thoiGianHenInput.min = now.toISOString().slice(0, 16);
+            }
+            
+            if (thoiGianKetThucInput) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                thoiGianKetThucInput.min = now.toISOString().slice(0, 16);
+            }
+
+            // Tính tổng giá Grooming khi chọn/bỏ chọn
+            function tinhTongGiaGrooming() {
+                const checkboxes = document.querySelectorAll('.grooming-checkbox:checked');
+                let tongGia = 0;
+                checkboxes.forEach(function(checkbox) {
+                    tongGia += parseFloat(checkbox.getAttribute('data-gia')) || 0;
+                });
+                const tongGiaElement = document.getElementById('tongGiaGrooming');
+                if (tongGiaElement) {
+                    tongGiaElement.textContent = tongGia.toLocaleString('vi-VN') + ' đ';
+                }
+            }
+
+            // Gắn sự kiện cho tất cả checkbox Grooming
+            document.querySelectorAll('.grooming-checkbox').forEach(function(checkbox) {
+                checkbox.addEventListener('change', tinhTongGiaGrooming);
+            });
+
+            // Tính tổng giá ban đầu khi trang được load
+            tinhTongGiaGrooming();
+
+            // Hiển thị/ẩn các trường cho khách sạn
+            const phongKhachSanSelect = document.getElementById('phongKhachSanSelect');
+            if (phongKhachSanSelect) {
+                phongKhachSanSelect.addEventListener('change', function() {
+                    const selected = this.value !== '';
+                    const thoiGianKetThucGroup = document.getElementById('thoiGianKetThuc');
+                    const thoiGianKetThucHint = document.getElementById('thoiGianKetThucHint');
+                    const ghiChuDacBietGroup = document.getElementById('ghiChuDacBietGroup');
+                    
+                    if (thoiGianKetThucGroup) {
+                        thoiGianKetThucGroup.style.display = selected ? 'block' : 'none';
+                        if (selected) {
+                            thoiGianKetThucGroup.required = true;
+                        } else {
+                            thoiGianKetThucGroup.required = false;
+                            thoiGianKetThucGroup.value = '';
+                        }
+                    }
+                    
+                    if (thoiGianKetThucHint) {
+                        thoiGianKetThucHint.style.display = selected ? 'block' : 'none';
+                    }
+                    
+                    if (ghiChuDacBietGroup) {
+                        ghiChuDacBietGroup.style.display = selected ? 'block' : 'none';
+                    }
+                });
+            }
+
+            // Validate form
+            document.getElementById('createForm').addEventListener('submit', function(e) {
+                // Kiểm tra đã chọn ít nhất 1 dịch vụ
+                const groomingCheckboxes = document.querySelectorAll('.grooming-checkbox:checked');
+                const phongKhachSanId = document.getElementById('phongKhachSanSelect')?.value;
+                
+                if (groomingCheckboxes.length === 0 && !phongKhachSanId) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn ít nhất một dịch vụ Grooming hoặc phòng khách sạn!');
+                    return false;
+                }
+
+                // Nếu chọn khách sạn, cần thời gian kết thúc
+                if (phongKhachSanId) {
+                    const thoiGianKetThuc = document.getElementById('thoiGianKetThuc')?.value;
+                    if (!thoiGianKetThuc) {
+                        e.preventDefault();
+                        alert('Vui lòng chọn thời gian kết thúc cho dịch vụ khách sạn!');
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+}

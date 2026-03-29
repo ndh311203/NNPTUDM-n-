@@ -1,0 +1,55 @@
+@model spatc.Models.ProductCategory
+@{
+    ViewData["Title"] = "Chi tiết danh mục";
+}
+
+<div class="container mt-4">
+    <h2>Chi tiết danh mục</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">ID:</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Tên danh mục:</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Mã danh mục (Slug):</dt>
+                <dd class="col-sm-9"><code>@Model.Slug</code></dd>
+
+                <dt class="col-sm-3">Mô tả:</dt>
+                <dd class="col-sm-9">@(Model.Description ?? "-")</dd>
+
+                <dt class="col-sm-3">Thứ tự hiển thị:</dt>
+                <dd class="col-sm-9">@Model.DisplayOrder</dd>
+
+                <dt class="col-sm-3">Trạng thái:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success">Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Tạm ngưng</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Ngày tạo:</dt>
+                <dd class="col-sm-9">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="col-sm-3">Ngày cập nhật:</dt>
+                <dd class="col-sm-9">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+
+            <div class="mt-4">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">Sửa</a>
+                <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger">Xóa</a>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </div>
+    </div>
+</div>
+

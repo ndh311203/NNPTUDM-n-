@@ -1,0 +1,193 @@
+@* Partial view cho thanh tìm kiếm với gợi ý *@
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="position-relative">
+            <label class="form-label fw-bold">
+                <i class="bi bi-search"></i> Tìm kiếm sản phẩm và dịch vụ
+            </label>
+            <div class="input-group input-group-lg">
+                <input type="text" 
+                       class="form-control" 
+                       id="searchInput" 
+                       placeholder="Nhập tên sản phẩm hoặc dịch vụ để tìm kiếm..." 
+                       autocomplete="off">
+                <button class="btn btn-primary" type="button" onclick="performSearch()">
+                    <i class="bi bi-search"></i> Tìm kiếm
+                </button>
+            </div>
+            <!-- Dropdown gợi ý -->
+            <div id="searchSuggestions" class="position-absolute w-100 bg-white border rounded shadow-lg" style="top: 100%; z-index: 1000; display: none; max-height: 400px; overflow-y: auto;">
+                <div id="suggestionsContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #searchSuggestions {
+        margin-top: 5px;
+    }
+    .suggestion-item {
+        padding: 12px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s;
+    }
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+    .suggestion-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    .suggestion-category {
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
+</style>
+
+<script>
+    (function() {
+        let searchTimeout;
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsDiv = document.getElementById('searchSuggestions');
+        const suggestionsContent = document.getElementById('suggestionsContent');
+
+        if (!searchInput) return;
+
+        // Xử lý khi người dùng nhập
+        searchInput.addEventListener('input', function() {
+            const keyword = this.value.trim();
+            
+            clearTimeout(searchTimeout);
+            
+            if (keyword.length < 2) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            // Debounce - đợi 300ms sau khi người dùng ngừng gõ
+            searchTimeout = setTimeout(() => {
+                loadSuggestions(keyword);
+            }, 300);
+        });
+
+        // Ẩn suggestions khi click ra ngoài
+        document.addEventListener('click', function(e) {
+            if (searchInput && !searchInput.contains(e.target) && suggestionsDiv && !suggestionsDiv.contains(e.target)) {
+                suggestionsDiv.style.display = 'none';
+            }
+        });
+
+        // Xử lý Enter để tìm kiếm
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+
+        function loadSuggestions(keyword) {
+            fetch(`/Search/QuickSearch?keyword=${encodeURIComponent(keyword)}&limit=8`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.results && data.results.length > 0) {
+                        displaySuggestions(data.results);
+                        suggestionsDiv.style.display = 'block';
+                    } else {
+                        suggestionsDiv.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading suggestions:', error);
+                    suggestionsDiv.style.display = 'none';
+                });
+        }
+
+        function displaySuggestions(results) {
+            suggestionsContent.innerHTML = '';
+
+            results.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'suggestion-item d-flex align-items-center gap-3';
+                itemDiv.onclick = () => {
+                    goToItem(item);
+                };
+
+                const imageHtml = item.image 
+                    ? `<img src="${item.image}" alt="${item.name}" class="suggestion-image">`
+                    : `<div class="suggestion-image bg-light d-flex align-items-center justify-content-center">
+                         <i class="bi bi-image text-muted"></i>
+                       </div>`;
+
+                const categoryBadge = item.type === 'grooming' 
+                    ? '<span class="badge bg-primary">Grooming</span>'
+                    : item.type === 'khachsan'
+                    ? '<span class="badge bg-warning">Khách sạn</span>'
+                    : `<span class="badge bg-info">${item.category}</span>`;
+
+                itemDiv.innerHTML = `
+                    ${imageHtml}
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold">${item.name}</div>
+                        <div class="suggestion-category">${categoryBadge} • ${formatPrice(item.price)} đ</div>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                `;
+
+                suggestionsContent.appendChild(itemDiv);
+            });
+
+            // Thêm link "Xem tất cả kết quả"
+            const viewAllDiv = document.createElement('div');
+            viewAllDiv.className = 'suggestion-item text-center bg-light';
+            viewAllDiv.style.cursor = 'pointer';
+            viewAllDiv.onclick = () => {
+                performSearch();
+            };
+            viewAllDiv.innerHTML = `
+                <strong class="text-primary">
+                    <i class="bi bi-search"></i> Xem tất cả kết quả cho "${searchInput.value}"
+                </strong>
+            `;
+            suggestionsContent.appendChild(viewAllDiv);
+        }
+
+        function goToItem(item) {
+            suggestionsDiv.style.display = 'none';
+            
+            if (item.type === 'grooming' || item.type === 'khachsan') {
+                // Dịch vụ
+                window.location.href = `/DichVu/Details/${item.id}`;
+            } else {
+                // Sản phẩm
+                const typeMap = {
+                    'pet': 'Pet',
+                    'food': 'Food',
+                    'accessory': 'Accessory'
+                };
+                const typeUrl = typeMap[item.type] || 'Pet';
+                window.location.href = `/PetShop/${typeUrl}Details/${item.id}`;
+            }
+        }
+
+        window.performSearch = function() {
+            const keyword = searchInput.value.trim();
+            if (keyword) {
+                window.location.href = `/Search?keyword=${encodeURIComponent(keyword)}`;
+            } else {
+                alert('Vui lòng nhập từ khóa tìm kiếm!');
+            }
+        };
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN').format(price);
+        }
+    })();
+</script>
+

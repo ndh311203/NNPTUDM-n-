@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - spatc</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pet-spa-theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/spatc.styles.css" asp-append-version="true" />
+</head>
+<body data-is-admin="@((User.Identity?.IsAuthenticated == true && (User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == "Admin" || User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value == "NhanVien")) ? "true" : "false")" 
+      data-user-id="@(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "")">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light mb-3" style="background: linear-gradient(135deg, #FFE5E5 0%, #FFD6D6 100%); border-bottom: 2px solid #ADD8E6; box-shadow: 0 2px 10px rgba(173, 216, 230, 0.2);">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index" style="color: #654321 !important; font-size: 1.5rem;">SPA THÚ CƯNG</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" style="color: #654321 !important;">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/DichVu" style="color: #654321 !important;">Dịch vụ</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="petShopDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #654321 !important;">
+                                Cửa Hàng
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="petShopDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="PetShop" asp-action="Index">Tất cả</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="PetShop" asp-action="Pets">🐕 Thú Cưng</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="PetShop" asp-action="Foods">🍖 Thức Ăn</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="PetShop" asp-action="Accessories">🎁 Phụ Kiện</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="LienHe" asp-action="Index" style="color: #654321 !important;">Liên hệ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary px-3" href="/DatLich" style="color: #654321 !important;">Đặt lịch</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" asp-area="" asp-controller="Cart" asp-action="Index" id="cartIcon" style="color: #654321 !important;">
+                                <i class="bi bi-cart3" style="font-size: 1.2rem;"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" id="cartBadge" style="display: none; background: #ADD8E6; color: #654321;">0</span>
+                            </a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+                            @if (userRole == "Admin" || userRole == "NhanVien")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index" style="color: #654321 !important;">
+                                        <i class="bi bi-speedometer2"></i> Quản trị
+                                    </a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #654321 !important;">
+                                        <i class="bi bi-bell" style="font-size: 1.2rem;"></i>
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display: none;">0</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" id="notificationList" style="min-width: 350px; max-height: 400px; overflow-y: auto;">
+                                        <li><h6 class="dropdown-header">Thông báo</h6></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li id="notificationEmpty" class="px-3 py-2 text-muted">Không có thông báo</li>
+                                        <li id="notificationItems"></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-center" href="#" id="markAllReadBtn">Đánh dấu tất cả đã đọc</a></li>
+                                    </ul>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link position-relative" href="#" id="notificationDropdownCustomer" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #654321 !important;">
+                                        <i class="bi bi-bell" style="font-size: 1.2rem;"></i>
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadgeCustomer" style="display: none;">0</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" id="notificationListCustomer" style="min-width: 350px; max-height: 400px; overflow-y: auto;">
+                                        <li><h6 class="dropdown-header">Thông báo</h6></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li id="notificationEmptyCustomer" class="px-3 py-2 text-muted">Không có thông báo</li>
+                                        <li id="notificationItemsCustomer"></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-center" href="#" id="markAllReadBtnCustomer">Đánh dấu tất cả đã đọc</a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #654321 !important;">
+                                        <i class="bi bi-person-circle"></i> @User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                        <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">
+                                            <i class="bi bi-person"></i> Thông tin tài khoản
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="@Url.Action("Index", "MyPet")">
+                                            <i class="bi bi-heart"></i> Thú cưng của tôi
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="@Url.Action("Logout", "Login")">
+                                            <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                                        </a></li>
+                                    </ul>
+                                </li>
+                            }
+                            @if (userRole == "Admin" || userRole == "NhanVien")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Login" asp-action="Logout" style="color: #654321 !important;">
+                                        <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Register" asp-action="Index" style="color: #654321 !important;">
+                                    <i class="bi bi-person-plus"></i> Đăng ký
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Login" asp-action="Index" style="color: #654321 !important;">
+                                    <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer" style="background: linear-gradient(135deg, #FFE5E5 0%, #FFD6D6 100%); border-top: 2px solid #ADD8E6 !important; color: #654321;">
+        <div class="container">
+            &copy; 2025 - SPA THÚ CƯNG - <a asp-area="" asp-controller="Home" asp-action="Privacy" style="color: #654321;">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/cart.js"></script>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script src="~/js/notifications.js" asp-append-version="true"></script>
+    }
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        @await Html.PartialAsync("_ChatBox")
+        <script src="~/js/chat.js" asp-append-version="true"></script>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

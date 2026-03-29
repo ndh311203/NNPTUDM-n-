@@ -1,0 +1,99 @@
+@model spatc.Models.FoodProduct
+@{
+    ViewData["Title"] = "Thêm thức ăn mới";
+}
+
+<div class="container mt-4">
+    <h2>Thêm thức ăn mới</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Tên sản phẩm *</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Brand" class="form-label">Thương hiệu</label>
+                            <input asp-for="Brand" class="form-control" />
+                            <span asp-validation-for="Brand" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Type" class="form-label">Loại thức ăn *</label>
+                            <select asp-for="Type" class="form-select" required>
+                                <option value="">-- Chọn loại --</option>
+                                <option value="Hạt">🍖 Hạt (Dry Food)</option>
+                                <option value="Pate">🥫 Pate (Wet Food)</option>
+                                <option value="Snack">🍪 Snack</option>
+                                <option value="Thức ăn tươi">🥩 Thức ăn tươi</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Weight" class="form-label">Trọng lượng</label>
+                            <input asp-for="Weight" class="form-control" placeholder="Ví dụ: 500g, 1kg" />
+                            <span asp-validation-for="Weight" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Price" class="form-label">Giá bán *</label>
+                            <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Image" class="form-label">URL Hình ảnh</label>
+                    <input asp-for="Image" class="form-control" placeholder="https://..." />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="SoLuongTon" class="form-label">Số lượng tồn kho</label>
+                    <input asp-for="SoLuongTon" class="form-control" type="number" min="0" value="0" />
+                    <span asp-validation-for="SoLuongTon" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input asp-for="TrangThai" class="form-check-input" type="checkbox" checked />
+                        <label asp-for="TrangThai" class="form-check-label">Còn hàng</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Thêm mới</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

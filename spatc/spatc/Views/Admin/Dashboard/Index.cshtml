@@ -1,0 +1,232 @@
+@{
+    ViewData["Title"] = "Dashboard Doanh Thu Pet Shop";
+}
+
+<div class="container-fluid mt-4">
+    <h2 class="mb-4">📊 Dashboard Doanh Thu Pet Shop</h2>
+
+    <!-- Tổng doanh thu -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Doanh thu hôm nay</h5>
+                    <h2 class="mb-0">@(((decimal)ViewBag.TodayRevenue).ToString("N0")) đ</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Doanh thu tháng này</h5>
+                    <h2 class="mb-0">@(((decimal)ViewBag.MonthRevenue).ToString("N0")) đ</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Tổng doanh thu</h5>
+                    <h2 class="mb-0">@(((decimal)ViewBag.TotalRevenue).ToString("N0")) đ</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biểu đồ -->
+    <div class="row mb-4">
+        <div class="col-md-8 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Doanh thu 7 ngày gần nhất</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Top 5 sản phẩm bán chạy</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="topProductsChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lịch sử đơn hàng gần nhất -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Đơn hàng gần nhất</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày đặt</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.RecentOrders != null)
+                        {
+                            @foreach (var order in ViewBag.RecentOrders as List<spatc.Models.ShopOrder>)
+                            {
+                                <tr>
+                                    <td><strong>#@order.Id</strong></td>
+                                    <td>@order.CustomerName</td>
+                                    <td class="fw-bold text-primary">@order.TotalAmount.ToString("N0") đ</td>
+                                    <td>
+                                        <span class="badge bg-@(order.Status == "Hoàn thành" ? "success" : order.Status == "Đang giao" ? "info" : order.Status == "Hủy" ? "danger" : "warning")">
+                                            @order.Status
+                                        </span>
+                                    </td>
+                                    <td>@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        <a href="/Admin/ShopOrder/Details/@order.Id" class="btn btn-sm btn-info">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Revenue Chart (Line Chart)
+        async function loadRevenueChart() {
+            try {
+                const response = await fetch('/Admin/Dashboard/GetRevenueChart');
+                if (!response.ok) {
+                    console.error('Failed to load revenue chart:', response.statusText);
+                    document.getElementById('revenueChart').parentElement.innerHTML = '<p class="text-muted text-center">Không có dữ liệu</p>';
+                    return;
+                }
+                const data = await response.json();
+            
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: data.map(d => d.revenue),
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' đ';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            } catch (error) {
+                console.error('Error loading revenue chart:', error);
+                document.getElementById('revenueChart').parentElement.innerHTML = '<p class="text-muted text-center">Lỗi khi tải dữ liệu</p>';
+            }
+        }
+
+        // Top Products Chart (Bar Chart)
+        async function loadTopProductsChart() {
+            try {
+                const response = await fetch('/Admin/Dashboard/GetTopProducts');
+                if (!response.ok) {
+                    console.error('Failed to load top products:', response.statusText);
+                    document.getElementById('topProductsChart').parentElement.innerHTML = '<p class="text-muted text-center">Không có dữ liệu</p>';
+                    return;
+                }
+                const data = await response.json();
+                
+                if (!data || data.length === 0) {
+                    document.getElementById('topProductsChart').parentElement.innerHTML = '<p class="text-muted text-center">Chưa có sản phẩm nào được bán</p>';
+                    return;
+                }
+            
+            const ctx = document.getElementById('topProductsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.name.length > 15 ? d.name.substring(0, 15) + '...' : d.name),
+                    datasets: [{
+                        label: 'Số lượng bán',
+                        data: data.map(d => d.quantity),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            } catch (error) {
+                console.error('Error loading top products chart:', error);
+                document.getElementById('topProductsChart').parentElement.innerHTML = '<p class="text-muted text-center">Lỗi khi tải dữ liệu</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRevenueChart();
+            loadTopProductsChart();
+        });
+    </script>
+}
+

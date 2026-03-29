@@ -1,0 +1,40 @@
+@model spatc.Models.ThuCung
+@{
+    ViewData["Title"] = "Xóa thú cưng";
+}
+
+<div class="container mt-4">
+    <h2>Xóa thú cưng</h2>
+    <hr />
+
+    <div class="alert alert-warning">
+        <strong>Bạn có chắc chắn muốn xóa thú cưng này?</strong>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">Tên thú cưng:</dt>
+                <dd class="col-sm-9">@Model.TenThuCung</dd>
+
+                <dt class="col-sm-3">Loại:</dt>
+                <dd class="col-sm-9">@Model.Loai</dd>
+
+                <dt class="col-sm-3">Giống:</dt>
+                <dd class="col-sm-9">@(Model.Giong ?? "-")</dd>
+
+                <dt class="col-sm-3">Chủ sở hữu:</dt>
+                <dd class="col-sm-9">@Model.KhachHang?.HoTen</dd>
+            </dl>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

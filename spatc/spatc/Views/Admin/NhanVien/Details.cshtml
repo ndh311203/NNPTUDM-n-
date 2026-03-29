@@ -1,0 +1,67 @@
+@model spatc.Models.NhanVien
+@{
+    ViewData["Title"] = "Chi tiết nhân viên";
+}
+
+<div class="container mt-4">
+    <h2>Chi tiết nhân viên</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">ID:</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Họ tên:</dt>
+                <dd class="col-sm-9">@Model.HoTen</dd>
+
+                <dt class="col-sm-3">Vị trí:</dt>
+                <dd class="col-sm-9">@Model.ViTri</dd>
+
+                <dt class="col-sm-3">Số điện thoại:</dt>
+                <dd class="col-sm-9">@(Model.SoDienThoai ?? "-")</dd>
+
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">@(Model.Email ?? "-")</dd>
+
+                <dt class="col-sm-3">Lịch làm việc:</dt>
+                <dd class="col-sm-9">@(Model.LichLamViec ?? "-")</dd>
+
+                <dt class="col-sm-3">Trạng thái:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.TrangThai)
+                    {
+                        <span class="badge bg-success">Đang làm việc</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Nghỉ</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Ảnh:</dt>
+                <dd class="col-sm-9">
+                    @if (!string.IsNullOrEmpty(Model.AnhNhanVien))
+                    {
+                        <img src="@Model.AnhNhanVien" alt="@Model.HoTen" class="img-thumbnail" style="max-width: 300px;">
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Ngày tạo:</dt>
+                <dd class="col-sm-9">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+
+            <div class="mt-4">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">Sửa</a>
+                <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger">Xóa</a>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </div>
+    </div>
+</div>
+

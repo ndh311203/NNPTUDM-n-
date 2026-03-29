@@ -1,0 +1,606 @@
+@model spatc.Models.PetProduct
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<style>
+    .product-detail-container {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .image-slider {
+        position: relative;
+    }
+
+    .main-image {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: zoom-in;
+    }
+
+    .thumbnail-images {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .thumbnail:hover,
+    .thumbnail.active {
+        border-color: #ee4d2d;
+    }
+
+    .product-info-section {
+        padding-left: 20px;
+    }
+
+    .product-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 12px;
+    }
+
+    .product-rating-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .rating-stars {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .star-filled {
+        color: #ffc107;
+        font-size: 18px;
+    }
+
+    .star-empty {
+        color: #ddd;
+        font-size: 18px;
+    }
+
+    .product-price-section {
+        background: #fff5f5;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .current-price {
+        color: #ee4d2d;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .old-price {
+        color: #999;
+        font-size: 18px;
+        text-decoration: line-through;
+        margin-left: 12px;
+    }
+
+    .discount-percent {
+        background: #ee4d2d;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-left: 12px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn-buy-now {
+        background: #ee4d2d;
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 4px;
+        font-weight: 600;
+        flex: 1;
+    }
+
+    .btn-buy-now:hover {
+        background: #d73211;
+        color: white;
+    }
+
+    .btn-add-cart {
+        background: #ff9800;
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 4px;
+        font-weight: 600;
+        flex: 1;
+    }
+
+    .btn-add-cart:hover {
+        background: #e68900;
+        color: white;
+    }
+
+    .product-details-tabs {
+        margin-top: 40px;
+    }
+
+    .tab-content {
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        margin-top: 16px;
+    }
+
+    .review-item {
+        border-bottom: 1px solid #e0e0e0;
+        padding: 16px 0;
+    }
+
+    .review-item:last-child {
+        border-bottom: none;
+    }
+
+    .review-images {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .review-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="product-detail-container">
+        <div class="row">
+            <!-- Image Slider -->
+            <div class="col-md-6">
+                <div class="image-slider">
+                    @if (!string.IsNullOrEmpty(Model.Images))
+                    {
+                        var images = Model.Images.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                        <img id="mainImage" src="@images[0].Trim()" alt="@Model.Name" class="main-image">
+                        @if (images.Length > 1)
+                        {
+                            <div class="thumbnail-images">
+                                @for (int i = 0; i < images.Length && i < 5; i++)
+                                {
+                                    <img src="@images[i].Trim()" alt="@Model.Name" class="thumbnail @(i == 0 ? "active" : "")" 
+                                         onclick="changeMainImage('@images[i].Trim()', this)">
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center rounded" style="height: 500px;">
+                            <span class="text-muted">Chưa có hình ảnh</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="col-md-6 product-info-section">
+                <h1 class="product-title">@Model.Name</h1>
+                
+                <div class="product-rating-section">
+                    <div class="rating-stars" id="ratingDisplay">
+                        <!-- Rating will be loaded by JavaScript -->
+                    </div>
+                    <span class="text-muted" id="reviewCountText">(@Model.ReviewCount đánh giá)</span>
+                    <span class="text-muted">|</span>
+                    <span class="text-muted">Đã bán: <strong>@Model.SoldCount</strong></span>
+                </div>
+
+                <div class="product-price-section">
+                    <div>
+                        <span class="current-price">@Model.Price.ToString("N0") đ</span>
+                        @if (Model.OldPrice.HasValue && Model.OldPrice > Model.Price)
+                        {
+                            <span class="old-price">@Model.OldPrice.Value.ToString("N0") đ</span>
+                            var discount = Math.Round((1 - (double)Model.Price / (double)Model.OldPrice.Value) * 100);
+                            <span class="discount-percent">-@discount%</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5>Thông tin sản phẩm</h5>
+                    <dl class="row">
+                        <dt class="col-sm-4">Giống loài:</dt>
+                        <dd class="col-sm-8"><span class="badge bg-primary">@Model.Species</span></dd>
+                        @if (!string.IsNullOrEmpty(Model.Age))
+                        {
+                            <dt class="col-sm-4">Tuổi:</dt>
+                            <dd class="col-sm-8">@Model.Age</dd>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Gender))
+                        {
+                            <dt class="col-sm-4">Giới tính:</dt>
+                            <dd class="col-sm-8">@Model.Gender</dd>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.HealthStatus))
+                        {
+                            <dt class="col-sm-4">Tình trạng sức khỏe:</dt>
+                            <dd class="col-sm-8"><span class="text-success">✓ @Model.HealthStatus</span></dd>
+                        }
+                    </dl>
+                </div>
+
+                <div class="action-buttons">
+                    @if (Model.TrangThai)
+                    {
+                        <button class="btn btn-add-cart" id="addToCartBtn" onclick="addPetToCart(@Model.Id)">
+                            <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                        </button>
+                        <button class="btn btn-buy-now" onclick="buyNow(@Model.Id, 'pet')">
+                            Mua ngay
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary" disabled style="flex: 1;">
+                            <i class="bi bi-x-circle"></i> Đã bán
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Tabs -->
+    <div class="product-details-tabs">
+        <ul class="nav nav-tabs" id="productTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="detail-tab" data-bs-toggle="tab" data-bs-target="#detail" type="button">
+                    Chi tiết sản phẩm
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button">
+                    Mô tả
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
+                    Đánh giá (@Model.ReviewCount)
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content" id="productTabContent">
+            <div class="tab-pane fade show active" id="detail" role="tabpanel">
+                <h5>Thông tin chi tiết</h5>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td style="width: 200px;"><strong>Giống loài</strong></td>
+                            <td>@Model.Species</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.Age))
+                        {
+                            <tr>
+                                <td><strong>Tuổi</strong></td>
+                                <td>@Model.Age</td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Gender))
+                        {
+                            <tr>
+                                <td><strong>Giới tính</strong></td>
+                                <td>@Model.Gender</td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.HealthStatus))
+                        {
+                            <tr>
+                                <td><strong>Tình trạng sức khỏe</strong></td>
+                                <td>@Model.HealthStatus</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="description" role="tabpanel">
+                <h5>Mô tả sản phẩm</h5>
+                <div>@Html.Raw(Model.Description?.Replace("\n", "<br>") ?? "Chưa có mô tả")</div>
+            </div>
+            <div class="tab-pane fade" id="reviews" role="tabpanel">
+                <h5>Đánh giá sản phẩm</h5>
+                <div id="reviewsContainer">
+                    <!-- Reviews will be loaded by JavaScript -->
+                </div>
+                <div id="reviewForm" class="mt-4">
+                    <h6>Viết đánh giá</h6>
+                    <form id="reviewFormElement">
+                        <div class="mb-3">
+                            <label class="form-label">Đánh giá *</label>
+                            <div class="rating-input">
+                                <input type="radio" name="rating" id="star5" value="5" checked>
+                                <label for="star5" class="star-label">★</label>
+                                <input type="radio" name="rating" id="star4" value="4">
+                                <label for="star4" class="star-label">★</label>
+                                <input type="radio" name="rating" id="star3" value="3">
+                                <label for="star3" class="star-label">★</label>
+                                <input type="radio" name="rating" id="star2" value="2">
+                                <label for="star2" class="star-label">★</label>
+                                <input type="radio" name="rating" id="star1" value="1">
+                                <label for="star1" class="star-label">★</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên của bạn *</label>
+                            <input type="text" class="form-control" id="reviewCustomerName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="reviewCustomerEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Bình luận</label>
+                            <textarea class="form-control" id="reviewComment" rows="4"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hình ảnh (tối đa 3 ảnh)</label>
+                            <input type="text" class="form-control" id="reviewImages" placeholder="URL ảnh, cách nhau bằng dấu phẩy">
+                            <small class="text-muted">Nhập URL hình ảnh, cách nhau bằng dấu phẩy</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/cart.js"></script>
+    <script>
+        const productId = @Model.Id;
+        const productType = 'pet';
+        const averageRating = @Model.AverageRating;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Display rating
+            displayRating(averageRating);
+            
+            // Load reviews
+            loadReviews();
+
+            // Handle review form submission
+            document.getElementById('reviewFormElement')?.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await submitReview();
+            });
+        });
+
+        function changeMainImage(src, element) {
+            document.getElementById('mainImage').src = src;
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function displayRating(rating) {
+            const container = document.getElementById('ratingDisplay');
+            let html = '';
+            const fullStars = Math.floor(rating);
+            const hasHalf = rating % 1 >= 0.5;
+            
+            for (let i = 0; i < 5; i++) {
+                if (i < fullStars) {
+                    html += '<span class="star-filled">★</span>';
+                } else if (i === fullStars && hasHalf) {
+                    html += '<span class="star-filled">☆</span>';
+                } else {
+                    html += '<span class="star-empty">★</span>';
+                }
+            }
+            html += `<span style="margin-left: 8px; font-size: 16px;">${rating.toFixed(1)}</span>`;
+            container.innerHTML = html;
+        }
+
+        async function loadReviews() {
+            try {
+                const response = await fetch(`@Url.Action("GetReviews", "ProductReview")?productId=${productId}&productType=${productType}`);
+                const result = await response.json();
+                
+                if (result.success && result.reviews.length > 0) {
+                    let html = '';
+                    result.reviews.forEach(review => {
+                        const stars = generateReviewStars(review.rating);
+                        const imagesHtml = review.images && review.images.length > 0
+                            ? `<div class="review-images">${review.images.map(img => `<img src="${img}" class="review-image" onclick="showImageModal('${img}')">`).join('')}</div>`
+                            : '';
+                        
+                        html += `
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong>${review.customerName}</strong>
+                                        <div class="rating-stars">${stars}</div>
+                                    </div>
+                                    <small class="text-muted">${review.createdAt}</small>
+                                </div>
+                                ${review.comment ? `<p>${review.comment}</p>` : ''}
+                                ${imagesHtml}
+                            </div>
+                        `;
+                    });
+                    document.getElementById('reviewsContainer').innerHTML = html;
+                } else {
+                    document.getElementById('reviewsContainer').innerHTML = '<p class="text-muted">Chưa có đánh giá nào</p>';
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        function generateReviewStars(rating) {
+            let html = '';
+            for (let i = 0; i < 5; i++) {
+                html += i < rating ? '<span class="star-filled">★</span>' : '<span class="star-empty">★</span>';
+            }
+            return html;
+        }
+
+        async function submitReview() {
+            // Kiểm tra rating đã chọn
+            const ratingInput = document.querySelector('input[name="rating"]:checked');
+            if (!ratingInput) {
+                alert('Vui lòng chọn đánh giá (sao)');
+                return;
+            }
+
+            const rating = parseInt(ratingInput.value);
+            const customerName = document.getElementById('reviewCustomerName')?.value?.trim();
+            const customerEmail = document.getElementById('reviewCustomerEmail')?.value?.trim();
+            const comment = document.getElementById('reviewComment')?.value?.trim();
+            const images = document.getElementById('reviewImages')?.value?.trim();
+
+            if (!customerName) {
+                alert('Vui lòng nhập tên của bạn');
+                return;
+            }
+
+            if (rating < 1 || rating > 5) {
+                alert('Đánh giá phải từ 1 đến 5 sao');
+                return;
+            }
+
+            try {
+                const reviewData = {
+                    productId: productId,
+                    productType: productType,
+                    rating: rating,
+                    comment: comment || null,
+                    images: images || null,
+                    customerName: customerName,
+                    customerEmail: customerEmail || null
+                };
+
+                console.log('Submitting review:', reviewData);
+
+                const response = await fetch('/ProductReview/Create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Response error:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const result = await response.json();
+                console.log('Review result:', result);
+
+                if (result.success) {
+                    alert('Cảm ơn bạn đã đánh giá!');
+                    document.getElementById('reviewFormElement').reset();
+                    // Reset rating to default
+                    const star5 = document.getElementById('star5');
+                    if (star5) star5.checked = true;
+                    loadReviews();
+                    // Reload page to update rating
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + (result.message || 'Có lỗi xảy ra khi gửi đánh giá'));
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert('Có lỗi xảy ra: ' + (error.message || 'Không thể gửi đánh giá. Vui lòng thử lại sau.'));
+            }
+        }
+
+        async function addPetToCart(petId) {
+            const btn = document.getElementById('addToCartBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang thêm...';
+
+            const result = await addToCart(petId, 'pet', 1);
+            
+            if (result.success) {
+                alert('Đã thêm vào giỏ hàng!');
+            } else {
+                alert(result.message);
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng';
+        }
+
+        function buyNow(productId, productType) {
+            // Add to cart and redirect to checkout
+            addToCart(productId, productType, 1).then(result => {
+                if (result.success) {
+                    window.location.href = '@Url.Action("Index", "Checkout")';
+                } else {
+                    alert(result.message);
+                }
+            });
+        }
+
+        function showImageModal(imageUrl) {
+            // Simple image modal
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer;';
+            modal.innerHTML = `<img src="${imageUrl}" style="max-width: 90%; max-height: 90%; object-fit: contain;">`;
+            modal.onclick = () => modal.remove();
+            document.body.appendChild(modal);
+        }
+    </script>
+    <style>
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .rating-input input[type="radio"] {
+            display: none;
+        }
+        .rating-input label {
+            font-size: 30px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .rating-input input[type="radio"]:checked ~ label,
+        .rating-input label:hover,
+        .rating-input label:hover ~ label {
+            color: #ffc107;
+        }
+    </style>
+}

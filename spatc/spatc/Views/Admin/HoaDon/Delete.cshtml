@@ -1,0 +1,40 @@
+@model spatc.Models.HoaDon
+@{
+    ViewData["Title"] = "Xóa hóa đơn";
+}
+
+<div class="container mt-4">
+    <h2>Xóa hóa đơn</h2>
+    <hr />
+
+    <div class="alert alert-warning">
+        <strong>Bạn có chắc chắn muốn xóa hóa đơn này?</strong>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">ID:</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Ngày thanh toán:</dt>
+                <dd class="col-sm-9">@Model.NgayThanhToan.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-3">Khách hàng:</dt>
+                <dd class="col-sm-9">@Model.DatLich?.ThuCung?.KhachHang?.HoTen</dd>
+
+                <dt class="col-sm-3">Tổng tiền:</dt>
+                <dd class="col-sm-9">@Model.TongTien.ToString("N0") đ</dd>
+            </dl>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,289 @@
+@model spatc.Models.ThuCung
+@{
+    ViewData["Title"] = "Chi tiết thú cưng";
+}
+
+<div class="container mt-4">
+    <h2>Chi tiết thú cưng</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">ID:</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Tên thú cưng:</dt>
+                <dd class="col-sm-9">@Model.TenThuCung</dd>
+
+                <dt class="col-sm-3">Loại:</dt>
+                <dd class="col-sm-9">@Model.Loai</dd>
+
+                <dt class="col-sm-3">Giống:</dt>
+                <dd class="col-sm-9">@(Model.Giong ?? "-")</dd>
+
+                <dt class="col-sm-3">Tuổi:</dt>
+                <dd class="col-sm-9">@(Model.Tuoi?.ToString() ?? "-") tháng</dd>
+
+                <dt class="col-sm-3">Cân nặng:</dt>
+                <dd class="col-sm-9">@(Model.CanNang?.ToString() ?? "-") kg</dd>
+
+                <dt class="col-sm-3">Chủ sở hữu:</dt>
+                <dd class="col-sm-9">@Model.KhachHang?.HoTen</dd>
+
+                <dt class="col-sm-3">Ghi chú sức khỏe:</dt>
+                <dd class="col-sm-9">@(Model.GhiChuSucKhoe ?? "-")</dd>
+
+                <dt class="col-sm-3">Hình ảnh:</dt>
+                <dd class="col-sm-9">
+                    @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                    {
+                        <img src="@Model.HinhAnh" alt="@Model.TenThuCung" class="img-thumbnail" style="max-width: 300px;">
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Ngày tạo:</dt>
+                <dd class="col-sm-9">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+
+            @if (Model.DatLiches != null && Model.DatLiches.Any())
+            {
+                <h4 class="mt-4">Lịch đặt:</h4>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Ngày hẹn</th>
+                                <th>Dịch vụ</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var datLich in Model.DatLiches)
+                            {
+                                <tr>
+                                    <td>@datLich.ThoiGianHen.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@datLich.DichVu?.TenDichVu</td>
+                                    <td>@datLich.TrangThai</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            <div class="mt-4">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">Sửa</a>
+                <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger">Xóa</a>
+                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#healthUpdateModal">
+                    <i class="bi bi-heart-pulse"></i> Gửi thông báo sức khỏe
+                </button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Gửi thông báo tình trạng sức khỏe -->
+<div class="modal fade" id="healthUpdateModal" tabindex="-1" aria-labelledby="healthUpdateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="healthUpdateModalLabel">Gửi thông báo tình trạng sức khỏe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="healthUpdateForm">
+                    <input type="hidden" id="thuCungId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label for="tinhTrang" class="form-label">Tình trạng sức khỏe <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="tinhTrang" required 
+                               placeholder="Ví dụ: Khỏe mạnh, Cần theo dõi, Cần chăm sóc đặc biệt">
+                    </div>
+                    <div class="mb-3">
+                        <label for="moTaChiTiet" class="form-label">Mô tả chi tiết</label>
+                        <textarea class="form-control" id="moTaChiTiet" rows="4" 
+                                  placeholder="Nhập mô tả chi tiết về tình trạng sức khỏe của thú cưng..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hinhAnh" class="form-label">Hình ảnh tình trạng</label>
+                        <input type="file" class="form-control" id="hinhAnh" accept="image/*" onchange="previewImage(this)">
+                        <small class="form-text text-muted">Chọn ảnh để chụp/upload tình trạng sức khỏe của thú cưng (JPG, PNG, GIF, WEBP - tối đa 5MB)</small>
+                        <div id="imagePreview" class="mt-2" style="display: none;">
+                            <img id="previewImg" src="" alt="Preview" class="img-thumbnail" style="max-width: 300px; max-height: 300px;">
+                            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeImage()">Xóa ảnh</button>
+                        </div>
+                        <input type="hidden" id="hinhAnhUrl" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="sendHealthUpdate()">Gửi thông báo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let uploadedImageUrl = null;
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // Kiểm tra kích thước (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File quá lớn. Kích thước tối đa: 5MB');
+                    input.value = '';
+                    return;
+                }
+
+                // Kiểm tra định dạng
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Định dạng file không hợp lệ. Chỉ chấp nhận: JPG, JPEG, PNG, GIF, WEBP');
+                    input.value = '';
+                    return;
+                }
+
+                // Hiển thị preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+
+                // Upload ảnh
+                uploadImage(file);
+            }
+        }
+
+        function uploadImage(file) {
+            console.log('📤 Bắt đầu upload ảnh:', file.name, file.size, 'bytes');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Hiển thị loading
+            const previewDiv = document.getElementById('imagePreview');
+            previewDiv.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Đang tải...</span></div>';
+
+            fetch('/api/upload/image', {
+                method: 'POST',
+                body: formData
+                // KHÔNG set Content-Type header - browser sẽ tự động set với boundary cho FormData
+            })
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        console.error('❌ Response error:', text);
+                        throw new Error(`HTTP ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('✅ Upload response:', data);
+                if (data.success) {
+                    uploadedImageUrl = data.url;
+                    document.getElementById('hinhAnhUrl').value = data.url;
+                    
+                    // Hiển thị preview với ảnh đã upload
+                    previewDiv.innerHTML = `
+                        <img id="previewImg" src="${data.url}" alt="Preview" class="img-thumbnail" style="max-width: 300px; max-height: 300px;">
+                        <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeImage()">Xóa ảnh</button>
+                    `;
+                    console.log('✅ Upload thành công, URL:', data.url);
+                } else {
+                    console.error('❌ Upload failed:', data.message);
+                    alert('Lỗi upload ảnh: ' + (data.message || 'Không thể upload ảnh'));
+                    document.getElementById('hinhAnh').value = '';
+                    previewDiv.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('❌ Upload error:', error);
+                alert('Có lỗi xảy ra khi upload ảnh: ' + error.message);
+                document.getElementById('hinhAnh').value = '';
+                previewDiv.style.display = 'none';
+            });
+        }
+
+        function removeImage() {
+            document.getElementById('hinhAnh').value = '';
+            document.getElementById('hinhAnhUrl').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            uploadedImageUrl = null;
+        }
+
+        function sendHealthUpdate() {
+            const thuCungId = document.getElementById('thuCungId').value;
+            const tinhTrang = document.getElementById('tinhTrang').value.trim();
+            const moTaChiTiet = document.getElementById('moTaChiTiet').value.trim();
+            const hinhAnhUrl = document.getElementById('hinhAnhUrl').value;
+
+            if (!tinhTrang) {
+                alert('Vui lòng nhập tình trạng sức khỏe!');
+                return;
+            }
+
+            fetch('/api/notification/send-health-update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    thuCungId: parseInt(thuCungId),
+                    tinhTrang: tinhTrang,
+                    moTaChiTiet: moTaChiTiet || null,
+                    hinhAnh: hinhAnhUrl || null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let message = 'Đã gửi thông báo tình trạng sức khỏe thành công!';
+                    if (data.warning) {
+                        message += '\n\nLưu ý: ' + data.warning;
+                    }
+                    alert(message);
+                    // Đóng modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('healthUpdateModal'));
+                    modal.hide();
+                    // Reset form
+                    document.getElementById('healthUpdateForm').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    uploadedImageUrl = null;
+                } else {
+                    alert('Lỗi: ' + (data.message || 'Không thể gửi thông báo'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi gửi thông báo');
+            });
+        }
+
+        // Reset form khi đóng modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('healthUpdateModal');
+            if (modal) {
+                modal.addEventListener('hidden.bs.modal', function() {
+                    document.getElementById('healthUpdateForm').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    uploadedImageUrl = null;
+                });
+            }
+        });
+    </script>
+}
+

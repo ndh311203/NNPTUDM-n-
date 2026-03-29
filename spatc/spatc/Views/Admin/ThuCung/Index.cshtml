@@ -1,0 +1,70 @@
+@model IEnumerable<spatc.Models.ThuCung>
+@{
+    ViewData["Title"] = "Quản lý Thú cưng";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Quản lý Thú cưng</h2>
+        </div>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Thêm thú cưng mới
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên thú cưng</th>
+                            <th>Loại</th>
+                            <th>Giống</th>
+                            <th>Tuổi</th>
+                            <th>Cân nặng</th>
+                            <th>Chủ</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.TenThuCung</td>
+                                <td>@item.Loai</td>
+                                <td>@(item.Giong ?? "-")</td>
+                                <td>@(item.Tuoi?.ToString() ?? "-")</td>
+                                <td>@(item.CanNang?.ToString() ?? "-") kg</td>
+                                <td>@item.KhachHang?.HoTen</td>
+                                <td>
+                                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info">
+                                        <i class="bi bi-search"></i> Chi tiết
+                                    </a>
+                                    <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> Sửa
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

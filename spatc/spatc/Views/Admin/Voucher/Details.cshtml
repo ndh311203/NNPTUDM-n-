@@ -1,0 +1,81 @@
+@model spatc.Models.Voucher
+@{
+    ViewData["Title"] = "Chi tiết voucher";
+}
+
+<div class="container mt-4">
+    <h2>Chi tiết voucher</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">Mã voucher:</dt>
+                <dd class="col-sm-9"><strong class="text-primary fs-5">@Model.Code</strong></dd>
+
+                <dt class="col-sm-3">Loại giảm giá:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Type == "percent")
+                    {
+                        <span class="badge bg-info">Giảm theo phần trăm</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Giảm theo số tiền</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Giá trị:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Type == "percent")
+                    {
+                        <span class="fs-5">@Model.Value%</span>
+                    }
+                    else
+                    {
+                        <span class="fs-5">@Model.Value.ToString("N0") đ</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Đơn hàng tối thiểu:</dt>
+                <dd class="col-sm-9">@Model.MinOrderAmount.ToString("N0") đ</dd>
+
+                @if (Model.MaxDiscount.HasValue)
+                {
+                    <dt class="col-sm-3">Giảm tối đa:</dt>
+                    <dd class="col-sm-9">@Model.MaxDiscount.Value.ToString("N0") đ</dd>
+                }
+
+                <dt class="col-sm-3">Ngày bắt đầu:</dt>
+                <dd class="col-sm-9">@Model.StartDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="col-sm-3">Ngày kết thúc:</dt>
+                <dd class="col-sm-9">@Model.EndDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="col-sm-3">Trạng thái:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Status == "active")
+                    {
+                        <span class="badge bg-success">Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Ngừng</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Ngày tạo:</dt>
+                <dd class="col-sm-9">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="col-sm-3">Ngày cập nhật:</dt>
+                <dd class="col-sm-9">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+
+            <div class="mt-4">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">Sửa</a>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </div>
+    </div>
+</div>
+

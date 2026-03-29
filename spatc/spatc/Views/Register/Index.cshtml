@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "Đăng ký";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h3 class="mb-0">Đăng ký tài khoản</h3>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Error
+                        </div>
+                    }
+
+                    <form asp-action="Index" method="post">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="mb-3">
+                            <label for="hoTen" class="form-label">Họ tên</label>
+                            <input type="text" class="form-control" id="hoTen" name="hoTen" 
+                                   placeholder="Nhập họ tên">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="Nhập email" required autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="soDienThoai" class="form-label">Số điện thoại *</label>
+                            <input type="tel" class="form-control" id="soDienThoai" name="soDienThoai" 
+                                   placeholder="Nhập số điện thoại" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="matKhau" class="form-label">Mật khẩu *</label>
+                            <input type="password" class="form-control" id="matKhau" name="matKhau" 
+                                   placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)" required minlength="6">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="xacNhanMatKhau" class="form-label">Xác nhận mật khẩu *</label>
+                            <input type="password" class="form-control" id="xacNhanMatKhau" name="xacNhanMatKhau" 
+                                   placeholder="Nhập lại mật khẩu" required minlength="6">
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-person-plus"></i> Đăng ký
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr>
+
+                    <div class="text-center">
+                        <p class="mb-0">Đã có tài khoản? <a href="/Login">Đăng nhập ngay</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+</style>
+

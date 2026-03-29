@@ -1,0 +1,82 @@
+@* Partial view để hiển thị gợi ý dịch vụ cho sản phẩm *@
+<div id="serviceSuggestions" class="mt-5">
+    <h3 class="mb-4">
+        <i class="bi bi-star-fill text-warning"></i> Dịch vụ gợi ý cho bạn
+    </h3>
+    <div id="serviceSuggestionsContent" class="row g-4">
+        <div class="col-12 text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const productId = @(ViewBag.ProductId ?? 0);
+        const productType = '@(ViewBag.ProductType ?? "")';
+        
+        if (productId > 0 && productType) {
+            loadServiceSuggestions(productId, productType);
+        }
+    });
+
+    function loadServiceSuggestions(productId, productType) {
+        fetch(`/Search/SuggestServicesForProduct?productId=${productId}&productType=${productType}&limit=5`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.suggestions && data.suggestions.length > 0) {
+                    displayServiceSuggestions(data.suggestions);
+                } else {
+                    document.getElementById('serviceSuggestions').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading service suggestions:', error);
+                document.getElementById('serviceSuggestions').style.display = 'none';
+            });
+    }
+
+    function displayServiceSuggestions(suggestions) {
+        const container = document.getElementById('serviceSuggestionsContent');
+        container.innerHTML = '';
+
+        suggestions.forEach(service => {
+            const serviceCard = `
+                <div class="col-md-4 col-sm-6">
+                    <div class="card h-100 shadow-sm">
+                        ${service.image ? `
+                            <img src="${service.image}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
+                        ` : `
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                        `}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">${service.name}</h5>
+                            <p class="card-text text-muted small flex-grow-1">
+                                ${service.description ? (service.description.length > 100 ? service.description.substring(0, 100) + '...' : service.description) : ''}
+                            </p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge bg-${service.type === 'grooming' ? 'primary' : 'warning'}">${service.category}</span>
+                                    <h5 class="text-primary mb-0">${formatPrice(service.price)} đ</h5>
+                                </div>
+                                <a href="/DichVu/Details/${service.id}" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-eye"></i> Xem chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += serviceCard;
+        });
+    }
+
+    function formatPrice(price) {
+        return new Intl.NumberFormat('vi-VN').format(price);
+    }
+</script>
+
