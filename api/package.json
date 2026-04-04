@@ -1,0 +1,41 @@
+{
+  "name": "spatc-api",
+  "version": "1.0.0",
+  "description": "SPATC Pet Shop Management System - REST API",
+  "main": "bin/www",
+  "scripts": {
+    "start": "node bin/www",
+    "dev": "nodemon bin/www",
+    "test": "jest --detectOpenHandles"
+  },
+  "keywords": [
+    "pet-shop",
+    "express",
+    "mongodb",
+    "rest-api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0",
+    "mongoose": "^8.8.0",
+    "dotenv": "^16.4.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.8.1",
+    "express-cors": "^0.0.3",
+    "cors": "^2.8.5",
+    "validator": "^13.11.0",
+    "express-validator": "^7.1.0",
+    "compression": "^1.7.4",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  }
+}
