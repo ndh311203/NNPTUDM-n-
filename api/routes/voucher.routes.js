@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const voucherController = require('../controllers/voucher.controller');
 
 /**
  * Voucher Routes
@@ -7,51 +8,21 @@ const router = express.Router();
  */
 
 // GET /api/vouchers - Get all vouchers
-router.get('/', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/vouchers'
-  });
-});
+router.get('/', voucherController.getAllVouchers);
 
 // POST /api/vouchers - Create new voucher
-router.post('/', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/vouchers'
-  });
-});
+router.post('/', voucherController.createVoucher);
 
 // GET /api/vouchers/:id - Get voucher details
-router.get('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/vouchers/:id'
-  });
-});
+router.get('/:id', voucherController.getVoucherById);
 
 // PUT /api/vouchers/:id - Update voucher
-router.put('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/vouchers/:id'
-  });
-});
+router.put('/:id', voucherController.updateVoucher);
 
 // DELETE /api/vouchers/:id - Delete voucher
-router.delete('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/vouchers/:id'
-  });
-});
+router.delete('/:id', voucherController.deleteVoucher);
 
 // POST /api/vouchers/validate - Validate voucher code
-router.post('/validate', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/vouchers/validate'
-  });
-});
+router.post('/validate', voucherController.validateVoucher);
 
 module.exports = router;

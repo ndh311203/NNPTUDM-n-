@@ -1,34 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { uploadSingle, multerErrorHandler } = require('../utils/uploadHandler');
+const uploadController = require('../controllers/upload.controller');
+const { uploadSingle, uploadMultiple, multerErrorHandler } = require('../utils/uploadHandler');
 
 /**
  * Upload Routes
  * Base: /api/upload
  */
 
-// POST /api/upload/single - Upload single file
-router.post('/single', uploadSingle('file'), multerErrorHandler, (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/upload/single'
-  });
-});
-
-// POST /api/upload/multiple - Upload multiple files
-router.post('/multiple', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/upload/multiple'
-  });
-});
-
-// DELETE /api/upload/:id - Delete uploaded file
-router.delete('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/upload/:id'
-  });
-});
+router.post('/single', uploadSingle('file'), multerErrorHandler, uploadController.uploadSingleFile);
+router.post('/multiple', uploadMultiple('files'), multerErrorHandler, uploadController.uploadMultipleFiles);
+router.delete('/', uploadController.deleteUploadedFile);
 
 module.exports = router;

@@ -89,6 +89,9 @@ app.use('/api/products', require('./routes/product.routes'));
 // Shop Orders Routes
 app.use('/api/shop-orders', require('./routes/shopOrder.routes'));
 
+// Cart Routes
+app.use('/api/cart', require('./routes/cart.routes'));
+
 // Reviews Routes
 app.use('/api/reviews', require('./routes/review.routes'));
 
