@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("spatc")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1b1e198629717da408ae69f7178ac2fa43f15b01")]
 [assembly: System.Reflection.AssemblyProductAttribute("spatc")]
 [assembly: System.Reflection.AssemblyTitleAttribute("spatc")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
