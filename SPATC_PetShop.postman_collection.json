@@ -1,0 +1,737 @@
+{
+  "info": {
+    "name": "SPATC Pet Shop API",
+    "description": "REST API cho hệ thống quản lý cửa hàng thú cưng",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "AUTHENTICATION",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"123456\",\n    \"hoTen\": \"Nguyen Van A\",\n    \"soDienThoai\": \"0909123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.tokens) {",
+                  "        pm.collectionVariables.set('accessToken', jsonData.data.tokens.accessToken);",
+                  "        pm.collectionVariables.set('refreshToken', jsonData.data.tokens.refreshToken);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"123456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "PRODUCTS (CRUD)",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/products", "host": ["{{baseUrl}}"], "path": ["products"] }
+          }
+        },
+        {
+          "name": "Get Product By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/products/:id", "host": ["{{baseUrl}}"], "path": ["products", ":id"] }
+          }
+        },
+        {
+          "name": "Create Product (Admin/Staff)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"tenSanPham\": \"Thức ăn cho mèo\",\n    \"phanLoai\": \"THUC_AN\",\n    \"soLuongTon\": 100,\n    \"donGia\": 150000,\n    \"moTa\": \"Thức ăn dinh dưỡng cho mèo\",\n    \"nhaCungCap\": \"Royal Canin\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/products", "host": ["{{baseUrl}}"], "path": ["products"] }
+          }
+        },
+        {
+          "name": "Update Product (Admin/Staff)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"tenSanPham\": \"Thức ăn cho mèo VIP\",\n    \"soLuongTon\": 150,\n    \"donGia\": 200000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/products/:id", "host": ["{{baseUrl}}"], "path": ["products", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Product (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/products/:id", "host": ["{{baseUrl}}"], "path": ["products", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ORDERS (CRUD + Transaction)",
+      "item": [
+        {
+          "name": "Get All Orders (Admin/Staff)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/shop-orders", "host": ["{{baseUrl}}"], "path": ["shop-orders"] }
+          }
+        },
+        {
+          "name": "Get Order By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/shop-orders/:id", "host": ["{{baseUrl}}"], "path": ["shop-orders", ":id"] }
+          }
+        },
+        {
+          "name": "Create Order (Transaction)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"khachHangId\": \"ID_KHACH_HANG\",\n    \"items\": [\n        {\n            \"sanPhamId\": \"ID_SAN_PHAM\",\n            \"soLuong\": 2,\n            \"donGiaLieu\": 150000\n        }\n    ],\n    \"tongTien\": 300000,\n    \"diaChiGiaoHang\": \"123 Đường ABC, TP.HCM\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/shop-orders", "host": ["{{baseUrl}}"], "path": ["shop-orders"] }
+          }
+        },
+        {
+          "name": "Update Order Status (Admin/Staff)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"trangThaiGiaoHang\": \"DANG_GIAO\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/shop-orders/:id", "host": ["{{baseUrl}}"], "path": ["shop-orders", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Order + Rollback Stock (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/shop-orders/:id", "host": ["{{baseUrl}}"], "path": ["shop-orders", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "BOOKINGS (CRUD)",
+      "item": [
+        {
+          "name": "Get All Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/bookings", "host": ["{{baseUrl}}"], "path": ["bookings"] }
+          }
+        },
+        {
+          "name": "Get Booking By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/bookings/:id", "host": ["{{baseUrl}}"], "path": ["bookings", ":id"] }
+          }
+        },
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"khachHangId\": \"ID_KHACH_HANG\",\n    \"thuCungId\": \"ID_THU_CUNG\",\n    \"dichVuId\": \"ID_DICH_VU\",\n    \"ngayHen\": \"2026-04-10T09:00:00.000Z\",\n    \"ghiChu\": \"Cắt tóc và tắm rửa\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/bookings", "host": ["{{baseUrl}}"], "path": ["bookings"] }
+          }
+        },
+        {
+          "name": "Update Booking (Admin/Staff)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"trangThai\": \"DA_XAC_NHAN\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/bookings/:id", "host": ["{{baseUrl}}"], "path": ["bookings", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Booking (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/bookings/:id", "host": ["{{baseUrl}}"], "path": ["bookings", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "PETS (CRUD)",
+      "item": [
+        {
+          "name": "Get All Pets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/pets", "host": ["{{baseUrl}}"], "path": ["pets"] }
+          }
+        },
+        {
+          "name": "Create Pet",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"tenThuCung\": \"Mèo Mun\",\n    \"loaiThuCung\": \"cat\",\n    \"canNang\": 3.5,\n    \"tuoi\": 2,\n    \"khachHangId\": \"ID_KHACH_HANG\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/pets", "host": ["{{baseUrl}}"], "path": ["pets"] }
+          }
+        },
+        {
+          "name": "Update Pet",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"canNang\": 4.0,\n    \"tuoi\": 3\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/pets/:id", "host": ["{{baseUrl}}"], "path": ["pets", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Pet",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/pets/:id", "host": ["{{baseUrl}}"], "path": ["pets", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "SERVICES (CRUD)",
+      "item": [
+        {
+          "name": "Get All Services",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/services", "host": ["{{baseUrl}}"], "path": ["services"] }
+          }
+        },
+        {
+          "name": "Create Service (Admin/Staff)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"tenDichVu\": \"Cắt tỉa lông\",\n    \"moTa\": \"Dịch vụ cắt tỉa lông chuyên nghiệp\",\n    \"donGia\": 200000,\n    \"thoiGianUocTinh\": 60\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/services", "host": ["{{baseUrl}}"], "path": ["services"] }
+          }
+        },
+        {
+          "name": "Update Service (Admin/Staff)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"donGia\": 250000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/services/:id", "host": ["{{baseUrl}}"], "path": ["services", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Service (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/services/:id", "host": ["{{baseUrl}}"], "path": ["services", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "VOUCHERS (CRUD)",
+      "item": [
+        {
+          "name": "Get All Vouchers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/vouchers", "host": ["{{baseUrl}}"], "path": ["vouchers"] }
+          }
+        },
+        {
+          "name": "Create Voucher (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"mienGiamCode\": \"SALE20\",\n    \"loaiGiamGia\": \"percent\",\n    \"giaTriGiam\": 20,\n    \"soLuongToiDa\": 100,\n    \"ngayHetHan\": \"2026-12-31\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/vouchers", "host": ["{{baseUrl}}"], "path": ["vouchers"] }
+          }
+        },
+        {
+          "name": "Validate Voucher",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"code\": \"SALE20\",\n    \"orderTotal\": 500000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/vouchers/validate", "host": ["{{baseUrl}}"], "path": ["vouchers", "validate"] }
+          }
+        },
+        {
+          "name": "Update Voucher (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"soLuongToiDa\": 50\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/vouchers/:id", "host": ["{{baseUrl}}"], "path": ["vouchers", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Voucher (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/vouchers/:id", "host": ["{{baseUrl}}"], "path": ["vouchers", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "UPLOAD FILES",
+      "item": [
+        {
+          "name": "Upload Single File",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/upload/single", "host": ["{{baseUrl}}"], "path": ["upload", "single"] }
+          }
+        },
+        {
+          "name": "Upload Multiple Files",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "files", "type": "file", "src": "" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/upload/multiple", "host": ["{{baseUrl}}"], "path": ["upload", "multiple"] }
+          }
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"filePath\": \"uploads/filename.jpg\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/upload", "host": ["{{baseUrl}}"], "path": ["upload"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "CHAT (Real-time)",
+      "item": [
+        {
+          "name": "Get Messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/chat/messages?room=general", "host": ["{{baseUrl}}"], "path": ["chat", "messages"], "query": [{ "key": "room", "value": "general" }] }
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nguoiGuiId\": \"user123\",\n    \"hoTen\": \"Nguyen Van A\",\n    \"noiDung\": \"Xin chào, tôi cần tư vấn về dịch vụ\",\n    \"room\": \"general\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/chat/messages", "host": ["{{baseUrl}}"], "path": ["chat", "messages"] }
+          }
+        },
+        {
+          "name": "Get Conversations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/chat/conversations", "host": ["{{baseUrl}}"], "path": ["chat", "conversations"] }
+          }
+        },
+        {
+          "name": "Update Message",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"noiDung\": \"Nội dung đã chỉnh sửa\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/chat/messages/:id", "host": ["{{baseUrl}}"], "path": ["chat", "messages", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Message",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/chat/messages/:id", "host": ["{{baseUrl}}"], "path": ["chat", "messages", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ACCOUNTS (Admin Only)",
+      "item": [
+        {
+          "name": "Get All Accounts",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/accounts", "host": ["{{baseUrl}}"], "path": ["accounts"] }
+          }
+        },
+        {
+          "name": "Get Account By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/accounts/:id", "host": ["{{baseUrl}}"], "path": ["accounts", ":id"] }
+          }
+        },
+        {
+          "name": "Create Account (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"staff@example.com\",\n    \"password\": \"123456\",\n    \"hoTen\": \"Trần Văn B\",\n    \"vaiTro\": \"staff\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/accounts", "host": ["{{baseUrl}}"], "path": ["accounts"] }
+          }
+        },
+        {
+          "name": "Update Account (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"vaiTro\": \"admin\",\n    \"trangThai\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/accounts/:id", "host": ["{{baseUrl}}"], "path": ["accounts", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Account (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/accounts/:id", "host": ["{{baseUrl}}"], "path": ["accounts", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "NOTIFICATIONS",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/notifications?userId=USER_ID", "host": ["{{baseUrl}}"], "path": ["notifications"], "query": [{ "key": "userId", "value": "USER_ID" }] }
+          }
+        },
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": \"USER_ID\",\n    \"tieuDe\": \"Đơn hàng mới\",\n    \"noiDung\": \"Bạn có một đơn hàng mới cần xử lý\",\n    \"loai\": \"order\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/notifications", "host": ["{{baseUrl}}"], "path": ["notifications"] }
+          }
+        },
+        {
+          "name": "Mark as Read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/notifications/:id/read", "host": ["{{baseUrl}}"], "path": ["notifications", ":id", "read"] }
+          }
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/notifications/:id", "host": ["{{baseUrl}}"], "path": ["notifications", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "CART",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/cart/:userId", "host": ["{{baseUrl}}"], "path": ["cart", ":userId"] }
+          }
+        },
+        {
+          "name": "Add to Cart",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": \"guest\",\n    \"sanPhamId\": \"PRODUCT_ID\",\n    \"soLuong\": 2,\n    \"donGia\": 150000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/cart/add", "host": ["{{baseUrl}}"], "path": ["cart", "add"] }
+          }
+        },
+        {
+          "name": "Remove from Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/cart/:productId/:userId", "host": ["{{baseUrl}}"], "path": ["cart", ":productId", ":userId"] }
+          }
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/cart/clear/:userId", "host": ["{{baseUrl}}"], "path": ["cart", "clear", ":userId"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "HEALTH CHECK",
+      "item": [
+        {
+          "name": "API Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:3000/health", "host": ["localhost:3000"], "path": ["health"] }
+          }
+        }
+      ]
+    }
+  ]
+}
