@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat - SPATC Pet Shop</title>
+  <meta name="description" content="Chat hỗ trợ khách hàng real-time tại SPATC Pet Shop" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body style="overflow:hidden;">
+  <div id="toast-area" class="toast-area"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span>🐾</span><span class="gradient-text">SPATC</span></a>
+    <div class="navbar-nav">
+      <a href="index.html" class="nav-link">🏠 Trang chủ</a>
+      <a href="shop.html" class="nav-link">🛍 Cửa hàng</a>
+      <a href="booking.html" class="nav-link">📅 Đặt lịch</a>
+      <a href="orders.html" class="nav-link">📦 Đơn hàng</a>
+      <a href="chat.html" class="nav-link active">💬 Chat</a>
+    </div>
+    <div class="navbar-right" id="nav-right"></div>
+  </nav>
+
+  <!-- Chat Layout -->
+  <div class="chat-layout">
+    <!-- Rooms sidebar -->
+    <div class="chat-rooms">
+      <div style="margin-bottom:14px;">
+        <div class="text-muted text-sm" style="font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Phòng chat</div>
+        <div id="room-list">
+          <div class="room-item active" onclick="joinRoom('general')">
+            <div class="room-dot"></div>
+            <div>
+              <div style="font-size:0.88rem;font-weight:500;">💬 Hỗ trợ chung</div>
+              <div class="text-muted" style="font-size:0.72rem;">#general</div>
+            </div>
+          </div>
+          <div class="room-item" onclick="joinRoom('san-pham')">
+            <div class="room-dot"></div>
+            <div>
+              <div style="font-size:0.88rem;font-weight:500;">🛍 Tư vấn sản phẩm</div>
+              <div class="text-muted" style="font-size:0.72rem;">#san-pham</div>
+            </div>
+          </div>
+          <div class="room-item" onclick="joinRoom('dich-vu')">
+            <div class="room-dot"></div>
+            <div>
+              <div style="font-size:0.88rem;font-weight:500;">✂️ Tư vấn dịch vụ</div>
+              <div class="text-muted" style="font-size:0.72rem;">#dich-vu</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thông báo -->
+      <div style="margin-top:20px;">
+        <div class="text-muted text-sm" style="font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Thông báo</div>
+        <div id="noti-list" style="max-height:200px;overflow-y:auto;">
+          <div class="empty-state" style="padding:20px 0;"><p class="text-sm">Không có thông báo</p></div>
+        </div>
+      </div>
+
+      <!-- Connection status -->
+      <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border-color);margin-top:20px;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.8rem;">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text" class="text-muted">Đang kết nối...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat main -->
+    <div class="chat-main">
+      <!-- Chat header -->
+      <div class="chat-header">
+        <div style="font-size:1.5rem;">💬</div>
+        <div>
+          <div style="font-weight:600;" id="room-title">Hỗ trợ chung</div>
+          <div class="text-muted text-sm" id="room-subtitle">#general</div>
+        </div>
+        <div style="margin-left:auto;">
+          <button class="btn btn-secondary btn-sm" onclick="loadHistory()">📜 Lịch sử</button>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-messages" id="chat-messages">
+        <div style="text-align:center; padding:20px;">
+          <div style="font-size:3rem;margin-bottom:12px;">👋</div>
+          <div style="color:var(--text-secondary);">Chào mừng đến phòng chat hỗ trợ!</div>
+          <div class="text-muted text-sm" style="margin-top:4px;">Đặt câu hỏi hoặc trao đổi với đội ngũ SPATC</div>
+        </div>
+      </div>
+
+      <!-- Input area -->
+      <div class="chat-input-area">
+        <input
+          type="text"
+          class="form-control"
+          id="msg-input"
+          placeholder="Nhập tin nhắn... (Enter để gửi)"
+          onkeydown="onMsgKeydown(event)"
+          style="flex:1;"
+        />
+        <button class="btn btn-primary" onclick="sendMsg()" id="btn-send">
+          ➤ Gửi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Socket.IO client từ CDN -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    const user = getCurrentUser();
+    const myName = user?.hoTen || user?.email || 'Khách';
+    const userId = user?._id || 'guest_' + Math.random().toString(36).slice(2,7);
+    let currentRoom = 'general';
+    let socket = null;
+
+    // Render nav right
+    function renderNavRight() {
+      const el = document.getElementById('nav-right');
+      if (user) {
+        el.innerHTML = `<div class="avatar">${myName[0].toUpperCase()}</div>`;
+      } else {
+        el.innerHTML = `<a href="login.html" class="btn btn-secondary btn-sm">Đăng nhập</a>`;
+      }
+    }
+
+    // Kết nối Socket.IO
+    function connectSocket() {
+      socket = io('http://localhost:3000', { transports: ['websocket', 'polling'] });
+
+      socket.on('connect', () => {
+        setStatus(true);
+        socket.emit('join_room', currentRoom);
+        if (user?._id) socket.emit('join_user', user._id);
+        showToast('Đã kết nối', 'Real-time chat sẵn sàng', 'success');
+      });
+
+      socket.on('disconnect', () => setStatus(false));
+
+      socket.on('joined_room', (data) => {
+        appendSystemMsg(`✅ Đã vào phòng ${data.room}`);
+      });
+
+      // Nhận tin nhắn mới
+      socket.on('new_message', (msg) => {
+        if (msg.room === currentRoom) {
+          appendMessage(msg);
+        }
+      });
+
+      // Nhận thông báo
+      socket.on('new_notification', (noti) => {
+        showToast(noti.tieude, noti.noiDung, 'info');
+        loadNotifications();
+      });
+    }
+
+    function setStatus(online) {
+      const dot = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+      dot.className = `status-dot ${online ? 'online' : 'offline'}`;
+      text.textContent = online ? 'Đã kết nối' : 'Mất kết nối';
+    }
+
+    // Join phòng mới
+    function joinRoom(room) {
+      currentRoom = room;
+      if (socket) {
+        socket.emit('join_room', room);
+      }
+      // Update UI
+      document.querySelectorAll('.room-item').forEach(el => el.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      const names = { general: 'Hỗ trợ chung', 'san-pham': 'Tư vấn sản phẩm', 'dich-vu': 'Tư vấn dịch vụ' };
+      document.getElementById('room-title').textContent = names[room] || room;
+      document.getElementById('room-subtitle').textContent = `#${room}`;
+      // Xóa messages cũ và tải lại
+      document.getElementById('chat-messages').innerHTML = '';
+      loadHistory();
+    }
+
+    // Gửi tin nhắn
+    async function sendMsg() {
+      const input = document.getElementById('msg-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      input.focus();
+
+      const msgData = {
+        nguoiGuiId: userId,
+        hoTen: myName,
+        noiDung: text,
+        room: currentRoom,
+      };
+
+      // Gửi qua socket (realtime)
+      if (socket?.connected) {
+        socket.emit('send_message', msgData);
+      }
+
+      // Đồng thời lưu vào DB qua API
+      try {
+        await ChatAPI.sendMessage(msgData);
+      } catch (e) {
+        // Socket đã gửi rồi nên không cần báo lỗi
+      }
+    }
+
+    function onMsgKeydown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMsg();
+      }
+    }
+
+    // Thêm message vào chat
+    function appendMessage(msg) {
+      const container = document.getElementById('chat-messages');
+      const isMe = msg.nguoiGuiId === userId;
+      const time = new Date(msg.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      const div = document.createElement('div');
+      div.style.cssText = `display:flex; flex-direction:column; align-items:${isMe ? 'flex-end' : 'flex-start'};`;
+      div.innerHTML = `
+        ${!isMe ? `<div class="bubble-name">${msg.hoTen || 'Ẩn danh'}</div>` : ''}
+        <div class="chat-bubble ${isMe ? 'me' : 'other'}">
+          ${msg.noiDung}
+          <div class="bubble-time">${time}</div>
+        </div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function appendSystemMsg(text) {
+      const container = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.style.cssText = 'text-align:center;padding:8px;';
+      div.innerHTML = `<span style="background:rgba(255,255,255,0.06);padding:4px 12px;border-radius:20px;font-size:0.75rem;color:var(--text-muted);">${text}</span>`;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Tải lịch sử chat
+    async function loadHistory() {
+      try {
+        const res = await ChatAPI.getMessages(currentRoom);
+        const msgs = res.data || [];
+        const container = document.getElementById('chat-messages');
+        container.innerHTML = '';
+        if (msgs.length) {
+          appendSystemMsg(`📜 ${msgs.length} tin nhắn cũ`);
+          msgs.forEach(m => appendMessage(m));
+        } else {
+          appendSystemMsg('Chưa có tin nhắn nào trong phòng này');
+        }
+      } catch (e) {}
+    }
+
+    // Tải thông báo
+    async function loadNotifications() {
+      try {
+        const res = await Notifications.getAll(user?._id);
+        const notis = (res.data || []).slice(0, 5);
+        const el = document.getElementById('noti-list');
+        if (!notis.length) {
+          el.innerHTML = `<div class="empty-state" style="padding:16px 0;"><p class="text-sm">Không có thông báo</p></div>`;
+          return;
+        }
+        el.innerHTML = notis.map(n => `
+          <div style="padding:8px 10px;border-radius:6px;margin-bottom:4px;background:${n.daDoc ? 'transparent' : 'rgba(124,58,237,0.08)'};cursor:pointer;"
+               onclick="markRead('${n._id}', this)">
+            <div style="font-size:0.8rem;font-weight:${n.daDoc ? '400' : '600'};">${n.tieude}</div>
+            <div class="text-muted" style="font-size:0.72rem;">${n.noiDung}</div>
+          </div>
+        `).join('');
+      } catch (e) {}
+    }
+
+    async function markRead(id, el) {
+      try {
+        await Notifications.markRead(id);
+        el.style.background = 'transparent';
+        el.querySelector('div').style.fontWeight = '400';
+      } catch (e) {}
+    }
+
+    // Init
+    renderNavRight();
+    connectSocket();
+    loadHistory();
+    loadNotifications();
+  </script>
+</body>
+</html>

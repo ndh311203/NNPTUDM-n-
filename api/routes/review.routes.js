@@ -1,57 +1,24 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const reviewController = require("../controllers/review.controller");
+const { authenticateToken, authorizeRole } = require("../utils/authHandler");
 
-/**
- * Review Routes (Products & Services)
- * Base: /api/reviews
- */
+// Lấy tất cả đánh giá
+router.get("/", reviewController.getAllReviews);
 
-// GET /api/reviews - Get all reviews
-router.get('/', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/reviews'
-  });
-});
+// Đánh giá sản phẩm (cần đăng nhập)
+router.post("/product", authenticateToken, reviewController.reviewProduct);
 
-// POST /api/reviews/product - Create product review
-router.post('/product', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/reviews/product'
-  });
-});
+// Đánh giá dịch vụ (cần đăng nhập)
+router.post("/service", authenticateToken, reviewController.reviewService);
 
-// POST /api/reviews/service - Create service review
-router.post('/service', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/reviews/service'
-  });
-});
+// Lấy đánh giá theo ID
+router.get("/:id", reviewController.getReviewById);
 
-// GET /api/reviews/:id - Get review details
-router.get('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/reviews/:id'
-  });
-});
+// Cập nhật đánh giá (cần đăng nhập)
+router.put("/:id", authenticateToken, reviewController.updateReview);
 
-// PUT /api/reviews/:id - Update review
-router.put('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/reviews/:id'
-  });
-});
-
-// DELETE /api/reviews/:id - Delete review
-router.delete('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/reviews/:id'
-  });
-});
+// Xóa đánh giá (admin)
+router.delete("/:id", authenticateToken, authorizeRole("admin", "staff"), reviewController.deleteReview);
 
 module.exports = router;

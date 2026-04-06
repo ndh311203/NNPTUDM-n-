@@ -1,49 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const hotelController = require("../controllers/hotel.controller");
+const { authenticateToken, authorizeRole } = require("../utils/authHandler");
 
-/**
- * Hotel/Khách Sạn Routes
- * Base: /api/hotel
- */
+// Lấy danh sách phòng (tất cả, filter theo trang thái: ?trangThai=TRONG)
+router.get("/rooms", hotelController.getAllRooms);
 
-// GET /api/hotel/rooms - Get all rooms
-router.get('/rooms', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/hotel/rooms'
-  });
-});
+// Tạo phòng mới (chỉ admin/staff)
+router.post("/rooms", authenticateToken, authorizeRole("admin", "staff"), hotelController.createRoom);
 
-// POST /api/hotel/rooms - Create new room
-router.post('/rooms', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/hotel/rooms'
-  });
-});
+// Lấy phòng theo ID
+router.get("/rooms/:id", hotelController.getRoomById);
 
-// GET /api/hotel/rooms/:id - Get room details
-router.get('/rooms/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/hotel/rooms/:id'
-  });
-});
+// Cập nhật phòng (chỉ admin/staff)
+router.put("/rooms/:id", authenticateToken, authorizeRole("admin", "staff"), hotelController.updateRoom);
 
-// PUT /api/hotel/rooms/:id - Update room
-router.put('/rooms/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/hotel/rooms/:id'
-  });
-});
-
-// DELETE /api/hotel/rooms/:id - Delete room
-router.delete('/rooms/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/hotel/rooms/:id'
-  });
-});
+// Xóa phòng (chỉ admin)
+router.delete("/rooms/:id", authenticateToken, authorizeRole("admin"), hotelController.deleteRoom);
 
 module.exports = router;

@@ -1,49 +1,17 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const notiController = require("../controllers/notification.controller");
 
-/**
- * Notification Routes
- * Base: /api/notifications
- */
+// Lấy danh sách thông báo
+router.get("/", notiController.getNotifications);
 
-// GET /api/notifications - Get all notifications
-router.get('/', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/notifications'
-  });
-});
+// Tạo thông báo mới (đẩy Socket.IO realtime)
+router.post("/", notiController.createNotification);
 
-// POST /api/notifications - Create notification
-router.post('/', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/notifications'
-  });
-});
+// Đánh dấu thông báo đã đọc
+router.put("/:id/read", notiController.markAsRead);
 
-// GET /api/notifications/:id - Get notification details
-router.get('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/notifications/:id'
-  });
-});
-
-// PUT /api/notifications/:id/read - Mark notification as read
-router.put('/:id/read', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/notifications/:id/read'
-  });
-});
-
-// DELETE /api/notifications/:id - Delete notification
-router.delete('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/notifications/:id'
-  });
-});
+// Xóa thông báo
+router.delete("/:id", notiController.deleteNotification);
 
 module.exports = router;

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đơn Hàng Của Tôi - SPATC Pet Shop</title>
+  <meta name="description" content="Xem lịch sử đơn hàng tại SPATC Pet Shop" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="spinner-overlay" class="spinner-overlay"><div class="spinner"></div></div>
+  <div id="toast-area" class="toast-area"></div>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span>🐾</span><span class="gradient-text">SPATC</span></a>
+    <div class="navbar-nav">
+      <a href="index.html" class="nav-link">🏠 Trang chủ</a>
+      <a href="shop.html" class="nav-link">🛍 Cửa hàng</a>
+      <a href="booking.html" class="nav-link">📅 Đặt lịch</a>
+      <a href="orders.html" class="nav-link active">📦 Đơn hàng</a>
+      <a href="chat.html" class="nav-link">💬 Chat</a>
+    </div>
+    <div class="navbar-right" id="nav-right"></div>
+  </nav>
+
+  <div class="main-content-no-sidebar" style="padding:0 24px 60px;">
+    <div class="container">
+      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <h1>📦 Đơn hàng của tôi</h1>
+          <p>Theo dõi trạng thái đơn hàng và lịch sử mua sắm</p>
+        </div>
+        <a href="shop.html" class="btn btn-primary btn-sm">🛍 Tiếp tục mua sắm</a>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Tổng đơn</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-pending">0</div>
+          <div class="stat-label">Đang xử lý</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-done">0</div>
+          <div class="stat-label">Đã giao</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="font-size:1.2rem;" id="stat-spent">0đ</div>
+          <div class="stat-label">Đã chi tiêu</div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="filter-bar">
+        <div class="search-wrapper" style="max-width:280px;">
+          <input type="text" class="search-input" id="order-search" placeholder="Tìm đơn hàng..." oninput="filterOrders()" />
+        </div>
+        <select class="form-select" id="status-filter" onchange="filterOrders()" style="width:auto;">
+          <option value="">Tất cả trạng thái</option>
+          <option value="DANG_XU_LY">Đang xử lý</option>
+          <option value="DA_GIAO">Đã giao</option>
+          <option value="DA_HUY">Đã hủy</option>
+        </select>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã đơn</th>
+                <th>Ngày đặt</th>
+                <th>Sản phẩm</th>
+                <th>Tổng tiền</th>
+                <th>Thanh toán</th>
+                <th>Giao hàng</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody">
+              <tr><td colspan="7" class="text-center"><div class="spinner" style="margin:20px auto;"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal chi tiết đơn hàng -->
+  <div class="modal-overlay" id="modal-order">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📦 Chi tiết đơn hàng</h3>
+        <button class="modal-close" onclick="closeModal('modal-order')">✕</button>
+      </div>
+      <div class="modal-body" id="modal-order-body">
+        <!-- Sẽ render bởi JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-order')">Đóng</button>
+        <button class="btn btn-danger" id="btn-cancel-order" onclick="cancelOrder()">🗑 Hủy đơn</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    let allOrders = [];
+    let selectedOrderId = null;
+    const user = getCurrentUser();
+    const kh = getKhachHang();
+
+    function renderNavRight() {
+      const el = document.getElementById('nav-right');
+      if (user) {
+        el.innerHTML = `<div class="avatar">${(user.hoTen||'?')[0].toUpperCase()}</div>`;
+      } else {
+        el.innerHTML = `<a href="login.html" class="btn btn-secondary btn-sm">Đăng nhập</a>`;
+      }
+    }
+
+    async function loadOrders() {
+      if (!user) {
+        document.getElementById('orders-tbody').innerHTML = `
+          <tr><td colspan="7" class="text-center" style="padding:40px;">
+            <div class="empty-state"><div class="icon">🔒</div><h3>Chưa đăng nhập</h3>
+            <p><a href="login.html" style="color:var(--accent-purple)">Đăng nhập</a> để xem đơn hàng</p></div>
+          </td></tr>`;
+        return;
+      }
+      showLoading();
+      try {
+        const res = await Orders.getAll();
+        allOrders = res.data || [];
+        // Lọc theo khách hàng nếu không phải admin
+        if (!isAdmin() && kh?._id) {
+          allOrders = allOrders.filter(o =>
+            o.khachHangId === kh._id || o.khachHangId?._id === kh._id
+          );
+        }
+        renderOrders(allOrders);
+        renderStats();
+      } catch (e) {
+        showToast('Lỗi', e.message, 'error');
+        document.getElementById('orders-tbody').innerHTML = `<tr><td colspan="7" class="text-center">⚠️ ${e.message}</td></tr>`;
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function renderStats() {
+      document.getElementById('stat-total').textContent = allOrders.length;
+      document.getElementById('stat-pending').textContent = allOrders.filter(o => o.trangThaiGiaoHang === 'DANG_XU_LY').length;
+      document.getElementById('stat-done').textContent = allOrders.filter(o => o.trangThaiGiaoHang === 'DA_GIAO').length;
+      const spent = allOrders.reduce((sum, o) => sum + (o.tongTien || 0), 0);
+      document.getElementById('stat-spent').textContent = formatPrice(spent);
+    }
+
+    function renderOrders(orders) {
+      const tbody = document.getElementById('orders-tbody');
+      if (!orders.length) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📦</div><h3>Chưa có đơn hàng</h3></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = orders.map(o => `
+        <tr>
+          <td><code style="font-size:0.78rem; color:var(--accent-purple);">#${(o._id||'').slice(-6).toUpperCase()}</code></td>
+          <td>${formatDate(o.createdAt)}</td>
+          <td>
+            <div style="max-width:180px;">
+              ${(o.items||[]).slice(0,2).map(i => `<div class="truncate text-sm">${i.sanPhamId?.tenSanPham || '—'} ×${i.soLuong}</div>`).join('')}
+              ${o.items?.length > 2 ? `<div class="text-muted" style="font-size:0.72rem;">+${o.items.length-2} sản phẩm khác</div>` : ''}
+            </div>
+          </td>
+          <td><strong class="price">${formatPrice(o.tongTien)}</strong></td>
+          <td>${getStatusBadge(o.trangThaiThanhToan)}</td>
+          <td>${getStatusBadge(o.trangThaiGiaoHang)}</td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-secondary btn-sm" onclick="viewOrder('${o._id}')">👁 Xem</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterOrders() {
+      const q = document.getElementById('order-search').value.toLowerCase();
+      const status = document.getElementById('status-filter').value;
+      const filtered = allOrders.filter(o =>
+        (!q || (o._id||'').toLowerCase().includes(q) || (o.diaChiGiaoHang||'').toLowerCase().includes(q)) &&
+        (!status || o.trangThaiGiaoHang === status)
+      );
+      renderOrders(filtered);
+    }
+
+    function viewOrder(id) {
+      const order = allOrders.find(o => o._id === id);
+      if (!order) return;
+      selectedOrderId = id;
+      const body = document.getElementById('modal-order-body');
+      const canCancel = order.trangThaiGiaoHang === 'DANG_XU_LY';
+      document.getElementById('btn-cancel-order').style.display = canCancel ? 'inline-flex' : 'none';
+      body.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div>
+            <div class="text-muted text-sm">Mã đơn hàng</div>
+            <code style="color:var(--accent-purple);font-size:1rem;">#${(order._id||'').slice(-6).toUpperCase()}</code>
+          </div>
+          <div style="text-align:right;">
+            <div class="text-muted text-sm">Ngày đặt</div>
+            <div class="text-sm">${formatDateTime(order.createdAt)}</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <h4 style="margin-bottom:10px;">🛍 Sản phẩm</h4>
+        ${(order.items||[]).map(i => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-color);">
+            <div>
+              <div class="text-sm font-bold">${i.sanPhamId?.tenSanPham || '—'}</div>
+              <div class="text-muted" style="font-size:0.75rem;">Số lượng: ${i.soLuong}</div>
+            </div>
+            <div class="price text-sm">${formatPrice(i.donGia * i.soLuong)}</div>
+          </div>
+        `).join('')}
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span class="text-muted text-sm">Địa chỉ giao hàng:</span>
+          <span class="text-sm">${order.diaChiGiaoHang || '—'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span class="text-muted text-sm">Trạng thái TT:</span>
+          ${getStatusBadge(order.trangThaiThanhToan)}
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span class="text-muted text-sm">Giao hàng:</span>
+          ${getStatusBadge(order.trangThaiGiaoHang)}
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-color);">
+          <span>Tổng tiền:</span>
+          <span class="price">${formatPrice(order.tongTien)}</span>
+        </div>
+      `;
+      openModal('modal-order');
+    }
+
+    async function cancelOrder() {
+      if (!selectedOrderId) return;
+      showLoading();
+      try {
+        await Orders.update(selectedOrderId, { trangThaiGiaoHang: 'DA_HUY' });
+        showToast('Đã hủy đơn hàng', '', 'info');
+        closeModal('modal-order');
+        await loadOrders();
+      } catch (e) {
+        showToast('Lỗi', e.message, 'error');
+      } finally {
+        hideLoading();
+      }
+    }
+
+    renderNavRight();
+    loadOrders();
+  </script>
+</body>
+</html>

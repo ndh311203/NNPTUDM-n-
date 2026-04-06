@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPATC Pet Shop - Cửa Hàng Thú Cưng</title>
+  <meta name="description" content="SPATC Pet Shop - Mua sắm, đặt lịch spa, khách sạn thú cưng uy tín" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Loading -->
+  <div id="spinner-overlay" class="spinner-overlay"><div class="spinner"></div></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">
+      <span>🐾</span>
+      <span class="gradient-text">SPATC</span>
+    </a>
+    <div class="navbar-nav">
+      <a href="index.html" class="nav-link active">🏠 Trang chủ</a>
+      <a href="shop.html" class="nav-link">🛍 Cửa hàng</a>
+      <a href="booking.html" class="nav-link">📅 Đặt lịch</a>
+      <a href="orders.html" class="nav-link">📦 Đơn hàng</a>
+      <a href="chat.html" class="nav-link">💬 Chat</a>
+    </div>
+    <div class="navbar-right" id="nav-right">
+      <!-- Sẽ render bởi JS -->
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-emoji">🐾</div>
+      <h1>Chăm sóc thú cưng <span class="gradient-text">tận tâm</span></h1>
+      <p>Cửa hàng thức ăn, đồ chơi, dịch vụ spa & khách sạn thú cưng cao cấp. Đặt lịch ngay hôm nay!</p>
+      <div class="hero-actions">
+        <a href="shop.html" class="btn btn-primary btn-lg">🛍 Mua sắm ngay</a>
+        <a href="booking.html" class="btn btn-secondary btn-lg">📅 Đặt lịch dịch vụ</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section style="padding: 0 24px 60px;">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-products">—</div>
+          <div class="stat-label">🛒 Sản phẩm</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-services">—</div>
+          <div class="stat-label">✂️ Dịch vụ</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-orders">—</div>
+          <div class="stat-label">📦 Đơn hàng</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-vouchers">—</div>
+          <div class="stat-label">🏷 Voucher</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features-section">
+    <div class="container">
+      <h2 class="text-center">Tại sao chọn <span class="gradient-text">SPATC?</span></h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🛍</div>
+          <div class="feature-title">Cửa hàng đa dạng</div>
+          <div class="feature-desc">Thức ăn, đồ chơi, phụ kiện, thuốc thú y từ các thương hiệu uy tín</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">✂️</div>
+          <div class="feature-title">Dịch vụ spa chuyên nghiệp</div>
+          <div class="feature-desc">Tắm gội, cắt tỉa lông, chăm sóc móng vuốt bởi đội ngũ có kinh nghiệm</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏨</div>
+          <div class="feature-title">Khách sạn thú cưng</div>
+          <div class="feature-desc">Không gian thoải mái, an toàn cho thú cưng khi bạn vắng nhà</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <div class="feature-title">Hỗ trợ 24/7</div>
+          <div class="feature-desc">Chat trực tiếp với đội ngũ chăm sóc khách hàng qua real-time chat</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏷</div>
+          <div class="feature-title">Ưu đãi hấp dẫn</div>
+          <div class="feature-desc">Voucher giảm giá, khuyến mãi định kỳ cho khách hàng thân thiết</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📦</div>
+          <div class="feature-title">Đặt hàng dễ dàng</div>
+          <div class="feature-desc">Đặt hàng online, theo dõi đơn hàng thời gian thực</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sản phẩm nổi bật -->
+  <section style="padding: 0 24px 80px;">
+    <div class="container">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+        <h2>Sản phẩm <span class="gradient-text">nổi bật</span></h2>
+        <a href="shop.html" class="btn btn-secondary btn-sm">Xem tất cả →</a>
+      </div>
+      <div class="product-grid" id="featured-products">
+        <div class="empty-state"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 40px 24px; text-align:center;">
+    <div class="gradient-text" style="font-size:1.4rem; font-weight:800; margin-bottom:8px;">🐾 SPATC Pet Shop</div>
+    <p class="text-muted text-sm">© 2024 SPATC - Đồ Án Nhóm 5 Thành Viên</p>
+    <div style="display:flex; gap:16px; justify-content:center; margin-top:14px;">
+      <a href="shop.html" class="text-muted text-sm">Cửa hàng</a>
+      <a href="booking.html" class="text-muted text-sm">Đặt lịch</a>
+      <a href="chat.html" class="text-muted text-sm">Chat</a>
+      <a href="admin.html" class="text-muted text-sm">Quản trị</a>
+    </div>
+  </footer>
+
+  <div id="toast-area" class="toast-area"></div>
+
+  <script src="js/api.js"></script>
+  <script>
+    // Render nav phải theo trạng thái login
+    function renderNavRight() {
+      const el = document.getElementById('nav-right');
+      const user = getCurrentUser();
+      if (user) {
+        el.innerHTML = `
+          ${isAdmin() ? `<a href="admin.html" class="btn btn-secondary btn-sm">⚙️ Admin</a>` : ''}
+          <a href="shop.html" class="btn btn-secondary btn-sm">🛒 Giỏ hàng</a>
+          <div class="avatar" title="${user.hoTen}">${(user.hoTen || user.email || '?')[0].toUpperCase()}</div>
+          <button class="btn btn-sm" style="color:var(--danger)" onclick="doLogout()">Đăng xuất</button>
+        `;
+      } else {
+        el.innerHTML = `<a href="login.html" class="btn btn-primary btn-sm">Đăng nhập</a>`;
+      }
+    }
+
+    async function doLogout() {
+      await Auth.logout();
+      showToast('Đăng xuất', 'Hẹn gặp lại!', 'info');
+      setTimeout(() => renderNavRight(), 300);
+    }
+
+    // Tải stats
+    async function loadStats() {
+      try {
+        const [ps, svs, ods, vcs] = await Promise.allSettled([
+          Products.getAll(),
+          Services.getAll(),
+          Orders.getAll(),
+          Vouchers.getAll(),
+        ]);
+        document.getElementById('stat-products').textContent = ps.value?.data?.length ?? '—';
+        document.getElementById('stat-services').textContent = svs.value?.data?.length ?? '—';
+        document.getElementById('stat-orders').textContent = ods.value?.data?.length ?? '—';
+        document.getElementById('stat-vouchers').textContent = vcs.value?.data?.length ?? '—';
+      } catch (e) {}
+    }
+
+    // Tải sản phẩm nổi bật (6 sản phẩm đầu)
+    async function loadFeatured() {
+      const el = document.getElementById('featured-products');
+      try {
+        const res = await Products.getAll();
+        const products = res.data?.slice(0, 6) || [];
+        if (!products.length) {
+          el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🛍</div><h3>Chưa có sản phẩm</h3><p>Hãy thêm sản phẩm từ trang Admin</p></div>`;
+          return;
+        }
+        el.innerHTML = products.map(p => `
+          <div class="product-card" onclick="location.href='shop.html'">
+            <div class="product-img">${getProductEmoji(p.phanLoai)}</div>
+            <div class="product-info">
+              <div class="product-name">${p.tenSanPham}</div>
+              <div class="product-cat">${p.phanLoai || 'Khác'}</div>
+              <div class="product-price">${formatPrice(p.donGia)}</div>
+              <div class="product-stock">Còn lại: ${p.soLuongTon}</div>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">⚠️</div><h3>Không thể tải sản phẩm</h3><p>API chưa kết nối?</p></div>`;
+      }
+    }
+
+    renderNavRight();
+    loadStats();
+    loadFeatured();
+  </script>
+</body>
+</html>

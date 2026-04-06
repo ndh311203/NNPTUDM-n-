@@ -31,6 +31,38 @@ const io = new Server(server, {
 // Make io accessible to app
 app.set('io', io);
 
+// Xử lý các sự kiện Socket.IO
+io.on('connection', (socket) => {
+  console.log(`[Socket] Client kết nối: ${socket.id}`);
+
+  // Client tham gia vào phòng chat
+  socket.on('join_room', (room) => {
+    socket.join(room);
+    console.log(`[Socket] ${socket.id} tham gia phòng: ${room}`);
+    socket.emit('joined_room', { room, message: `Đã tham gia phòng ${room}` });
+  });
+
+  // Client tham gia vào kênh thông báo riêng
+  socket.on('join_user', (userId) => {
+    socket.join(`user_${userId}`);
+    console.log(`[Socket] ${socket.id} đăng ký nhận thông báo user: ${userId}`);
+  });
+
+  // Client gửi tin nhắn trực tiếp qua socket (không qua API)
+  socket.on('send_message', (data) => {
+    const msg = {
+      ...data,
+      _id: Date.now().toString(),
+      createdAt: new Date(),
+    };
+    io.to(data.room || 'general').emit('new_message', msg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`[Socket] Client ngắt kết nối: ${socket.id}`);
+  });
+});
+
 /**
  * Listen on provided port, on all network interfaces.
  */

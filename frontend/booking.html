@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đặt Lịch Dịch Vụ - SPATC Pet Shop</title>
+  <meta name="description" content="Đặt lịch spa, tắm gội, khám thú y tại SPATC Pet Shop" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="spinner-overlay" class="spinner-overlay"><div class="spinner"></div></div>
+  <div id="toast-area" class="toast-area"></div>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span>🐾</span><span class="gradient-text">SPATC</span></a>
+    <div class="navbar-nav">
+      <a href="index.html" class="nav-link">🏠 Trang chủ</a>
+      <a href="shop.html" class="nav-link">🛍 Cửa hàng</a>
+      <a href="booking.html" class="nav-link active">📅 Đặt lịch</a>
+      <a href="orders.html" class="nav-link">📦 Đơn hàng</a>
+      <a href="chat.html" class="nav-link">💬 Chat</a>
+    </div>
+    <div class="navbar-right" id="nav-right"></div>
+  </nav>
+
+  <div class="main-content-no-sidebar" style="padding:0 24px 60px;">
+    <div class="container">
+      <div class="page-header">
+        <h1>📅 Đặt lịch dịch vụ</h1>
+        <p>Chọn dịch vụ và thời gian phù hợp với bạn</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start;">
+        <!-- Form đặt lịch -->
+        <div>
+          <div class="card" style="border-color:var(--accent-purple);">
+            <div class="card-header">
+              <h3 class="card-title">📝 Thông tin đặt lịch</h3>
+            </div>
+            <form id="form-booking" onsubmit="doBooking(event)">
+              <div class="form-group">
+                <label class="form-label">Dịch vụ <span style="color:var(--danger)">*</span></label>
+                <select class="form-select" id="dv-select" required onchange="onServiceChange()">
+                  <option value="">-- Chọn dịch vụ --</option>
+                </select>
+              </div>
+              <div id="dv-info" style="display:none; background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.2); border-radius:8px; padding:12px; margin-bottom:14px;">
+                <div class="text-sm text-muted" id="dv-mota"></div>
+                <div style="display:flex; gap:16px; margin-top:8px;">
+                  <div><span class="text-muted text-sm">Giá:</span> <strong class="price" id="dv-gia"></strong></div>
+                  <div><span class="text-muted text-sm">Thời gian:</span> <strong id="dv-tg" style="color:var(--info)"></strong></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Thú cưng</label>
+                <input type="text" class="form-control" id="thu-cung" placeholder="Tên / loài thú cưng (vd: Mèo Mimi)" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ngày hẹn <span style="color:var(--danger)">*</span></label>
+                <input type="datetime-local" class="form-control" id="ngay-hen" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ghi chú</label>
+                <textarea class="form-textarea" id="ghi-chu" placeholder="Yêu cầu đặc biệt, tình trạng sức khỏe thú cưng..." style="min-height:80px;"></textarea>
+              </div>
+              <div id="login-notice" class="hidden" style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:8px; padding:12px; margin-bottom:14px; font-size:0.85rem; color:var(--warning);">
+                ⚠️ Vui lòng <a href="login.html" style="color:var(--accent-purple); font-weight:600;">đăng nhập</a> để đặt lịch
+              </div>
+              <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-booking">📅 Đặt lịch ngay</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Danh sách lịch đặt -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">📋 Lịch đặt của tôi</h3>
+              <button class="btn btn-secondary btn-sm" onclick="loadMyBookings()">🔄 Làm mới</button>
+            </div>
+            <div id="booking-list">
+              <div class="empty-state"><div class="spinner"></div></div>
+            </div>
+          </div>
+
+          <!-- Danh sách dịch vụ -->
+          <div class="card" style="margin-top:20px;">
+            <div class="card-header">
+              <h3 class="card-title">✨ Dịch vụ nổi bật</h3>
+            </div>
+            <div id="service-list">
+              <div class="empty-state"><div class="spinner"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal hủy lịch -->
+  <div class="modal-overlay" id="modal-cancel">
+    <div class="modal" style="max-width:400px;">
+      <div class="modal-header">
+        <h3>🗑 Xác nhận hủy lịch</h3>
+        <button class="modal-close" onclick="closeModal('modal-cancel')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn có chắc muốn hủy lịch đặt này không?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-cancel')">Không</button>
+        <button class="btn btn-danger" id="btn-confirm-cancel" onclick="confirmCancel()">Hủy lịch</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    let services = [];
+    let myBookings = [];
+    let cancelId = null;
+    const user = getCurrentUser();
+    const kh = getKhachHang();
+
+    function renderNavRight() {
+      const el = document.getElementById('nav-right');
+      if (user) {
+        el.innerHTML = `<div class="avatar" title="${user.hoTen}">${(user.hoTen||'?')[0].toUpperCase()}</div>`;
+      } else {
+        el.innerHTML = `<a href="login.html" class="btn btn-secondary btn-sm">Đăng nhập</a>`;
+      }
+    }
+
+    // Set min date là ngày mai
+    function initDateInput() {
+      const el = document.getElementById('ngay-hen');
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(8, 0, 0, 0);
+      el.min = tomorrow.toISOString().slice(0, 16);
+      el.value = tomorrow.toISOString().slice(0, 16);
+    }
+
+    async function loadServices() {
+      try {
+        const res = await Services.getAll();
+        services = (res.data || []).filter(s => s.trangThai !== false);
+        const select = document.getElementById('dv-select');
+        services.forEach(s => {
+          select.innerHTML += `<option value="${s._id}">${s.tenDichVu} — ${formatPrice(s.donGia)}</option>`;
+        });
+        renderServiceList();
+      } catch (e) {
+        document.getElementById('service-list').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><h3>Lỗi kết nối API</h3></div>`;
+      }
+    }
+
+    function onServiceChange() {
+      const id = document.getElementById('dv-select').value;
+      const s = services.find(x => x._id === id);
+      const infoEl = document.getElementById('dv-info');
+      if (s) {
+        infoEl.style.display = 'block';
+        document.getElementById('dv-mota').textContent = s.moTa || 'Không có mô tả';
+        document.getElementById('dv-gia').textContent = formatPrice(s.donGia);
+        document.getElementById('dv-tg').textContent = `${s.thoiGianUocTinh} phút`;
+      } else {
+        infoEl.style.display = 'none';
+      }
+    }
+
+    function renderServiceList() {
+      const el = document.getElementById('service-list');
+      if (!services.length) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">✂️</div><h3>Chưa có dịch vụ</h3></div>`;
+        return;
+      }
+      el.innerHTML = services.map(s => `
+        <div style="display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px solid var(--border-color);">
+          <div style="font-size:2rem;">✂️</div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:0.9rem;">${s.tenDichVu}</div>
+            <div class="text-muted text-sm">${s.moTa || ''}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="price text-sm">${formatPrice(s.donGia)}</div>
+            <div class="text-muted" style="font-size:0.72rem;">${s.thoiGianUocTinh} phút</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function loadMyBookings() {
+      const el = document.getElementById('booking-list');
+      if (!kh?._id) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">🔒</div><h3>Chưa đăng nhập</h3><p><a href="login.html" style="color:var(--accent-purple)">Đăng nhập</a> để xem lịch của bạn</p></div>`;
+        return;
+      }
+      el.innerHTML = `<div class="empty-state"><div class="spinner"></div></div>`;
+      try {
+        const res = await Bookings.getAll();
+        myBookings = (res.data || []).filter(b => b.khachHangId === kh._id || b.khachHangId?._id === kh._id);
+        renderBookingList();
+      } catch (e) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><h3>Không thể tải lịch</h3></div>`;
+      }
+    }
+
+    function renderBookingList() {
+      const el = document.getElementById('booking-list');
+      if (!myBookings.length) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">📅</div><h3>Chưa có lịch đặt</h3><p>Đặt lịch dịch vụ ngay</p></div>`;
+        return;
+      }
+      el.innerHTML = myBookings.slice(0,5).map(b => {
+        const dv = b.dichVuId?.tenDichVu || '—';
+        return `
+          <div style="display:flex; align-items:flex-start; gap:10px; padding:12px; border-bottom:1px solid var(--border-color);">
+            <div style="font-size:1.6rem;">📅</div>
+            <div style="flex:1;">
+              <div style="font-weight:500;font-size:0.88rem;">${dv}</div>
+              <div class="text-muted text-sm">${formatDateTime(b.ngayHen)}</div>
+              ${b.ghiChu ? `<div class="text-sm" style="color:var(--text-muted);margin-top:2px;">${b.ghiChu}</div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              ${getStatusBadge(b.trangThai)}
+              ${b.trangThai === 'CHO_XAC_NHAN' ? `<button class="btn btn-danger btn-sm" onclick="startCancel('${b._id}')">Hủy</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function startCancel(id) {
+      cancelId = id;
+      openModal('modal-cancel');
+    }
+
+    async function confirmCancel() {
+      if (!cancelId) return;
+      try {
+        await Bookings.update(cancelId, { trangThai: 'DA_HUY' });
+        showToast('Đã hủy lịch', '', 'info');
+        closeModal('modal-cancel');
+        await loadMyBookings();
+      } catch (e) {
+        showToast('Lỗi', e.message, 'error');
+      }
+      cancelId = null;
+    }
+
+    async function doBooking(e) {
+      e.preventDefault();
+      if (!user) {
+        document.getElementById('login-notice').classList.remove('hidden');
+        return;
+      }
+      const dichVuId = document.getElementById('dv-select').value;
+      const ngayHen = document.getElementById('ngay-hen').value;
+      const ghiChu = document.getElementById('ghi-chu').value;
+      if (!dichVuId) return showToast('Chọn dịch vụ', 'Vui lòng chọn dịch vụ', 'warning');
+
+      const btn = document.getElementById('btn-booking');
+      btn.disabled = true;
+      btn.textContent = '⏳ Đang đặt lịch...';
+      showLoading();
+      try {
+        const res = await Bookings.create({
+          khachHangId: kh?._id || user._id,
+          dichVuId,
+          ngayHen,
+          ghiChu,
+          trangThai: 'CHO_XAC_NHAN',
+        });
+        if (res.success) {
+          showToast('Đặt lịch thành công! 🎉', 'Chúng tôi sẽ liên hệ xác nhận sớm', 'success');
+          document.getElementById('form-booking').reset();
+          document.getElementById('dv-info').style.display = 'none';
+          initDateInput();
+          await loadMyBookings();
+        }
+      } catch (e) {
+        showToast('Đặt lịch thất bại', e.message, 'error');
+      } finally {
+        hideLoading();
+        btn.disabled = false;
+        btn.innerHTML = '📅 Đặt lịch ngay';
+      }
+    }
+
+    // Init
+    if (!user) document.getElementById('login-notice').classList.remove('hidden');
+    renderNavRight();
+    initDateInput();
+    loadServices();
+    loadMyBookings();
+  </script>
+</body>
+</html>

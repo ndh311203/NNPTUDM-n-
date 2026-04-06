@@ -1,16 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const bookingController = require('../controllers/booking.controller');
+const bookingController = require("../controllers/booking.controller");
 
-/**
- * Booking Routes
- * Base: /api/bookings
- */
-
-router.get('/', bookingController.getAllBookings);
-router.post('/', bookingController.createBooking);
-router.get('/:id', bookingController.getBookingById);
-router.put('/:id', bookingController.updateBooking);
-router.delete('/:id', bookingController.deleteBooking);
+router.get("/", bookingController.getAllBookings);
+router.post("/", bookingController.createBooking);
+router.get("/:id", bookingController.getBookingById);
+router.put("/:id", bookingController.updateBooking);
+router.delete("/:id", bookingController.deleteBooking);
 
 module.exports = router;

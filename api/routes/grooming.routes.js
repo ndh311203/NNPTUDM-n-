@@ -1,49 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const bookingController = require("../controllers/booking.controller");
+const { authenticateToken, authorizeRole } = require("../utils/authHandler");
 
-/**
- * Grooming Service Routes
- * Base: /api/grooming
- */
+// Lấy tất cả lịch grooming (admin/staff xem tất cả)
+router.get("/", bookingController.getAllBookings);
 
-// GET /api/grooming - Get all grooming services
-router.get('/', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/grooming'
-  });
-});
+// Tạo lịch grooming mới (user đã đăng nhập)
+router.post("/", authenticateToken, bookingController.createBooking);
 
-// POST /api/grooming - Create new grooming service
-router.post('/', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/grooming'
-  });
-});
+// Lấy lịch grooming theo ID
+router.get("/:id", bookingController.getBookingById);
 
-// GET /api/grooming/:id - Get grooming service details
-router.get('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/grooming/:id'
-  });
-});
+// Cập nhật lịch grooming (staff/admin)
+router.put("/:id", authenticateToken, authorizeRole("admin", "staff"), bookingController.updateBooking);
 
-// PUT /api/grooming/:id - Update grooming service
-router.put('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/grooming/:id'
-  });
-});
-
-// DELETE /api/grooming/:id - Delete grooming service
-router.delete('/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/grooming/:id'
-  });
-});
+// Xóa lịch grooming (admin)
+router.delete("/:id", authenticateToken, authorizeRole("admin"), bookingController.deleteBooking);
 
 module.exports = router;

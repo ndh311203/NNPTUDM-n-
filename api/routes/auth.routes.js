@@ -1,57 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const { register, login, refreshToken, logout, getCurrentUser } = require("../controllers/auth.controller");
+const { authenticateToken } = require("../utils/authHandler");
 
-/**
- * Authentication Routes
- * Base: /api/auth
- */
+// Đăng ký tài khoản mới
+router.post("/register", register);
 
-// POST /api/auth/register - Register new user
-router.post('/register', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/auth/register'
-  });
-});
+// Đăng nhập
+router.post("/login", login);
 
-// POST /api/auth/login - Login user
-router.post('/login', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/auth/login'
-  });
-});
+// Làm mới access token
+router.post("/refresh", refreshToken);
 
-// POST /api/auth/refresh - Refresh token
-router.post('/refresh', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/auth/refresh'
-  });
-});
+// Đăng xuất
+router.post("/logout", logout);
 
-// POST /api/auth/logout - Logout user
-router.post('/logout', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/auth/logout'
-  });
-});
-
-// POST /api/auth/google - Google OAuth
-router.post('/google', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/auth/google'
-  });
-});
-
-// POST /api/auth/facebook - Facebook OAuth
-router.post('/facebook', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/auth/facebook'
-  });
-});
+// Lấy thông tin user hiện tại (cần token)
+router.get("/me", authenticateToken, getCurrentUser);
 
 module.exports = router;

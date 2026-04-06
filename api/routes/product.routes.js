@@ -1,16 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const productController = require('../controllers/product.controller');
+const productController = require("../controllers/product.controller");
+const { authenticateToken, authorizeRole } = require("../utils/authHandler");
 
-/**
- * Product Routes
- * Base: /api/products
- */
+// Xem sản phẩm (public)
+router.get("/", productController.getAllProducts);
+router.get("/:id", productController.getProductById);
 
-router.get('/', productController.getAllProducts);
-router.post('/', productController.createProduct);
-router.get('/:id', productController.getProductById);
-router.put('/:id', productController.updateProduct);
-router.delete('/:id', productController.deleteProduct);
+// Thêm/sửa/xóa sản phẩm (chỉ admin/staff)
+router.post("/", authenticateToken, authorizeRole("admin", "staff"), productController.createProduct);
+router.put("/:id", authenticateToken, authorizeRole("admin", "staff"), productController.updateProduct);
+router.delete("/:id", authenticateToken, authorizeRole("admin"), productController.deleteProduct);
 
 module.exports = router;

@@ -1,49 +1,20 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const chatController = require("../controllers/chat.controller");
 
-/**
- * Chat Routes
- * Base: /api/chat
- */
+// Lấy lịch sử tin nhắn (có thể lọc ?room=general)
+router.get("/messages", chatController.getMessages);
 
-// GET /api/chat/messages - Get all messages (or by conversation)
-router.get('/messages', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/chat/messages'
-  });
-});
+// Gửi tin nhắn mới (phát Socket.IO realtime)
+router.post("/messages", chatController.sendMessage);
 
-// POST /api/chat/messages - Send message
-router.post('/messages', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/chat/messages'
-  });
-});
+// Lấy danh sách các phòng chat
+router.get("/conversations", chatController.getConversations);
 
-// GET /api/chat/conversations - Get all conversations
-router.get('/conversations', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/chat/conversations'
-  });
-});
+// Cập nhật tin nhắn
+router.put("/messages/:id", chatController.updateMessage);
 
-// PUT /api/chat/messages/:id - Edit message
-router.put('/messages/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/chat/messages/:id'
-  });
-});
-
-// DELETE /api/chat/messages/:id - Delete message
-router.delete('/messages/:id', (req, res) => {
-  res.status(501).json({
-    message: 'Route not implemented yet',
-    path: '/api/chat/messages/:id'
-  });
-});
+// Xóa tin nhắn
+router.delete("/messages/:id", chatController.deleteMessage);
 
 module.exports = router;

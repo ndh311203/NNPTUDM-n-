@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản Trị Admin - SPATC Pet Shop</title>
+  <meta name="description" content="Trang quản trị SPATC Pet Shop - Quản lý sản phẩm, dịch vụ, đơn hàng, voucher" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="spinner-overlay" class="spinner-overlay"><div class="spinner"></div></div>
+  <div id="toast-area" class="toast-area"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span>🐾</span><span class="gradient-text">SPATC Admin</span></a>
+    <div class="navbar-right" id="nav-right"></div>
+  </nav>
+
+  <!-- Layout -->
+  <div class="layout-with-sidebar">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Tổng quan</div>
+        <div class="sidebar-link active" onclick="showSection('dashboard')" id="menu-dashboard">
+          <span class="icon">📊</span> Dashboard
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Quản lý</div>
+        <div class="sidebar-link" onclick="showSection('products')" id="menu-products">
+          <span class="icon">🛍</span> Sản phẩm
+        </div>
+        <div class="sidebar-link" onclick="showSection('services')" id="menu-services">
+          <span class="icon">✂️</span> Dịch vụ
+        </div>
+        <div class="sidebar-link" onclick="showSection('bookings')" id="menu-bookings">
+          <span class="icon">📅</span> Lịch đặt
+        </div>
+        <div class="sidebar-link" onclick="showSection('orders')" id="menu-orders">
+          <span class="icon">📦</span> Đơn hàng
+        </div>
+        <div class="sidebar-link" onclick="showSection('vouchers')" id="menu-vouchers">
+          <span class="icon">🏷</span> Voucher
+        </div>
+        <div class="sidebar-link" onclick="showSection('upload')" id="menu-upload">
+          <span class="icon">📁</span> Upload ảnh
+        </div>
+        <div class="sidebar-link" onclick="showSection('notifications')" id="menu-notifications">
+          <span class="icon">🔔</span> Thông báo
+        </div>
+      </div>
+      <div class="sidebar-section" style="margin-top:auto;">
+        <div class="sidebar-link" onclick="doLogout()" style="color:var(--danger);">
+          <span class="icon">🚪</span> Đăng xuất
+        </div>
+        <a href="index.html" class="sidebar-link">
+          <span class="icon">🏠</span> Về trang chủ
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- ================== DASHBOARD ================== -->
+      <section id="section-dashboard">
+        <div class="page-header">
+          <h1>📊 Dashboard</h1>
+          <p>Tổng quan hệ thống SPATC Pet Shop</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-value" id="d-products">—</div><div class="stat-label">🛍 Sản phẩm</div></div>
+          <div class="stat-card"><div class="stat-value" id="d-services">—</div><div class="stat-label">✂️ Dịch vụ</div></div>
+          <div class="stat-card"><div class="stat-value" id="d-orders">—</div><div class="stat-label">📦 Đơn hàng</div></div>
+          <div class="stat-card"><div class="stat-value" id="d-bookings">—</div><div class="stat-label">📅 Lịch đặt</div></div>
+          <div class="stat-card"><div class="stat-value" id="d-vouchers">—</div><div class="stat-label">🏷 Voucher</div></div>
+          <div class="stat-card"><div class="stat-value" style="font-size:1rem;" id="d-revenue">—</div><div class="stat-label">💰 Doanh thu</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3 class="card-title">📦 Đơn hàng gần đây</h3></div>
+          <div id="recent-orders"><div class="empty-state"><div class="spinner"></div></div></div>
+        </div>
+      </section>
+
+      <!-- ================== PRODUCTS ================== -->
+      <section id="section-products" class="hidden">
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;">
+          <div><h1>🛍 Quản lý sản phẩm</h1><p>Thêm, sửa, xóa sản phẩm</p></div>
+          <button class="btn btn-primary" onclick="openProductForm()">+ Thêm sản phẩm</button>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Tên sản phẩm</th><th>Danh mục</th><th>Giá</th><th>Tồn kho</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+              <tbody id="products-tbody"><tr><td colspan="6" class="text-center"><div class="spinner" style="margin:20px auto;"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== SERVICES ================== -->
+      <section id="section-services" class="hidden">
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;">
+          <div><h1>✂️ Quản lý dịch vụ</h1><p>Dịch vụ spa, tắm gội, khách sạn</p></div>
+          <button class="btn btn-primary" onclick="openServiceForm()">+ Thêm dịch vụ</button>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Tên dịch vụ</th><th>Giá</th><th>Thời gian</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+              <tbody id="services-tbody"><tr><td colspan="5" class="text-center"><div class="spinner" style="margin:20px auto;"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== BOOKINGS ================== -->
+      <section id="section-bookings" class="hidden">
+        <div class="page-header"><h1>📅 Quản lý lịch đặt</h1><p>Xem và cập nhật trạng thái lịch hẹn</p></div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Khách hàng</th><th>Dịch vụ</th><th>Ngày hẹn</th><th>Ghi chú</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+              <tbody id="bookings-tbody"><tr><td colspan="6" class="text-center"><div class="spinner" style="margin:20px auto;"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== ORDERS ================== -->
+      <section id="section-orders" class="hidden">
+        <div class="page-header"><h1>📦 Quản lý đơn hàng</h1><p>Xem và cập nhật đơn hàng</p></div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Tổng tiền</th><th>Thanh toán</th><th>Giao hàng</th><th>Ngày đặt</th><th>Thao tác</th></tr></thead>
+              <tbody id="orders-tbody"><tr><td colspan="7" class="text-center"><div class="spinner" style="margin:20px auto;"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== VOUCHERS ================== -->
+      <section id="section-vouchers" class="hidden">
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;">
+          <div><h1>🏷 Quản lý voucher</h1><p>Tạo và quản lý mã giảm giá</p></div>
+          <button class="btn btn-primary" onclick="openVoucherForm()">+ Tạo voucher</button>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Mã voucher</th><th>Loại giảm</th><th>Giá trị giảm</th><th>Đã dùng</th><th>Hết hạn</th><th>TT</th><th>Thao tác</th></tr></thead>
+              <tbody id="vouchers-tbody"><tr><td colspan="7" class="text-center"><div class="spinner" style="margin:20px auto;"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== UPLOAD ================== -->
+      <section id="section-upload" class="hidden">
+        <div class="page-header"><h1>📁 Upload ảnh</h1><p>Tải ảnh sản phẩm hoặc dịch vụ lên server</p></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:16px;">📷 Upload 1 ảnh</h3>
+            <div class="upload-area" id="upload-single-area" onclick="document.getElementById('file-single').click()" ondragover="onDragOver(event)" ondrop="onDropSingle(event)">
+              <div class="icon">📁</div>
+              <div style="font-weight:500;">Nhấn hoặc kéo thả ảnh vào đây</div>
+              <div class="text-muted text-sm" style="margin-top:4px;">PNG, JPG, GIF tối đa 10MB</div>
+            </div>
+            <input type="file" id="file-single" accept="image/*" style="display:none;" onchange="uploadSingleFile(event)" />
+            <div id="single-preview" style="margin-top:12px;display:none;">
+              <img id="single-preview-img" style="max-width:100%;border-radius:8px;max-height:200px;object-fit:cover;" />
+              <div class="text-sm text-muted" style="margin-top:6px;" id="single-url"></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:16px;">📁 Upload nhiều ảnh</h3>
+            <div class="upload-area" onclick="document.getElementById('file-multi').click()">
+              <div class="icon">📂</div>
+              <div style="font-weight:500;">Chọn nhiều ảnh cùng lúc</div>
+              <div class="text-muted text-sm" style="margin-top:4px;">Tối đa 5 ảnh, mỗi ảnh ≤ 10MB</div>
+            </div>
+            <input type="file" id="file-multi" accept="image/*" multiple style="display:none;" onchange="uploadMultiFile(event)" />
+            <div id="multi-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"></div>
+            <div id="multi-urls" style="margin-top:8px;font-size:0.78rem;color:var(--text-muted);"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== NOTIFICATIONS ================== -->
+      <section id="section-notifications" class="hidden">
+        <div class="page-header"><h1>🔔 Gửi thông báo</h1><p>Đẩy thông báo realtime qua Socket.IO</p></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;">
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom:16px;">✉️ Tạo thông báo mới</h3>
+            <form onsubmit="sendNoti(event)">
+              <div class="form-group">
+                <label class="form-label">Tiêu đề</label>
+                <input type="text" class="form-control" id="noti-tieude" placeholder="Khuyến mãi mới..." required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nội dung</label>
+                <textarea class="form-textarea" id="noti-noidung" placeholder="Mô tả thông báo..." required style="min-height:80px;"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Loại</label>
+                <select class="form-select" id="noti-loai">
+                  <option value="INFO">ℹ️ Thông tin</option>
+                  <option value="PROMO">🏷 Khuyến mãi</option>
+                  <option value="WARNING">⚠️ Cảnh báo</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Gửi đến (để trống = gửi tất cả)</label>
+                <input type="text" class="form-control" id="noti-userid" placeholder="User ID cụ thể..." />
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">🚀 Gửi thông báo</button>
+            </form>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">📋 Thông báo đã gửi</h3>
+              <button class="btn btn-secondary btn-sm" onclick="loadNotis()">🔄</button>
+            </div>
+            <div id="noti-sent-list"><div class="empty-state"><div class="spinner"></div></div></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Sản phẩm -->
+  <div class="modal-overlay" id="modal-product">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-product-title">Thêm sản phẩm</h3>
+        <button class="modal-close" onclick="closeModal('modal-product')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="p-id" />
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Tên sản phẩm *</label>
+            <input type="text" class="form-control" id="p-ten" placeholder="Tên sản phẩm" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Danh mục *</label>
+            <select class="form-select" id="p-phanloai">
+              <option value="THUC_AN">🍖 Thức ăn</option>
+              <option value="DO_CHOI">🎾 Đồ chơi</option>
+              <option value="THUOC">💊 Thuốc</option>
+              <option value="PHU_KIEN">🎀 Phụ kiện</option>
+              <option value="KHAC">📦 Khác</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Đơn giá (VND) *</label>
+            <input type="number" class="form-control" id="p-gia" min="0" placeholder="50000" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Số lượng tồn *</label>
+            <input type="number" class="form-control" id="p-soluong" min="0" placeholder="100" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nhà cung cấp</label>
+          <input type="text" class="form-control" id="p-ncc" placeholder="Tên nhà cung cấp" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mô tả</label>
+          <textarea class="form-textarea" id="p-mota" placeholder="Mô tả sản phẩm..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-product')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveProduct()">💾 Lưu sản phẩm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Dịch vụ -->
+  <div class="modal-overlay" id="modal-service">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-service-title">Thêm dịch vụ</h3>
+        <button class="modal-close" onclick="closeModal('modal-service')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="s-id" />
+        <div class="form-group">
+          <label class="form-label">Tên dịch vụ *</label>
+          <input type="text" class="form-control" id="s-ten" placeholder="Tắm gội, cắt tỉa..." required />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Đơn giá (VND) *</label>
+            <input type="number" class="form-control" id="s-gia" min="0" placeholder="150000" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Thời gian (phút) *</label>
+            <input type="number" class="form-control" id="s-thoigian" min="0" placeholder="60" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mô tả</label>
+          <textarea class="form-textarea" id="s-mota" placeholder="Mô tả dịch vụ..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-service')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveService()">💾 Lưu dịch vụ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Voucher -->
+  <div class="modal-overlay" id="modal-voucher">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-voucher-title">Tạo voucher</h3>
+        <button class="modal-close" onclick="closeModal('modal-voucher')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="v-id" />
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Mã voucher *</label>
+            <input type="text" class="form-control" id="v-code" placeholder="SALE50" style="text-transform:uppercase;" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Loại giảm *</label>
+            <select class="form-select" id="v-loai">
+              <option value="PHAN_TRAM">% Phần trăm</option>
+              <option value="CO_DINH">💵 Cố định</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Giá trị giảm *</label>
+            <input type="number" class="form-control" id="v-giatri" min="0" placeholder="50" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Giảm tối đa (VND)</label>
+            <input type="number" class="form-control" id="v-giamdaMax" min="0" placeholder="200000" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Đơn hàng tối thiểu</label>
+            <input type="number" class="form-control" id="v-donhang" min="0" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Số lượng tối đa</label>
+            <input type="number" class="form-control" id="v-soluong" min="1" placeholder="100" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ngày bắt đầu *</label>
+            <input type="date" class="form-control" id="v-batdau" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ngày kết thúc *</label>
+            <input type="date" class="form-control" id="v-ketthuc" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-voucher')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveVoucher()">💾 Lưu voucher</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal cập nhật trạng thái đơn hàng -->
+  <div class="modal-overlay" id="modal-order-status">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-header">
+        <h3>📦 Cập nhật trạng thái</h3>
+        <button class="modal-close" onclick="closeModal('modal-order-status')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="order-update-id" />
+        <div class="form-group">
+          <label class="form-label">Trạng thái giao hàng</label>
+          <select class="form-select" id="order-gh-status">
+            <option value="DANG_XU_LY">Đang xử lý</option>
+            <option value="DA_GIAO">Đã giao</option>
+            <option value="DA_HUY">Đã hủy</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Trạng thái thanh toán</label>
+          <select class="form-select" id="order-tt-status">
+            <option value="CHUA_THANH_TOAN">Chưa thanh toán</option>
+            <option value="DA_THANH_TOAN">Đã thanh toán</option>
+            <option value="HOAN_TIEN">Hoàn tiền</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-order-status')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveOrderStatus()">💾 Cập nhật</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    // ============ AUTHORIZATION CHECK ============
+    // Chỉ admin/staff mới vào được trang này
+    const currentUser = getCurrentUser();
+    if (!currentUser || !isAdmin()) {
+      document.body.innerHTML = `
+        <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg-primary);color:var(--text-primary);text-align:center;font-family:Inter,sans-serif;">
+          <div>
+            <div style="font-size:4rem;margin-bottom:16px;">🔒</div>
+            <h2 style="font-size:1.5rem;margin-bottom:8px;">Truy cập bị từ chối</h2>
+            <p style="color:var(--text-secondary);margin-bottom:24px;">Bạn cần quyền Admin hoặc Staff để vào trang này</p>
+            <a href="login.html" style="background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">Đăng nhập Admin</a>
+          </div>
+        </div>`;
+      // Stop script
+      throw new Error('Unauthorized');
+    }
+
+    // Render nav
+    document.getElementById('nav-right').innerHTML = `
+      <div class="flex gap-3" style="display:flex;align-items:center;gap:12px;">
+        <span class="badge badge-purple">${currentUser.vaiTro}</span>
+        <div class="avatar" title="${currentUser.hoTen}">${(currentUser.hoTen||'A')[0].toUpperCase()}</div>
+        <span class="text-muted text-sm">${currentUser.hoTen || currentUser.email}</span>
+      </div>
+    `;
+
+    // ============ SECTION NAVIGATION ============
+    const sections = ['dashboard','products','services','bookings','orders','vouchers','upload','notifications'];
+    function showSection(name) {
+      sections.forEach(s => {
+        document.getElementById(`section-${s}`).classList.toggle('hidden', s !== name);
+        document.getElementById(`menu-${s}`)?.classList.toggle('active', s === name);
+      });
+      // Load data khi switch section
+      const loaders = {
+        dashboard: loadDashboard,
+        products: loadProducts,
+        services: loadServices,
+        bookings: loadBookings,
+        orders: loadOrders,
+        vouchers: loadVouchers,
+        notifications: loadNotis,
+      };
+      loaders[name]?.();
+    }
+
+    // ============ DASHBOARD ============
+    async function loadDashboard() {
+      const [ps, svs, ods, bks, vcs] = await Promise.allSettled([
+        Products.getAll(), Services.getAll(), Orders.getAll(), Bookings.getAll(), Vouchers.getAll()
+      ]);
+      document.getElementById('d-products').textContent = ps.value?.data?.length ?? '—';
+      document.getElementById('d-services').textContent = svs.value?.data?.length ?? '—';
+      document.getElementById('d-orders').textContent = ods.value?.data?.length ?? '—';
+      document.getElementById('d-bookings').textContent = bks.value?.data?.length ?? '—';
+      document.getElementById('d-vouchers').textContent = vcs.value?.data?.length ?? '—';
+      const revenue = (ods.value?.data||[]).reduce((s,o) => s + (o.tongTien||0), 0);
+      document.getElementById('d-revenue').textContent = formatPrice(revenue);
+
+      // Recent orders
+      const orders = (ods.value?.data||[]).slice(0,5);
+      const rEl = document.getElementById('recent-orders');
+      if (!orders.length) {
+        rEl.innerHTML = `<div class="empty-state"><div class="icon">📦</div><h3>Chưa có đơn hàng</h3></div>`;
+        return;
+      }
+      rEl.innerHTML = `<div class="table-wrapper"><table>
+        <thead><tr><th>Mã đơn</th><th>Tổng tiền</th><th>Giao hàng</th><th>Ngày đặt</th></tr></thead>
+        <tbody>
+          ${orders.map(o => `<tr>
+            <td><code style="color:var(--accent-purple);">#${(o._id||'').slice(-6).toUpperCase()}</code></td>
+            <td><strong class="price">${formatPrice(o.tongTien)}</strong></td>
+            <td>${getStatusBadge(o.trangThaiGiaoHang)}</td>
+            <td>${formatDate(o.createdAt)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+    }
+
+    // ============ PRODUCTS ============
+    async function loadProducts() {
+      showLoading();
+      try {
+        const res = await Products.getAll();
+        const tbody = document.getElementById('products-tbody');
+        const products = res.data || [];
+        tbody.innerHTML = products.length ? products.map(p => `
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px;">${getProductEmoji(p.phanLoai)} <strong>${p.tenSanPham}</strong></div></td>
+            <td><span class="badge badge-purple">${p.phanLoai}</span></td>
+            <td class="price">${formatPrice(p.donGia)}</td>
+            <td>${p.soLuongTon} <span class="text-muted text-sm">cái</span></td>
+            <td>${p.trangThai !== false ? '<span class="badge badge-success">Hoạt động</span>' : '<span class="badge badge-danger">Ẩn</span>'}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-secondary btn-sm" onclick="editProduct(${JSON.stringify(p).replace(/"/g,'&quot;')})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p._id}')">🗑</button>
+              </div>
+            </td>
+          </tr>`).join('') : `<tr><td colspan="6"><div class="empty-state"><div class="icon">🛍</div><h3>Chưa có sản phẩm</h3></div></td></tr>`;
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    function openProductForm(p = null) {
+      document.getElementById('modal-product-title').textContent = p ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm';
+      document.getElementById('p-id').value = p?._id || '';
+      document.getElementById('p-ten').value = p?.tenSanPham || '';
+      document.getElementById('p-phanloai').value = p?.phanLoai || 'KHAC';
+      document.getElementById('p-gia').value = p?.donGia || '';
+      document.getElementById('p-soluong').value = p?.soLuongTon || '';
+      document.getElementById('p-ncc').value = p?.nhaCungCap || '';
+      document.getElementById('p-mota').value = p?.moTa || '';
+      openModal('modal-product');
+    }
+
+    function editProduct(p) { openProductForm(p); }
+
+    async function saveProduct() {
+      const id = document.getElementById('p-id').value;
+      const body = {
+        tenSanPham: document.getElementById('p-ten').value,
+        phanLoai: document.getElementById('p-phanloai').value,
+        donGia: Number(document.getElementById('p-gia').value),
+        soLuongTon: Number(document.getElementById('p-soluong').value),
+        nhaCungCap: document.getElementById('p-ncc').value,
+        moTa: document.getElementById('p-mota').value,
+      };
+      showLoading();
+      try {
+        if (id) {
+          await Products.update(id, body);
+          showToast('Đã cập nhật', body.tenSanPham, 'success');
+        } else {
+          await Products.create(body);
+          showToast('Đã thêm sản phẩm', body.tenSanPham, 'success');
+        }
+        closeModal('modal-product');
+        await loadProducts();
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm('Xóa sản phẩm này?')) return;
+      showLoading();
+      try {
+        await Products.delete(id);
+        showToast('Đã xóa', '', 'info');
+        await loadProducts();
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    // ============ SERVICES ============
+    async function loadServices() {
+      showLoading();
+      try {
+        const res = await Services.getAll();
+        const tbody = document.getElementById('services-tbody');
+        const svs = res.data || [];
+        tbody.innerHTML = svs.length ? svs.map(s => `
+          <tr>
+            <td><strong>${s.tenDichVu}</strong></td>
+            <td class="price">${formatPrice(s.donGia)}</td>
+            <td>${s.thoiGianUocTinh} phút</td>
+            <td>${s.trangThai !== false ? '<span class="badge badge-success">Hoạt động</span>' : '<span class="badge badge-danger">Tạm dừng</span>'}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-secondary btn-sm" onclick="editService(${JSON.stringify(s).replace(/"/g,'&quot;')})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteService('${s._id}')">🗑</button>
+              </div>
+            </td>
+          </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="icon">✂️</div><h3>Chưa có dịch vụ</h3></div></td></tr>`;
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    function openServiceForm(s=null) {
+      document.getElementById('modal-service-title').textContent = s ? 'Cập nhật dịch vụ' : 'Thêm dịch vụ';
+      document.getElementById('s-id').value = s?._id || '';
+      document.getElementById('s-ten').value = s?.tenDichVu || '';
+      document.getElementById('s-gia').value = s?.donGia || '';
+      document.getElementById('s-thoigian').value = s?.thoiGianUocTinh || '';
+      document.getElementById('s-mota').value = s?.moTa || '';
+      openModal('modal-service');
+    }
+    function editService(s) { openServiceForm(s); }
+
+    async function saveService() {
+      const id = document.getElementById('s-id').value;
+      const body = {
+        tenDichVu: document.getElementById('s-ten').value,
+        donGia: Number(document.getElementById('s-gia').value),
+        thoiGianUocTinh: Number(document.getElementById('s-thoigian').value),
+        moTa: document.getElementById('s-mota').value,
+      };
+      showLoading();
+      try {
+        if (id) { await Services.update(id, body); showToast('Đã cập nhật', body.tenDichVu, 'success'); }
+        else { await Services.create(body); showToast('Đã thêm dịch vụ', body.tenDichVu, 'success'); }
+        closeModal('modal-service');
+        await loadServices();
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+    async function deleteService(id) {
+      if (!confirm('Xóa dịch vụ?')) return;
+      showLoading();
+      try { await Services.delete(id); showToast('Đã xóa','','info'); await loadServices(); }
+      catch(e) { showToast('Lỗi',e.message,'error'); } finally { hideLoading(); }
+    }
+
+    // ============ BOOKINGS ============
+    async function loadBookings() {
+      showLoading();
+      try {
+        const res = await Bookings.getAll();
+        const tbody = document.getElementById('bookings-tbody');
+        const bks = res.data || [];
+        tbody.innerHTML = bks.length ? bks.map(b => `
+          <tr>
+            <td>${b.khachHangId?.hoTen || '—'}</td>
+            <td>${b.dichVuId?.tenDichVu || '—'}</td>
+            <td>${formatDateTime(b.ngayHen)}</td>
+            <td class="text-sm text-muted">${b.ghiChu || '—'}</td>
+            <td>${getStatusBadge(b.trangThai)}</td>
+            <td>
+              <select class="form-select" style="width:auto;font-size:0.78rem;padding:4px 8px;" onchange="updateBookingStatus('${b._id}', this.value)">
+                <option ${b.trangThai==='CHO_XAC_NHAN'?'selected':''} value="CHO_XAC_NHAN">Chờ xác nhận</option>
+                <option ${b.trangThai==='DA_XAC_NHAN'?'selected':''} value="DA_XAC_NHAN">Đã xác nhận</option>
+                <option ${b.trangThai==='HOAN_THANH'?'selected':''} value="HOAN_THANH">Hoàn thành</option>
+                <option ${b.trangThai==='DA_HUY'?'selected':''} value="DA_HUY">Đã hủy</option>
+              </select>
+            </td>
+          </tr>`).join('') : `<tr><td colspan="6"><div class="empty-state"><div class="icon">📅</div><h3>Chưa có lịch đặt</h3></div></td></tr>`;
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    async function updateBookingStatus(id, status) {
+      try {
+        await Bookings.update(id, { trangThai: status });
+        showToast('Đã cập nhật', `Trạng thái → ${status}`, 'success');
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+    }
+
+    // ============ ORDERS ============
+    async function loadOrders() {
+      showLoading();
+      try {
+        const res = await Orders.getAll();
+        const tbody = document.getElementById('orders-tbody');
+        const orders = res.data || [];
+        tbody.innerHTML = orders.length ? orders.map(o => `
+          <tr>
+            <td><code style="color:var(--accent-purple);">#${(o._id||'').slice(-6).toUpperCase()}</code></td>
+            <td>${o.khachHangId?.hoTen || '—'}</td>
+            <td class="price">${formatPrice(o.tongTien)}</td>
+            <td>${getStatusBadge(o.trangThaiThanhToan)}</td>
+            <td>${getStatusBadge(o.trangThaiGiaoHang)}</td>
+            <td>${formatDate(o.createdAt)}</td>
+            <td>
+              <button class="btn btn-secondary btn-sm" onclick="openOrderStatus('${o._id}', '${o.trangThaiGiaoHang}', '${o.trangThaiThanhToan}')">✏️ Cập nhật</button>
+            </td>
+          </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="icon">📦</div><h3>Chưa có đơn hàng</h3></div></td></tr>`;
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    function openOrderStatus(id, gh, tt) {
+      document.getElementById('order-update-id').value = id;
+      document.getElementById('order-gh-status').value = gh;
+      document.getElementById('order-tt-status').value = tt;
+      openModal('modal-order-status');
+    }
+
+    async function saveOrderStatus() {
+      const id = document.getElementById('order-update-id').value;
+      const body = {
+        trangThaiGiaoHang: document.getElementById('order-gh-status').value,
+        trangThaiThanhToan: document.getElementById('order-tt-status').value,
+      };
+      showLoading();
+      try {
+        await Orders.update(id, body);
+        showToast('Đã cập nhật đơn hàng', '', 'success');
+        closeModal('modal-order-status');
+        await loadOrders();
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    // ============ VOUCHERS ============
+    async function loadVouchers() {
+      showLoading();
+      try {
+        const res = await Vouchers.getAll();
+        const tbody = document.getElementById('vouchers-tbody');
+        const vcs = res.data || [];
+        tbody.innerHTML = vcs.length ? vcs.map(v => `
+          <tr>
+            <td><code style="color:var(--accent-cyan);font-size:0.9rem;">${v.mienGiamCode}</code></td>
+            <td><span class="badge badge-info">${v.loaiGiamGia}</span></td>
+            <td class="price">${v.loaiGiamGia==='PHAN_TRAM' ? v.giaTriGiam+'%' : formatPrice(v.giaTriGiam)}</td>
+            <td>${v.soLuongDaDung||0}/${v.soLuongToiDa}</td>
+            <td>${formatDate(v.ngayKetThuc)}</td>
+            <td>${v.trangThai ? '<span class="badge badge-success">Hoạt động</span>' : '<span class="badge badge-danger">Tắt</span>'}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-secondary btn-sm" onclick="editVoucher(${JSON.stringify(v).replace(/"/g,'&quot;')})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteVoucher('${v._id}')">🗑</button>
+              </div>
+            </td>
+          </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="icon">🏷</div><h3>Chưa có voucher</h3></div></td></tr>`;
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    function openVoucherForm(v=null) {
+      document.getElementById('modal-voucher-title').textContent = v ? 'Cập nhật voucher' : 'Tạo voucher';
+      document.getElementById('v-id').value = v?._id || '';
+      document.getElementById('v-code').value = v?.mienGiamCode || '';
+      document.getElementById('v-loai').value = v?.loaiGiamGia || 'PHAN_TRAM';
+      document.getElementById('v-giatri').value = v?.giaTriGiam || '';
+      document.getElementById('v-giamdaMax').value = v?.giamToiDa || '';
+      document.getElementById('v-donhang').value = v?.giaTriDonHangToiThieu || '';
+      document.getElementById('v-soluong').value = v?.soLuongToiDa || 100;
+      document.getElementById('v-batdau').value = v?.ngayBatDau?.slice(0,10) || new Date().toISOString().slice(0,10);
+      document.getElementById('v-ketthuc').value = v?.ngayKetThuc?.slice(0,10) || '';
+      openModal('modal-voucher');
+    }
+    function editVoucher(v) { openVoucherForm(v); }
+
+    async function saveVoucher() {
+      const id = document.getElementById('v-id').value;
+      const body = {
+        mienGiamCode: document.getElementById('v-code').value.toUpperCase(),
+        loaiGiamGia: document.getElementById('v-loai').value,
+        giaTriGiam: Number(document.getElementById('v-giatri').value),
+        giamToiDa: Number(document.getElementById('v-giamdaMax').value)||undefined,
+        giaTriDonHangToiThieu: Number(document.getElementById('v-donhang').value)||0,
+        soLuongToiDa: Number(document.getElementById('v-soluong').value)||100,
+        ngayBatDau: document.getElementById('v-batdau').value,
+        ngayKetThuc: document.getElementById('v-ketthuc').value,
+        trangThai: true,
+      };
+      showLoading();
+      try {
+        if (id) { await Vouchers.update(id, body); showToast('Đã cập nhật voucher','','success'); }
+        else { await Vouchers.create(body); showToast('Đã tạo voucher', body.mienGiamCode, 'success'); }
+        closeModal('modal-voucher');
+        await loadVouchers();
+      } catch(e) { showToast('Lỗi', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+    async function deleteVoucher(id) {
+      if (!confirm('Xóa voucher?')) return;
+      showLoading();
+      try { await Vouchers.delete(id); showToast('Đã xóa','','info'); await loadVouchers(); }
+      catch(e) { showToast('Lỗi',e.message,'error'); } finally { hideLoading(); }
+    }
+
+    // ============ UPLOAD ============
+    function onDragOver(e) { e.preventDefault(); document.getElementById('upload-single-area').classList.add('drag-over'); }
+    function onDropSingle(e) {
+      e.preventDefault();
+      document.getElementById('upload-single-area').classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) uploadSingleFile({ target: { files: [file] } });
+    }
+
+    async function uploadSingleFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      showLoading();
+      try {
+        const res = await Upload.single(file);
+        const url = `${API_UPLOAD}${res.data?.url || res.data?.path || ''}`;
+        document.getElementById('single-preview').style.display = 'block';
+        document.getElementById('single-preview-img').src = url;
+        document.getElementById('single-url').textContent = `URL: ${url}`;
+        showToast('Upload thành công!', file.name, 'success');
+      } catch(e) { showToast('Upload thất bại', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    async function uploadMultiFile(e) {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+      showLoading();
+      try {
+        const res = await Upload.multiple(files);
+        const urls = res.data?.urls || res.data?.paths || [];
+        const preview = document.getElementById('multi-preview');
+        preview.innerHTML = urls.map(u => `
+          <img src="${API_UPLOAD}${u}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;" />
+        `).join('');
+        document.getElementById('multi-urls').textContent = `Đã upload ${urls.length} ảnh`;
+        showToast('Upload thành công!', `${files.length} ảnh`, 'success');
+      } catch(e) { showToast('Upload thất bại', e.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    // ============ NOTIFICATIONS ============
+    async function sendNoti(e) {
+      e.preventDefault();
+      const body = {
+        tieude: document.getElementById('noti-tieude').value,
+        noiDung: document.getElementById('noti-noidung').value,
+        loai: document.getElementById('noti-loai').value,
+        userId: document.getElementById('noti-userid').value || undefined,
+      };
+      showLoading();
+      try {
+        await Notifications.create(body);
+        showToast('Gửi thành công!', 'Thông báo đã được đẩy realtime', 'success');
+        e.target.reset();
+        await loadNotis();
+      } catch(err) { showToast('Lỗi', err.message, 'error'); }
+      finally { hideLoading(); }
+    }
+
+    async function loadNotis() {
+      try {
+        const res = await Notifications.getAll();
+        const notis = res.data || [];
+        const el = document.getElementById('noti-sent-list');
+        if (!notis.length) {
+          el.innerHTML = `<div class="empty-state"><div class="icon">🔔</div><h3>Chưa có thông báo</h3></div>`;
+          return;
+        }
+        el.innerHTML = notis.slice(0,10).map(n => `
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px;border-bottom:1px solid var(--border-color);">
+            <div style="font-size:1.4rem;">${{INFO:'ℹ️',PROMO:'🏷',WARNING:'⚠️'}[n.loai]||'🔔'}</div>
+            <div style="flex:1;">
+              <div style="font-size:0.85rem;font-weight:500;">${n.tieude}</div>
+              <div class="text-muted text-sm">${n.noiDung}</div>
+              <div class="text-muted" style="font-size:0.72rem;margin-top:2px;">${formatDateTime(n.createdAt)}</div>
+            </div>
+            <button class="btn btn-danger btn-sm btn-icon" onclick="deleteNoti('${n._id}')">🗑</button>
+          </div>
+        `).join('');
+      } catch(e) {}
+    }
+
+    async function deleteNoti(id) {
+      try {
+        await Notifications.delete(id);
+        await loadNotis();
+        showToast('Đã xóa thông báo','','info');
+      } catch(e) { showToast('Lỗi',e.message,'error'); }
+    }
+
+    // Logout
+    async function doLogout() {
+      await Auth.logout();
+      window.location.href = 'login.html';
+    }
+
+    // Init - Load dashboard khi vào
+    loadDashboard();
+  </script>
+</body>
+</html>

@@ -1,55 +1,80 @@
-const DatLich = require('../schemas/DatLich');
+const DatLich = require("../schemas/DatLich");
 
-// GET /api/bookings
 exports.getAllBookings = async (req, res) => {
-    try {
-        const bookings = await DatLich.find().populate('khachHangId').populate('thuCungId').populate('dichVuId');
-        res.status(200).json({ success: true, data: bookings });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+  try {
+    const bookings = await DatLich.find()
+      .populate("khachHangId")
+      .populate("thuCungId")
+      .populate("dichVuId");
+    res.status(200).json({ success: true, data: bookings });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
-// GET /api/bookings/:id
 exports.getBookingById = async (req, res) => {
-    try {
-        const booking = await DatLich.findById(req.params.id).populate('khachHangId').populate('thuCungId').populate('dichVuId');
-        if (!booking) return res.status(404).json({ success: false, message: 'Lịch hẹn không tồn tại' });
-        res.status(200).json({ success: true, data: booking });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+  try {
+    const booking = await DatLich.findById(req.params.id)
+      .populate("khachHangId")
+      .populate("thuCungId")
+      .populate("dichVuId");
+    if (!booking)
+      return res
+        .status(404)
+        .json({ success: false, message: "Lịch hẹn không tồn tại" });
+    res.status(200).json({ success: true, data: booking });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
-// POST /api/bookings
 exports.createBooking = async (req, res) => {
-    try {
-        const newBooking = new DatLich(req.body);
-        await newBooking.save();
-        res.status(201).json({ success: true, message: 'Đặt lịch thành công', data: newBooking });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+  try {
+    const newBooking = new DatLich(req.body);
+    await newBooking.save();
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: "Đặt lịch thành công",
+        data: newBooking,
+      });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
-// PUT /api/bookings/:id
 exports.updateBooking = async (req, res) => {
-    try {
-        const booking = await DatLich.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-        if (!booking) return res.status(404).json({ success: false, message: 'Lịch hẹn không tồn tại' });
-        res.status(200).json({ success: true, message: 'Cập nhật lịch hẹn thành công', data: booking });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+  try {
+    const booking = await DatLich.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!booking)
+      return res
+        .status(404)
+        .json({ success: false, message: "Lịch hẹn không tồn tại" });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Cập nhật lịch hẹn thành công",
+        data: booking,
+      });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
-// DELETE /api/bookings/:id
 exports.deleteBooking = async (req, res) => {
-    try {
-        const booking = await DatLich.findByIdAndDelete(req.params.id);
-        if (!booking) return res.status(404).json({ success: false, message: 'Lịch hẹn không tồn tại' });
-        res.status(200).json({ success: true, message: 'Xóa lịch hẹn thành công' });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+  try {
+    const booking = await DatLich.findByIdAndDelete(req.params.id);
+    if (!booking)
+      return res
+        .status(404)
+        .json({ success: false, message: "Lịch hẹn không tồn tại" });
+    res.status(200).json({ success: true, message: "Xóa lịch hẹn thành công" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };

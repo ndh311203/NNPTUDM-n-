@@ -1,16 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const orderController = require('../controllers/order.controller');
+const orderController = require("../controllers/order.controller");
+const { authenticateToken, authorizeRole } = require("../utils/authHandler");
 
-/**
- * ShopOrder Routes
- * Base: /api/shop-orders
- */
+// Xem tất cả đơn hàng (admin)
+router.get("/", authenticateToken, authorizeRole("admin", "staff"), orderController.getAllOrders);
 
-router.get('/', orderController.getAllOrders);
-router.post('/', orderController.createOrder);
-router.get('/:id', orderController.getOrderById);
-router.put('/:id', orderController.updateOrder);
-router.delete('/:id', orderController.deleteOrder);
+// Tạo đơn hàng (user đã đăng nhập - có Transaction bên trong)
+router.post("/", authenticateToken, orderController.createOrder);
+
+// Xem đơn theo ID
+router.get("/:id", authenticateToken, orderController.getOrderById);
+
+// Cập nhật đơn hàng (admin/staff)
+router.put("/:id", authenticateToken, authorizeRole("admin", "staff"), orderController.updateOrder);
+
+// Xóa đơn hàng + hoàn kho (Transaction - chỉ admin)
+router.delete("/:id", authenticateToken, authorizeRole("admin"), orderController.deleteOrder);
 
 module.exports = router;

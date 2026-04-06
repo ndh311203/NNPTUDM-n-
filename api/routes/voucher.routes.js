@@ -1,28 +1,17 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const voucherController = require('../controllers/voucher.controller');
+const voucherController = require("../controllers/voucher.controller");
 
-/**
- * Voucher Routes
- * Base: /api/vouchers
- */
+router.get("/", voucherController.getAllVouchers);
 
-// GET /api/vouchers - Get all vouchers
-router.get('/', voucherController.getAllVouchers);
+router.post("/", voucherController.createVoucher);
 
-// POST /api/vouchers - Create new voucher
-router.post('/', voucherController.createVoucher);
+router.get("/:id", voucherController.getVoucherById);
 
-// GET /api/vouchers/:id - Get voucher details
-router.get('/:id', voucherController.getVoucherById);
+router.put("/:id", voucherController.updateVoucher);
 
-// PUT /api/vouchers/:id - Update voucher
-router.put('/:id', voucherController.updateVoucher);
+router.delete("/:id", voucherController.deleteVoucher);
 
-// DELETE /api/vouchers/:id - Delete voucher
-router.delete('/:id', voucherController.deleteVoucher);
-
-// POST /api/vouchers/validate - Validate voucher code
-router.post('/validate', voucherController.validateVoucher);
+router.post("/validate", voucherController.validateVoucher);
 
 module.exports = router;

@@ -1,16 +1,13 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const accountController = require('../controllers/account.controller');
+const accountController = require("../controllers/account.controller");
+const { authenticateToken, authorizeRole } = require("../utils/authHandler");
 
-/**
- * Account Routes
- * Base: /api/accounts
- */
-
-router.get('/', accountController.getAllAccounts);
-router.post('/', accountController.createAccount);
-router.get('/:id', accountController.getAccountById);
-router.put('/:id', accountController.updateAccount);
-router.delete('/:id', accountController.deleteAccount);
+// Chỉ admin mới quản lý tài khoản
+router.get("/", authenticateToken, authorizeRole("admin"), accountController.getAllAccounts);
+router.post("/", authenticateToken, authorizeRole("admin"), accountController.createAccount);
+router.get("/:id", authenticateToken, authorizeRole("admin"), accountController.getAccountById);
+router.put("/:id", authenticateToken, authorizeRole("admin"), accountController.updateAccount);
+router.delete("/:id", authenticateToken, authorizeRole("admin"), accountController.deleteAccount);
 
 module.exports = router;

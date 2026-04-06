@@ -1,16 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const serviceController = require('../controllers/service.controller');
+const serviceController = require("../controllers/service.controller");
+const { authenticateToken, authorizeRole } = require("../utils/authHandler");
 
-/**
- * Service Routes
- * Base: /api/services
- */
+// Xem dịch vụ (public)
+router.get("/", serviceController.getAllServices);
+router.get("/:id", serviceController.getServiceById);
 
-router.get('/', serviceController.getAllServices);
-router.post('/', serviceController.createService);
-router.get('/:id', serviceController.getServiceById);
-router.put('/:id', serviceController.updateService);
-router.delete('/:id', serviceController.deleteService);
+// Thêm/sửa/xóa dịch vụ (chỉ admin/staff)
+router.post("/", authenticateToken, authorizeRole("admin", "staff"), serviceController.createService);
+router.put("/:id", authenticateToken, authorizeRole("admin", "staff"), serviceController.updateService);
+router.delete("/:id", authenticateToken, authorizeRole("admin"), serviceController.deleteService);
 
 module.exports = router;
