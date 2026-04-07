@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giỏ Hàng - SPATC Pet Shop</title>
+  <meta name="description" content="Xem và quản lý giỏ hàng tại SPATC Pet Shop" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="spinner-overlay" class="spinner-overlay"><div class="spinner"></div></div>
+  <div id="toast-area" class="toast-area"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span>🐾</span><span class="gradient-text">SPATC</span></a>
+    <div class="navbar-nav">
+      <a href="index.html" class="nav-link">🏠 Trang chủ</a>
+      <a href="shop.html" class="nav-link">🛍 Cửa hàng</a>
+      <a href="booking.html" class="nav-link">📅 Đặt lịch</a>
+      <a href="orders.html" class="nav-link">📦 Đơn hàng</a>
+      <a href="chat.html" class="nav-link">💬 Chat</a>
+    </div>
+    <div class="navbar-right">
+      <div id="nav-user"></div>
+      <a href="cart.html" class="btn btn-secondary btn-sm active">
+        🛒 Giỏ hàng <span class="cart-badge" id="cart-count">0</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content-no-sidebar" style="padding:0 24px 60px;">
+    <div class="container">
+      <div class="page-header">
+        <h1>🛒 Giỏ hàng của bạn</h1>
+        <p>Quản lý sản phẩm trong giỏ hàng</p>
+      </div>
+
+      <!-- Cart Items -->
+      <div id="cart-content">
+        <div class="empty-state">
+          <div class="icon">🛒</div>
+          <h3>Giỏ hàng trống</h3>
+          <p>Hãy thêm sản phẩm từ cửa hàng để bắt đầu mua sắm</p>
+          <a href="shop.html" class="btn btn-primary">🛍 Mua sắm ngay</a>
+        </div>
+      </div>
+
+      <!-- Cart Summary -->
+      <div id="cart-summary" style="display:none;">
+        <div class="card" style="margin-top:24px;">
+          <div class="card-header">
+            <h3>💳 Tóm tắt đơn hàng</h3>
+          </div>
+          <div class="card-body">
+            <div class="cart-total-row">
+              <span>Tổng tiền hàng:</span>
+              <span id="subtotal">0đ</span>
+            </div>
+            <div class="cart-total-row" id="voucher-row" style="display:none;">
+              <span>Giảm giá (voucher):</span>
+              <span id="voucher-discount">-0đ</span>
+            </div>
+            <hr style="margin:12px 0;">
+            <div class="cart-total-row total">
+              <span><strong>Tổng cộng:</strong></span>
+              <span class="gradient-text" id="total">0đ</span>
+            </div>
+
+            <!-- Voucher Input -->
+            <div style="margin-top:16px;">
+              <label class="form-label">Mã voucher (tùy chọn)</label>
+              <div style="display:flex; gap:8px;">
+                <input type="text" class="form-control" id="voucher-code" placeholder="Nhập mã voucher..." />
+                <button class="btn btn-secondary" onclick="applyVoucher()">Áp dụng</button>
+              </div>
+              <div id="voucher-info" style="margin-top:8px; font-size:0.9rem;"></div>
+            </div>
+
+            <!-- Checkout Button -->
+            <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="checkout()" id="btn-checkout">
+              💳 Thanh toán
+            </button>
+            <button class="btn btn-danger btn-block" style="margin-top:8px;" onclick="clearCart()">
+              🗑 Xóa toàn bộ giỏ hàng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    let cartData = null;
+    let allProducts = [];
+    let appliedVoucher = null;
+    const userId = getKhachHang()?._id || getCurrentUser()?._id || 'guest';
+
+    // Render nav user
+    function renderNavUser() {
+      const user = getCurrentUser();
+      const el = document.getElementById('nav-user');
+      if (user) {
+        el.innerHTML = `<div class="avatar" title="${user.hoTen}">${(user.hoTen||'?')[0].toUpperCase()}</div>`;
+      } else {
+        el.innerHTML = `<a href="login.html" class="btn btn-secondary btn-sm">Đăng nhập</a>`;
+      }
+    }
+
+    // Load products for details
+    async function loadProducts() {
+      try {
+        const res = await Products.getAll();
+        allProducts = res.data || [];
+      } catch (e) {
+        console.error('Error loading products:', e);
+      }
+    }
+
+    // Load cart
+    async function loadCart() {
+      try {
+        const res = await Cart.get(userId);
+        cartData = res.data;
+        renderCart();
+      } catch (e) {
+        console.error('Error loading cart:', e);
+        showToast('Lỗi', 'Không thể tải giỏ hàng', 'error');
+      }
+    }
+
+    // Render cart
+    function renderCart() {
+      const content = document.getElementById('cart-content');
+      const summary = document.getElementById('cart-summary');
+      const count = document.getElementById('cart-count');
+
+      if (!cartData || !cartData.items || !cartData.items.length) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">🛒</div>
+            <h3>Giỏ hàng trống</h3>
+            <p>Hãy thêm sản phẩm từ cửa hàng để bắt đầu mua sắm</p>
+            <a href="shop.html" class="btn btn-primary">🛍 Mua sắm ngay</a>
+          </div>
+        `;
+        summary.style.display = 'none';
+        count.textContent = '0';
+        return;
+      }
+
+      count.textContent = cartData.items.length;
+      summary.style.display = 'block';
+
+      content.innerHTML = cartData.items.map(item => {
+        const product = allProducts.find(p => p._id === item.sanPhamId) || {};
+        const itemTotal = item.soLuong * item.donGia;
+        return `
+          <div class="card cart-item-card" style="margin-bottom:16px;">
+            <div class="cart-item">
+              <div class="cart-item-icon">${getProductEmoji(product.phanLoai)}</div>
+              <div class="cart-item-info">
+                <div class="cart-item-name">${product.tenSanPham || item.sanPhamId}</div>
+                <div class="cart-item-price">${formatPrice(item.donGia)} mỗi cái</div>
+                <div class="cart-item-controls">
+                  <button class="btn btn-icon btn-secondary btn-sm" onclick="updateQuantity('${item.sanPhamId}', ${item.soLuong - 1})">-</button>
+                  <input type="number" class="form-control quantity-input" value="${item.soLuong}" min="1" max="${product.soLuongTon || 999}" onchange="changeQuantity('${item.sanPhamId}', this.value)" />
+                  <button class="btn btn-icon btn-secondary btn-sm" onclick="updateQuantity('${item.sanPhamId}', ${item.soLuong + 1})">+</button>
+                </div>
+              </div>
+              <div class="cart-item-total">
+                <div class="price">${formatPrice(itemTotal)}</div>
+                <button class="btn btn-danger btn-icon btn-sm" onclick="removeItem('${item.sanPhamId}')">🗑</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateSummary();
+    }
+
+    // Update quantity
+    async function updateQuantity(productId, newQty) {
+      if (newQty < 1) return removeItem(productId);
+      const product = allProducts.find(p => p._id === productId);
+      if (product && newQty > product.soLuongTon) {
+        showToast('Lỗi', 'Không đủ hàng trong kho', 'warning');
+        return;
+      }
+      try {
+        // Remove old and add new
+        await Cart.remove(productId, userId);
+        await Cart.add({ userId, sanPhamId: productId, soLuong: newQty, donGia: cartData.items.find(i => i.sanPhamId === productId).donGia });
+        await loadCart();
+      } catch (e) {
+        showToast('Lỗi', e.message, 'error');
+      }
+    }
+
+    // Change quantity from input
+    async function changeQuantity(productId, qty) {
+      const newQty = parseInt(qty);
+      if (isNaN(newQty) || newQty < 1) return;
+      await updateQuantity(productId, newQty);
+    }
+
+    // Remove item
+    async function removeItem(productId) {
+      try {
+        await Cart.remove(productId, userId);
+        await loadCart();
+        showToast('Đã xóa', 'Sản phẩm đã được xóa khỏi giỏ', 'info');
+      } catch (e) {
+        showToast('Lỗi', e.message, 'error');
+      }
+    }
+
+    // Clear cart
+    async function clearCart() {
+      if (!confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) return;
+      try {
+        await Cart.clear(userId);
+        cartData = null;
+        appliedVoucher = null;
+        await loadCart();
+        showToast('Đã xóa', 'Giỏ hàng đã được làm trống', 'info');
+      } catch (e) {
+        showToast('Lỗi', e.message, 'error');
+      }
+    }
+
+    // Update summary
+    function updateSummary() {
+      const subtotal = cartData.total || 0;
+      document.getElementById('subtotal').textContent = formatPrice(subtotal);
+
+      let discount = 0;
+      if (appliedVoucher) {
+        // Use discountAmount from validation if available, otherwise calculate
+        if (appliedVoucher._discountAmount !== undefined) {
+          discount = appliedVoucher._discountAmount;
+        } else {
+          if (appliedVoucher.loaiGiamGia === 'PHAN_TRAM') {
+            discount = Math.round(subtotal * appliedVoucher.giaTriGiam / 100);
+            if (appliedVoucher.giamToiDa && discount > appliedVoucher.giamToiDa) {
+              discount = appliedVoucher.giamToiDa;
+            }
+          } else {
+            discount = Math.min(appliedVoucher.giaTriGiam, subtotal);
+          }
+        }
+      }
+
+      document.getElementById('voucher-discount').textContent = formatPrice(discount);
+      document.getElementById('voucher-row').style.display = discount > 0 ? 'flex' : 'none';
+      document.getElementById('total').textContent = formatPrice(subtotal - discount);
+    }
+
+    // Apply voucher
+    async function applyVoucher() {
+      const code = document.getElementById('voucher-code').value.trim();
+      if (!code) return showToast('Thiếu mã', 'Vui lòng nhập mã voucher', 'warning');
+
+      const subtotal = cartData?.total || 0;
+      if (subtotal === 0) return showToast('Lỗi', 'Giỏ hàng trống', 'warning');
+
+      try {
+        const res = await Vouchers.validate({ code, orderValue: subtotal });
+        const data = res.data;
+        if (!data || !data.voucher) {
+          throw new Error('Voucher không hợp lệ');
+        }
+
+        appliedVoucher = data.voucher;
+        appliedVoucher._discountAmount = data.discountAmount;
+        updateSummary();
+        document.getElementById('voucher-info').innerHTML = `<span style="color:var(--success);">✅ Đã áp dụng: ${appliedVoucher.tenVoucher} (-${appliedVoucher.loaiGiamGia === 'PHAN_TRAM' ? appliedVoucher.giaTriGiam + '%' : formatPrice(data.discountAmount)})</span>`;
+        showToast('Thành công', 'Voucher đã được áp dụng', 'success');
+      } catch (e) {
+        appliedVoucher = null;
+        updateSummary();
+        document.getElementById('voucher-info').innerHTML = `<span style="color:var(--danger);">❌ ${e.message}</span>`;
+        showToast('Lỗi', e.message, 'error');
+      }
+    }
+
+    // Checkout
+    async function checkout() {
+      if (!cartData || !cartData.items.length) return showToast('Lỗi', 'Giỏ hàng trống', 'warning');
+
+      const user = getCurrentUser();
+      if (!user) {
+        showToast('Cần đăng nhập', 'Vui lòng đăng nhập để thanh toán', 'warning');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        // Create order
+        const orderData = {
+          khachHangId: userId,
+          items: cartData.items,
+          tongTien: cartData.total,
+          voucherId: appliedVoucher?._id,
+          phuongThucThanhToan: 'COD' // You might want to add payment method selection
+        };
+
+        const res = await Orders.create(orderData);
+        showToast('Thành công', 'Đơn hàng đã được tạo', 'success');
+
+        // Clear cart
+        await Cart.clear(userId);
+        cartData = null;
+        appliedVoucher = null;
+
+        // Redirect to orders page
+        setTimeout(() => {
+          window.location.href = 'orders.html';
+        }, 2000);
+      } catch (e) {
+        showToast('Lỗi', e.message, 'error');
+      }
+    }
+
+    // Helper functions
+    function getProductEmoji(category) {
+      const emojis = {
+        'THUC_AN': '🍖',
+        'DO_CHOI': '🎾',
+        'THUOC': '💊',
+        'PHU_KIEN': '🎀',
+        'KHAC': '📦'
+      };
+      return emojis[category] || '📦';
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', async () => {
+      renderNavUser();
+      await loadProducts();
+      await loadCart();
+    });
+  </script>
+</body>
+</html>
