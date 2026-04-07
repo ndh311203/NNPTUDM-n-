@@ -7,8 +7,6 @@ const connectDB = async () => {
       process.env.MONGODB_URI || "mongodb://localhost:27017/spatc";
 
     const conn = await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       retryWrites: true,
     });

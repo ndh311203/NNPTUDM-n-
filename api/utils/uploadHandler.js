@@ -8,22 +8,38 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+const extname = (name) => path.extname(name || "").toLowerCase();
+
+/** Postman/Windows đôi khi gửi application/octet-stream cho ảnh chụp màn hình — nhận diện theo đuôi file */
+const isImageLike = (file) =>
+  file.mimetype.startsWith("image/") ||
+  (file.mimetype === "application/octet-stream" &&
+    [".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(extname(file.originalname)));
+
+const isVideoLike = (file) =>
+  file.mimetype.startsWith("video/") ||
+  (file.mimetype === "application/octet-stream" &&
+    [".mp4", ".mpeg", ".mov"].includes(extname(file.originalname)));
+
+const isDocLike = (file) =>
+  file.mimetype === "application/pdf" ||
+  file.mimetype === "application/msword" ||
+  file.mimetype ===
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+  (file.mimetype === "application/octet-stream" &&
+    [".pdf", ".doc", ".docx"].includes(extname(file.originalname)));
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let folder = "other";
 
-    if (file.mimetype.startsWith("image/")) {
+    if (isImageLike(file)) {
       folder = "images";
-    } else if (file.mimetype.startsWith("video/")) {
+    } else if (isVideoLike(file)) {
       folder = "videos";
     } else if (file.mimetype.startsWith("audio/")) {
       folder = "audio";
-    } else if (
-      file.mimetype === "application/pdf" ||
-      file.mimetype === "application/msword" ||
-      file.mimetype ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ) {
+    } else if (isDocLike(file)) {
       folder = "documents";
     }
 
@@ -61,6 +77,11 @@ const fileFilter = (req, file, cb) => {
   ];
 
   if (allowedMimes.includes(file.mimetype)) {
+    cb(null, true);
+  } else if (
+    file.mimetype === "application/octet-stream" &&
+    (isImageLike(file) || isVideoLike(file) || isDocLike(file))
+  ) {
     cb(null, true);
   } else {
     cb(new Error(`File type not supported: ${file.mimetype}`), false);

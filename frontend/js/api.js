@@ -178,6 +178,84 @@ const ChatAPI = {
   deleteMessage: (id) => apiCall(`/chat/messages/${id}`, { method: 'DELETE' }),
 };
 
+// ============ CATEGORIES APIs ============
+const Categories = {
+  getAll: (loai) => apiCall(`/categories${loai ? '?loai=' + loai : ''}`),
+  getById: (id) => apiCall(`/categories/${id}`),
+  create: (body) => apiCall('/categories', { method: 'POST', body: JSON.stringify(body) }),
+  update: (id, body) => apiCall(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (id) => apiCall(`/categories/${id}`, { method: 'DELETE' }),
+};
+
+// ============ SERVICE TYPES APIs ============
+const ServiceTypes = {
+  getAll: () => apiCall('/service-types'),
+  getById: (id) => apiCall(`/service-types/${id}`),
+  create: (body) => apiCall('/service-types', { method: 'POST', body: JSON.stringify(body) }),
+  update: (id, body) => apiCall(`/service-types/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (id) => apiCall(`/service-types/${id}`, { method: 'DELETE' }),
+};
+
+// ============ PAYMENTS APIs ============
+const Payments = {
+  getAll: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return apiCall(`/payments${q ? '?' + q : ''}`);
+  },
+  getById: (id) => apiCall(`/payments/${id}`),
+  create: (body) => apiCall('/payments', { method: 'POST', body: JSON.stringify(body) }),
+  update: (id, body) => apiCall(`/payments/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (id) => apiCall(`/payments/${id}`, { method: 'DELETE' }),
+  confirm: (id) => apiCall(`/payments/${id}/confirm`, { method: 'PATCH' }),
+  refund: (id) => apiCall(`/payments/${id}/refund`, { method: 'PATCH' }),
+};
+
+// ============ ADDRESSES APIs ============
+const Addresses = {
+  getAll: (khachHangId) => apiCall(`/addresses${khachHangId ? '?khachHangId=' + khachHangId : ''}`),
+  getById: (id) => apiCall(`/addresses/${id}`),
+  create: (body) => apiCall('/addresses', { method: 'POST', body: JSON.stringify(body) }),
+  update: (id, body) => apiCall(`/addresses/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (id) => apiCall(`/addresses/${id}`, { method: 'DELETE' }),
+  setDefault: (id) => apiCall(`/addresses/${id}/set-default`, { method: 'PATCH' }),
+};
+
+// ============ GROOMING ROOMS APIs ============
+const GroomingRooms = {
+  getAll: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return apiCall(`/grooming-rooms${q ? '?' + q : ''}`);
+  },
+  getById: (id) => apiCall(`/grooming-rooms/${id}`),
+  create: (body) => apiCall('/grooming-rooms', { method: 'POST', body: JSON.stringify(body) }),
+  update: (id, body) => apiCall(`/grooming-rooms/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (id) => apiCall(`/grooming-rooms/${id}`, { method: 'DELETE' }),
+  toggleStatus: (id, trangThai) => apiCall(`/grooming-rooms/${id}/status`, { method: 'PATCH', body: JSON.stringify({ trangThai }) }),
+};
+
+// ============ HEALTH RECORDS APIs ============
+const HealthRecords = {
+  getAll: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return apiCall(`/health-records${q ? '?' + q : ''}`);
+  },
+  getByPet: (petId) => apiCall(`/health-records/pet/${petId}`),
+  getById: (id) => apiCall(`/health-records/${id}`),
+  create: (body) => apiCall('/health-records', { method: 'POST', body: JSON.stringify(body) }),
+  update: (id, body) => apiCall(`/health-records/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (id) => apiCall(`/health-records/${id}`, { method: 'DELETE' }),
+};
+
+// ============ IMPORT RECEIPTS APIs ============
+const ImportReceipts = {
+  getAll: (trangThai) => apiCall(`/import-receipts${trangThai ? '?trangThai=' + trangThai : ''}`),
+  getById: (id) => apiCall(`/import-receipts/${id}`),
+  create: (body) => apiCall('/import-receipts', { method: 'POST', body: JSON.stringify(body) }),
+  update: (id, body) => apiCall(`/import-receipts/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (id) => apiCall(`/import-receipts/${id}`, { method: 'DELETE' }),
+  updateStatus: (id, trangThai) => apiCall(`/import-receipts/${id}/status`, { method: 'PATCH', body: JSON.stringify({ trangThai }) }),
+};
+
 // ============ UPLOAD APIs ============
 const Upload = {
   single: async (file) => {
@@ -264,6 +342,18 @@ function getStatusBadge(status) {
     CHUA_THANH_TOAN: ['warning', 'Chưa TT'],
     DA_THANH_TOAN: ['success', 'Đã TT'],
     HOAN_TIEN: ['danger', 'Hoàn tiền'],
+    CHO_XU_LY: ['warning', 'Chờ xử lý'],
+    THANH_CONG: ['success', 'Thành công'],
+    THAT_BAI: ['danger', 'Thất bại'],
+    TRONG: ['success', 'Trống'],
+    DANG_SU_DUNG: ['info', 'Đang sử dụng'],
+    BAO_TRI: ['warning', 'Bảo trì'],
+    DA_DAT: ['info', 'Đã đặt'],
+    TIEN_MAT: ['info', 'Tiền mặt'],
+    CHUYEN_KHOAN: ['info', 'Chuyển khoản'],
+    MOMO: ['info', 'MoMo'],
+    ZALO_PAY: ['info', 'ZaloPay'],
+    VNPAY: ['info', 'VNPay'],
   };
   const [type, label] = map[status] || ['info', status];
   return `<span class="badge badge-${type}">${label}</span>`;
@@ -309,6 +399,13 @@ window.Accounts = Accounts;
 window.Notifications = Notifications;
 window.ChatAPI = ChatAPI;
 window.Upload = Upload;
+window.Categories = Categories;
+window.ServiceTypes = ServiceTypes;
+window.Payments = Payments;
+window.Addresses = Addresses;
+window.GroomingRooms = GroomingRooms;
+window.HealthRecords = HealthRecords;
+window.ImportReceipts = ImportReceipts;
 window.showToast = showToast;
 window.formatPrice = formatPrice;
 window.formatDate = formatDate;
