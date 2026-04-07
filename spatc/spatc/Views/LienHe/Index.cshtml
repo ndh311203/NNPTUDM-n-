@@ -2,62 +2,363 @@
     ViewData["Title"] = "Liên hệ";
 }
 
-<div class="container mt-4">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold">Liên hệ với chúng tôi</h1>
-        <p class="lead text-muted">Chúng tôi luôn sẵn sàng hỗ trợ bạn</p>
+<style>
+    :root {
+        --spa-pink-light: #FFE5E5;
+        --spa-pink-medium: #FFD6D6;
+        --spa-pink-dark: #FFCCCC;
+        --spa-blue-light: #ADD8E6;
+        --spa-blue-medium: #87CEEB;
+        --spa-blue-dark: #6BB6FF;
+        --spa-brown-dark: #654321;
+        --spa-brown-medium: #8B4513;
+    }
+
+    .contact-header {
+        background: linear-gradient(135deg, var(--spa-pink-light) 0%, var(--spa-pink-medium) 50%, var(--spa-blue-light) 100%);
+        padding: 60px 20px;
+        text-align: center;
+        margin: -20px -20px 40px -20px;
+        border-bottom: 4px solid var(--spa-blue-medium);
+    }
+
+    .contact-header h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: var(--spa-brown-dark);
+        margin-bottom: 15px;
+        letter-spacing: 0.5px;
+    }
+
+    .contact-header .subtitle {
+        font-size: 1.2rem;
+        color: var(--spa-brown-medium);
+        margin: 0;
+    }
+
+    .header-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        display: inline-block;
+    }
+
+    .contact-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .contact-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .contact-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 10px 40px rgba(173, 216, 230, 0.15);
+        border: 2px solid transparent;
+        transition: all 0.4s ease;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .contact-card:hover {
+        border-color: var(--spa-blue-light);
+        box-shadow: 0 15px 50px rgba(173, 216, 230, 0.25);
+        transform: translateY(-5px);
+    }
+
+    .contact-card h3 {
+        color: var(--spa-brown-dark);
+        font-weight: 700;
+        margin-bottom: 25px;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .contact-item {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #E8E8E8;
+    }
+
+    .contact-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .contact-item-label {
+        font-weight: 600;
+        color: var(--spa-brown-dark);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1rem;
+    }
+
+    .contact-item-value {
+        color: var(--spa-brown-medium);
+        margin: 0;
+        padding-left: 28px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .contact-item a {
+        color: var(--spa-blue-medium);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .contact-item a:hover {
+        color: var(--spa-brown-dark);
+        text-decoration: underline;
+    }
+
+    .icon-circle {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--spa-blue-light) 0%, var(--spa-blue-medium) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--spa-brown-dark);
+        font-size: 1.2rem;
+    }
+
+    .map-container {
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 10px 40px rgba(173, 216, 230, 0.15);
+        animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    .map-container h3 {
+        color: var(--spa-brown-dark);
+        font-weight: 700;
+        margin-bottom: 25px;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .map-wrapper {
+        width: 100%;
+        height: 450px;
+        background: linear-gradient(135deg, var(--spa-pink-light), var(--spa-blue-light));
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(173, 216, 230, 0.2);
+    }
+
+    .map-wrapper iframe {
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
+    }
+
+    .map-info {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #E8E8E8;
+        color: var(--spa-brown-medium);
+        font-size: 0.9rem;
+    }
+
+    .quick-contact-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid #E8E8E8;
+    }
+
+    .quick-btn {
+        padding: 12px 20px;
+        border-radius: 12px;
+        border: 2px solid var(--spa-blue-light);
+        background: white;
+        color: var(--spa-brown-dark);
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .quick-btn:hover {
+        background: linear-gradient(135deg, var(--spa-pink-light) 0%, var(--spa-blue-light) 100%);
+        border-color: var(--spa-blue-medium);
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="contact-header">
+    <div class="header-icon">📞</div>
+    <h1>Liên Hệ Với Chúng Tôi</h1>
+    <p class="subtitle">SPA THÚ CƯNG - Chúng tôi luôn sẵn sàng hỗ trợ bạn</p>
+</div>
+
+<div class="contact-container">
+    <div class="contact-section">
+        <div class="contact-card">
+            <h3>
+                <div class="icon-circle">
+                    <i class="bi bi-info-circle"></i>
+                </div>
+                Thông Tin Liên Hệ
+            </h3>
+
+            <div class="contact-item">
+                <div class="contact-item-label">
+                    <i class="bi bi-geo-alt-fill" style="color: var(--spa-blue-medium);"></i>
+                    Địa Chỉ
+                </div>
+                <p class="contact-item-value">@ViewBag.DiaChi</p>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-item-label">
+                    <i class="bi bi-telephone-fill" style="color: var(--spa-blue-medium);"></i>
+                    Hotline
+                </div>
+                <p class="contact-item-value">
+                    <a href="tel:@ViewBag.Hotline">@ViewBag.Hotline</a>
+                </p>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-item-label">
+                    <i class="bi bi-envelope-fill" style="color: var(--spa-blue-medium);"></i>
+                    Email
+                </div>
+                <p class="contact-item-value">
+                    <a href="mailto:@ViewBag.Email">@ViewBag.Email</a>
+                </p>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-item-label">
+                    <i class="bi bi-clock-fill" style="color: var(--spa-blue-medium);"></i>
+                    Giờ Làm Việc
+                </div>
+                <p class="contact-item-value">@ViewBag.GioLamViec</p>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <h3>
+                <div class="icon-circle">
+                    <i class="bi bi-chat-dots"></i>
+                </div>
+                Kênh Hỗ Trợ
+            </h3>
+
+            <div class="contact-item">
+                <div class="contact-item-label">
+                    <i class="bi bi-chat-dots-fill" style="color: var(--spa-blue-medium);"></i>
+                    Zalo
+                </div>
+                <p class="contact-item-value">
+                    <a href="https://zalo.me/@ViewBag.Zalo" target="_blank">
+                        @ViewBag.Zalo
+                        <i class="bi bi-box-arrow-up-right ms-1"></i>
+                    </a>
+                </p>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-item-label">
+                    <i class="bi bi-facebook" style="color: #1877F2;"></i>
+                    Facebook
+                </div>
+                <p class="contact-item-value">
+                    <a href="@ViewBag.Facebook" target="_blank">
+                        Spa Thú Cưng Official
+                        <i class="bi bi-box-arrow-up-right ms-1"></i>
+                    </a>
+                </p>
+            </div>
+
+            <div class="contact-item" style="border-bottom: none; padding-bottom: 0;">
+                <div class="contact-item-label">
+                    <i class="bi bi-instagram" style="color: #E4405F;"></i>
+                    Theo Dõi Chúng Tôi
+                </div>
+                <p class="contact-item-value">
+                    <small>Cập nhật tin tức, ưu đãi mới hàng ngày</small>
+                </p>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <h3>
+                <div class="icon-circle">
+                    <i class="bi bi-heart"></i>
+                </div>
+                Về Chúng Tôi
+            </h3>
+
+            <p style="color: var(--spa-brown-medium); line-height: 1.8; margin-bottom: 0;">
+                🐾 <strong>SPA THÚ CƯNG</strong> là địa chỉ tin cậy chuyên cung cấp các dịch vụ làm đẹp, chăm sóc và bán lẻ cho thú cưng yêu của bạn.
+            </p>
+
+            <div class="quick-contact-row">
+                <a href="tel:@ViewBag.Hotline" class="quick-btn">
+                    <i class="bi bi-telephone"></i> Gọi Ngay
+                </a>
+                <a href="mailto:@ViewBag.Email" class="quick-btn">
+                    <i class="bi bi-envelope"></i> Email
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-6 mb-4">
-            <div class="card h-100 shadow">
-                <div class="card-body">
-                    <h3 class="card-title mb-4">Thông tin liên hệ</h3>
-                    <div class="mb-3">
-                        <h5><i class="bi bi-geo-alt-fill text-primary"></i> Địa chỉ</h5>
-                        <p>@ViewBag.DiaChi</p>
-                    </div>
-                    <div class="mb-3">
-                        <h5><i class="bi bi-telephone-fill text-primary"></i> Hotline</h5>
-                        <p><a href="tel:@ViewBag.Hotline" class="text-decoration-none">@ViewBag.Hotline</a></p>
-                    </div>
-                    <div class="mb-3">
-                        <h5><i class="bi bi-envelope-fill text-primary"></i> Email</h5>
-                        <p><a href="mailto:@ViewBag.Email" class="text-decoration-none">@ViewBag.Email</a></p>
-                    </div>
-                    <div class="mb-3">
-                        <h5><i class="bi bi-clock-fill text-primary"></i> Giờ làm việc</h5>
-                        <p>@ViewBag.GioLamViec</p>
-                    </div>
-                    <div class="mb-3">
-                        <h5><i class="bi bi-chat-dots-fill text-primary"></i> Zalo</h5>
-                        <p><a href="https://zalo.me/@ViewBag.Zalo" target="_blank" class="text-decoration-none">@ViewBag.Zalo</a></p>
-                    </div>
-                    <div class="mb-3">
-                        <h5><i class="bi bi-facebook text-primary"></i> Facebook</h5>
-                        <p><a href="@ViewBag.Facebook" target="_blank" class="text-decoration-none">Facebook của chúng tôi</a></p>
-                    </div>
-                </div>
-            </div>
+    <div class="map-container">
+        <h3>
+            <i class="bi bi-map" style="color: var(--spa-blue-medium);"></i>
+            Vị Trí Trên Bản Đồ
+        </h3>
+
+        <div class="map-wrapper">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.1234567890123!2d106.6297!3d10.8231!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ5JzIzLjEiTiAxMDbCsDM3JzQ2LjkiRQ!5e0!3m2!1svi!2s!4v1234567890123!5m2!1svi!2s" 
+                allowfullscreen="" 
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
         </div>
-        <div class="col-lg-6 mb-4">
-            <div class="card h-100 shadow">
-                <div class="card-body">
-                    <h3 class="card-title mb-4">Bản đồ</h3>
-                    <div style="width: 100%; height: 400px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <iframe 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.1234567890123!2d106.6297!3d10.8231!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ5JzIzLjEiTiAxMDbCsDM3JzQ2LjkiRQ!5e0!3m2!1svi!2s!4v1234567890123!5m2!1svi!2s" 
-                            width="100%" 
-                            height="100%" 
-                            style="border:0; border-radius: 8px;" 
-                            allowfullscreen="" 
-                            loading="lazy">
-                        </iframe>
-                    </div>
-                    <p class="text-muted mt-3"><small>Bản đồ chỉ mang tính chất minh họa</small></p>
-                </div>
-            </div>
-        </div>
+
+        <p class="map-info">
+            <i class="bi bi-info-circle"></i> Bản đồ minh họa, vui lòng liên hệ để nhận địa chỉ cụ thể
+        </p>
     </div>
 </div>
 

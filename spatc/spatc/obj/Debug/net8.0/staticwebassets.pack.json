@@ -1,0 +1,329 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\spatc.bundle.scp.css",
+      "PackagePath": "staticwebassets\\spatc.1p04ues80x.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\css\\pet-spa-theme.css",
+      "PackagePath": "staticwebassets\\css\\pet-spa-theme.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\css\\site.css",
+      "PackagePath": "staticwebassets\\css\\site.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\images\\README.md",
+      "PackagePath": "staticwebassets\\images\\README.md"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\js\\admin-chat.js",
+      "PackagePath": "staticwebassets\\js\\admin-chat.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\js\\cart.js",
+      "PackagePath": "staticwebassets\\js\\cart.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\js\\chat.js",
+      "PackagePath": "staticwebassets\\js\\chat.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\js\\notifications.js",
+      "PackagePath": "staticwebassets\\js\\notifications.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\js\\site.js",
+      "PackagePath": "staticwebassets\\js\\site.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\LICENSE",
+      "PackagePath": "staticwebassets\\lib\\bootstrap"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\LICENSE.md"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.min.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.js"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\uploads\\health-status\\health_20251212170147_19914ff0e3904b60804023146caa6b52.png",
+      "PackagePath": "staticwebassets\\uploads\\health-status\\health_20251212170147_19914ff0e3904b60804023146caa6b52.png"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\uploads\\health-status\\health_20251212172828_cbfe8162ee0748f1a69451f9f3c51411.png",
+      "PackagePath": "staticwebassets\\uploads\\health-status\\health_20251212172828_cbfe8162ee0748f1a69451f9f3c51411.png"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\uploads\\health-status\\health_20251212173833_a733f95f40d64261a5be895b386cbf67.png",
+      "PackagePath": "staticwebassets\\uploads\\health-status\\health_20251212173833_a733f95f40d64261a5be895b386cbf67.png"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\uploads\\health-status\\health_20251212173906_8fc3326db9df43ebb399990ca3a1698c.png",
+      "PackagePath": "staticwebassets\\uploads\\health-status\\health_20251212173906_8fc3326db9df43ebb399990ca3a1698c.png"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\uploads\\health-status\\health_20251212173924_7f97bd812cfa4be8a81b7409e49a7e96.png",
+      "PackagePath": "staticwebassets\\uploads\\health-status\\health_20251212173924_7f97bd812cfa4be8a81b7409e49a7e96.png"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\uploads\\health-status\\health_20251212212420_a16891a2db8242afa6b22e5efd8570da.png",
+      "PackagePath": "staticwebassets\\uploads\\health-status\\health_20251212212420_a16891a2db8242afa6b22e5efd8570da.png"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\uploads\\health-status\\health_20251212213243_22d2a97fa63441138ac7f526232c50a3.png",
+      "PackagePath": "staticwebassets\\uploads\\health-status\\health_20251212213243_22d2a97fa63441138ac7f526232c50a3.png"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\uploads\\health-status\\health_20251212213311_36f1b465fb754f60980309f99ac4c7be.png",
+      "PackagePath": "staticwebassets\\uploads\\health-status\\health_20251212213311_36f1b465fb754f60980309f99ac4c7be.png"
+    },
+    {
+      "Id": "D:\\NNptud-doan\\NNPTUDM-n-\\spatc\\spatc\\wwwroot\\uploads\\health-status\\health_20251212215722_e02f7a38932041bebe1a2077ec5e8b3c.png",
+      "PackagePath": "staticwebassets\\uploads\\health-status\\health_20251212215722_e02f7a38932041bebe1a2077ec5e8b3c.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.spatc.props",
+      "PackagePath": "build\\spatc.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.spatc.props",
+      "PackagePath": "buildMultiTargeting\\spatc.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.spatc.props",
+      "PackagePath": "buildTransitive\\spatc.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.spatc.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.spatc.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

@@ -3,88 +3,315 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3 class="mb-0"> đăng nhập</h3>
+<style>
+    :root {
+        --spa-pink-light: #FFE5E5;
+        --spa-pink-medium: #FFD6D6;
+        --spa-pink-dark: #FFCCCC;
+        --spa-blue-light: #ADD8E6;
+        --spa-blue-medium: #87CEEB;
+        --spa-brown-dark: #654321;
+        --spa-brown-medium: #8B4513;
+    }
+
+    .login-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #FFE5E5 0%, #FFD6D6 50%, #E6F2FF 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .login-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(173, 216, 230, 0.3);
+        overflow: hidden;
+        max-width: 500px;
+        width: 100%;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .login-header {
+        background: linear-gradient(135deg, var(--spa-blue-light) 0%, var(--spa-blue-medium) 100%);
+        padding: 40px 20px 30px;
+        text-align: center;
+        color: var(--spa-brown-dark);
+        border-bottom: 4px solid var(--spa-pink-light);
+    }
+
+    .login-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 10px 0 5px 0;
+        letter-spacing: 0.5px;
+    }
+
+    .login-header .subtitle {
+        font-size: 0.95rem;
+        opacity: 0.8;
+        margin: 0;
+    }
+
+    .login-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+
+    .login-body {
+        padding: 40px 30px;
+        background: #FFFFFF;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--spa-brown-dark);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        border: 2px solid #E8E8E8;
+        border-radius: 12px;
+        padding: 12px 18px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background-color: #F8F9FA;
+    }
+
+    .form-control:focus {
+        border-color: var(--spa-blue-light);
+        background-color: #FFFFFF;
+        box-shadow: 0 0 0 0.2rem rgba(173, 216, 230, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: #B0B0B0;
+    }
+
+    .btn-login {
+        background: linear-gradient(135deg, var(--spa-blue-light) 0%, var(--spa-blue-medium) 100%);
+        border: none;
+        color: var(--spa-brown-dark);
+        font-weight: 600;
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(173, 216, 230, 0.4);
+        color: var(--spa-brown-dark);
+    }
+
+    .btn-login:active {
+        transform: translateY(0);
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 30px 0;
+        color: #B0B0B0;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #E8E8E8;
+    }
+
+    .divider span {
+        padding: 0 15px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .oauth-buttons {
+        display: grid;
+        gap: 12px;
+    }
+
+    .btn-oauth {
+        border: 2px solid #E8E8E8;
+        background: #F8F9FA;
+        color: var(--spa-brown-dark);
+        font-weight: 600;
+        padding: 12px 20px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-oauth:hover {
+        border-color: var(--spa-blue-light);
+        background: linear-gradient(135deg, rgba(255, 229, 229, 0.5) 0%, rgba(173, 216, 230, 0.2) 100%);
+        transform: translateY(-2px);
+    }
+
+    .btn-google:hover {
+        border-color: #EA4335;
+    }
+
+    .btn-facebook:hover {
+        border-color: #1877F2;
+    }
+
+    .signup-section {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #E8E8E8;
+        margin-top: 25px;
+    }
+
+    .signup-section p {
+        margin: 0;
+        color: var(--spa-brown-dark);
+        font-size: 0.95rem;
+    }
+
+    .signup-section a {
+        color: var(--spa-blue-medium);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .signup-section a:hover {
+        color: var(--spa-brown-dark);
+        text-decoration: underline;
+    }
+
+    .login-footer {
+        background: #F8F9FA;
+        padding: 20px;
+        text-align: center;
+        color: var(--spa-brown-medium);
+        font-size: 0.85rem;
+        border-top: 1px solid #E8E8E8;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        animation: slideDown 0.4s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-danger {
+        background-color: #FFE5E5;
+        color: #C72E2E;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-icon">🐾</div>
+            <h1>Đăng Nhập</h1>
+            <p class="subtitle">Spa Thú Cưng</p>
+        </div>
+
+        <div class="login-body">
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-circle-fill"></i> @ViewBag.Error
                 </div>
-                <div class="card-body">
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Error
-                        </div>
-                    }
-                    @if (TempData["Error"] != null)
-                    {
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    }
-
-                    <form asp-action="Index" method="post">
-                        @Html.AntiForgeryToken()
-                        
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" 
-                                   placeholder="Nhập email" required autofocus>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="matKhau" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" id="matKhau" name="matKhau" 
-                                   placeholder="Nhập mật khẩu" required>
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
-                            </button>
-                        </div>
-                    </form>
-
-                    <hr>
-
-                    <!-- OAuth Login Buttons -->
-                    <div class="mb-3">
-                        <div class="text-center mb-2">
-                            <small class="text-muted">Hoặc đăng nhập bằng</small>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <a href="@Url.Action("GoogleLogin", "Login")" class="btn btn-outline-danger">
-                                <i class="bi bi-google"></i> Đăng nhập với Google
-                            </a>
-                            <a href="@Url.Action("FacebookLogin", "Login")" class="btn btn-outline-primary">
-                                <i class="bi bi-facebook"></i> Đăng nhập với Facebook
-                            </a>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <div class="text-center">
-                        <p class="mb-0">Chưa có tài khoản? <a href="/Register">Đăng ký ngay</a></p>
-                    </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-                <div class="card-footer text-muted text-center">
-                    <small>Hệ thống quản lý Spa Thú Cưng</small>
+            }
+
+            <form asp-action="Index" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        <i class="bi bi-envelope"></i> Email
+                    </label>
+                    <input type="email" class="form-control" id="email" name="email" 
+                           placeholder="your@email.com" required autofocus>
                 </div>
+
+                <div class="form-group">
+                    <label for="matKhau" class="form-label">
+                        <i class="bi bi-lock"></i> Mật Khẩu
+                    </label>
+                    <input type="password" class="form-control" id="matKhau" name="matKhau" 
+                           placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-login">
+                    <i class="bi bi-box-arrow-in-right"></i> Đăng Nhập
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>hoặc</span>
             </div>
+
+            <div class="oauth-buttons">
+                <a href="@Url.Action("GoogleLogin", "Login")" class="btn btn-oauth btn-google">
+                    <i class="bi bi-google"></i> Google
+                </a>
+                <a href="@Url.Action("FacebookLogin", "Login")" class="btn btn-oauth btn-facebook">
+                    <i class="bi bi-facebook"></i> Facebook
+                </a>
+            </div>
+
+            <div class="signup-section">
+                <p>Chưa có tài khoản? <a href="/Register">Đăng ký ngay</a></p>
+            </div>
+        </div>
+
+        <div class="login-footer">
+            <i class="bi bi-shield-check"></i> Hệ thống quản lý Spa Thú Cưng | An toàn & bảo mật
         </div>
     </div>
 </div>
-
-<style>
-    .card {
-        border: none;
-        border-radius: 10px;
-    }
-    .card-header {
-        border-radius: 10px 10px 0 0 !important;
-    }
-</style>
 
