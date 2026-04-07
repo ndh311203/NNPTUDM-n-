@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "SPATC: API (port 3000)",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/api"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "spatc-api"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "SPATC: Frontend (port 8080)",
+      "type": "shell",
+      "command": "npx --yes http-server -p 8080 -c-1 .",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "spatc-fe"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

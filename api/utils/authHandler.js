@@ -4,11 +4,12 @@ require("dotenv").config();
 
 const generateAccessToken = (payload) => {
   const expirestIn = process.env.JWT_EXPIRE || "7d";
+  const subject = payload.userId ? payload.userId.toString() : (payload.id ? payload.id.toString() : undefined);
 
   return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: expirestIn,
     issuer: "spatc-api",
-    subject: payload.userId || payload.id,
+    subject,
   });
 };
 
@@ -114,7 +115,8 @@ const authorizeRole = (...roles) => {
       });
     }
 
-    if (!roles.includes(req.user.role)) {
+    const userRole = req.user.vaiTro ?? req.user.role;
+    if (!userRole || !roles.includes(userRole)) {
       return res.status(403).json({
         success: false,
         message: "Insufficient permissions",

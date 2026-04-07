@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Schema phòng khách sạn thú cưng
 const phongKhachSanSchema = new mongoose.Schema(
   {
     tenPhong: { type: String, required: true },
@@ -9,7 +8,7 @@ const phongKhachSanSchema = new mongoose.Schema(
       enum: ["STANDARD", "DELUXE", "VIP"],
       default: "STANDARD",
     },
-    sucChua: { type: Number, default: 1 }, // số thú cưng tối đa
+    sucChua: { type: Number, default: 1 },
     giaTheoNgay: { type: Number, required: true, min: 0 },
     moTa: { type: String },
     hinhAnh: [{ type: String }],

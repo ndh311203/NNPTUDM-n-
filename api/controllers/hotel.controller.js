@@ -1,6 +1,5 @@
-const PhongKhachSan = require("../schemas/PhongKhachSan");
+const PhongKhachSan = require("../models/PhongKhachSan");
 
-// Lấy tất cả phòng
 exports.getAllRooms = async (req, res) => {
   try {
     const { trangThai } = req.query;
@@ -12,7 +11,6 @@ exports.getAllRooms = async (req, res) => {
   }
 };
 
-// Lấy phòng theo ID
 exports.getRoomById = async (req, res) => {
   try {
     const room = await PhongKhachSan.findById(req.params.id);
@@ -24,7 +22,6 @@ exports.getRoomById = async (req, res) => {
   }
 };
 
-// Tạo phòng mới
 exports.createRoom = async (req, res) => {
   try {
     const newRoom = new PhongKhachSan(req.body);
@@ -35,7 +32,6 @@ exports.createRoom = async (req, res) => {
   }
 };
 
-// Cập nhật phòng
 exports.updateRoom = async (req, res) => {
   try {
     const room = await PhongKhachSan.findByIdAndUpdate(req.params.id, req.body, {
@@ -50,7 +46,6 @@ exports.updateRoom = async (req, res) => {
   }
 };
 
-// Xóa phòng
 exports.deleteRoom = async (req, res) => {
   try {
     const room = await PhongKhachSan.findByIdAndDelete(req.params.id);

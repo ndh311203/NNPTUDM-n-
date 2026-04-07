@@ -1,4 +1,4 @@
-const SanPham = require("../schemas/SanPham");
+const SanPham = require("../models/SanPham");
 
 exports.getAllProducts = async (req, res) => {
   try {

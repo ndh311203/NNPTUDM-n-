@@ -1,5 +1,5 @@
-const TaiKhoan = require("../schemas/TaiKhoan");
-const KhachHang = require("../schemas/KhachHang");
+const TaiKhoan = require("../models/TaiKhoan");
+const KhachHang = require("../models/KhachHang");
 
 exports.getAllAccounts = async (req, res) => {
   try {

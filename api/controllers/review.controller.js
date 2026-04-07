@@ -1,6 +1,5 @@
-const DanhGia = require("../schemas/DanhGia");
+const DanhGia = require("../models/DanhGia");
 
-// Lấy tất cả đánh giá
 exports.getAllReviews = async (req, res) => {
   try {
     const reviews = await DanhGia.find({ trangThai: true })
@@ -14,7 +13,6 @@ exports.getAllReviews = async (req, res) => {
   }
 };
 
-// Lấy đánh giá theo ID
 exports.getReviewById = async (req, res) => {
   try {
     const review = await DanhGia.findById(req.params.id)
@@ -29,7 +27,6 @@ exports.getReviewById = async (req, res) => {
   }
 };
 
-// Đánh giá sản phẩm
 exports.reviewProduct = async (req, res) => {
   try {
     const { khachHangId, sanPhamId, soSao, noiDung } = req.body;
@@ -44,7 +41,6 @@ exports.reviewProduct = async (req, res) => {
   }
 };
 
-// Đánh giá dịch vụ
 exports.reviewService = async (req, res) => {
   try {
     const { khachHangId, dichVuId, soSao, noiDung } = req.body;
@@ -59,7 +55,6 @@ exports.reviewService = async (req, res) => {
   }
 };
 
-// Cập nhật đánh giá
 exports.updateReview = async (req, res) => {
   try {
     const review = await DanhGia.findByIdAndUpdate(req.params.id, req.body, {
@@ -74,7 +69,6 @@ exports.updateReview = async (req, res) => {
   }
 };
 
-// Xóa đánh giá (soft-delete)
 exports.deleteReview = async (req, res) => {
   try {
     const review = await DanhGia.findByIdAndUpdate(

@@ -1,4 +1,4 @@
-const DatLich = require("../schemas/DatLich");
+const DatLich = require("../models/DatLich");
 
 exports.getAllBookings = async (req, res) => {
   try {

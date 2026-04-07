@@ -1,4 +1,4 @@
-const ThuCung = require("../schemas/ThuCung");
+const ThuCung = require("../models/ThuCung");
 
 exports.getAllPets = async (req, res) => {
   try {

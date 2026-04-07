@@ -1,4 +1,4 @@
-const DichVu = require("../schemas/DichVu");
+const DichVu = require("../models/DichVu");
 
 exports.getAllServices = async (req, res) => {
   try {
@@ -22,9 +22,21 @@ exports.getServiceById = async (req, res) => {
   }
 };
 
+function normalizeServiceBody(body) {
+  const b = { ...body };
+  if (b.donGia == null && b.giaDichVu != null) b.donGia = b.giaDichVu;
+  if (b.thoiGianUocTinh == null && b.thoiGianDuKien != null) {
+    b.thoiGianUocTinh = b.thoiGianDuKien;
+  }
+  delete b.giaDichVu;
+  delete b.thoiGianDuKien;
+  delete b.loaiDichVu;
+  return b;
+}
+
 exports.createService = async (req, res) => {
   try {
-    const newService = new DichVu(req.body);
+    const newService = new DichVu(normalizeServiceBody(req.body));
     await newService.save();
     res
       .status(201)
@@ -40,10 +52,14 @@ exports.createService = async (req, res) => {
 
 exports.updateService = async (req, res) => {
   try {
-    const service = await DichVu.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const service = await DichVu.findByIdAndUpdate(
+      req.params.id,
+      normalizeServiceBody(req.body),
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
     if (!service)
       return res
         .status(404)

@@ -1,4 +1,4 @@
-const Voucher = require("../schemas/Voucher");
+const Voucher = require("../models/Voucher");
 const { validationResult } = require("express-validator");
 
 exports.getAllVouchers = async (req, res) => {

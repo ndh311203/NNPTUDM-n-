@@ -1,33 +1,37 @@
-// Lưu thông báo tạm thời trong bộ nhớ (in-memory), dùng cho mục đích demo
 let notifications = [];
 
-// Lấy tất cả thông báo của một user
 exports.getNotifications = (req, res) => {
   try {
     const userId = req.query.userId || "all";
     const userNoti = userId === "all"
       ? notifications
       : notifications.filter(n => n.userId === userId || n.userId === "all");
-
     res.status(200).json({ success: true, data: userNoti });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Tạo thông báo mới và push qua Socket.IO
 exports.createNotification = (req, res) => {
   try {
-    const { userId, tieude, noiDung, loai } = req.body;
+    const tieuDe =
+      req.body.tieude || req.body.tieuDe ||
+      req.body.tieu_de || req.body.title;
+    const noiDung =
+      req.body.noiDung || req.body.noidung || req.body.content;
+    const userId =
+      req.body.userId || req.body.nguoiNhanId || req.body.nguoi_nhan_id;
+    const loai =
+      req.body.loai || req.body.loaiThongBao || req.body.loai_thong_bao || "INFO";
 
-    if (!tieude || !noiDung) {
+    if (!tieuDe || !noiDung) {
       return res.status(400).json({ success: false, message: "Tiêu đề và nội dung là bắt buộc" });
     }
 
     const newNoti = {
       _id: Date.now().toString(),
       userId: userId || "all",
-      tieude,
+      tieude: tieuDe,
       noiDung,
       loai: loai || "INFO",
       daDoc: false,
@@ -36,7 +40,6 @@ exports.createNotification = (req, res) => {
 
     notifications.unshift(newNoti);
 
-    // Gửi realtime qua Socket.IO
     const io = req.app.get("io");
     if (io) {
       if (userId && userId !== "all") {
@@ -52,7 +55,6 @@ exports.createNotification = (req, res) => {
   }
 };
 
-// Đánh dấu đã đọc
 exports.markAsRead = (req, res) => {
   try {
     const noti = notifications.find(n => n._id === req.params.id);
@@ -66,7 +68,6 @@ exports.markAsRead = (req, res) => {
   }
 };
 
-// Xóa thông báo
 exports.deleteNotification = (req, res) => {
   try {
     const index = notifications.findIndex(n => n._id === req.params.id);

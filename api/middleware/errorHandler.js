@@ -1,7 +1,6 @@
 const errorHandler = (err, req, res, next) => {
   console.error("[Error Handler]", err);
 
-  // Mongoose validation error
   if (err.name === "ValidationError") {
     const messages = Object.values(err.errors).map((e) => e.message);
     return res.status(400).json({
@@ -11,7 +10,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Mongoose duplicate key error
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue)[0];
     return res.status(409).json({
@@ -20,7 +18,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Mongoose CastError (invalid ObjectId)
   if (err.name === "CastError") {
     return res.status(400).json({
       success: false,
@@ -28,7 +25,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // JWT errors
   if (err.name === "JsonWebTokenError") {
     return res.status(401).json({
       success: false,
@@ -43,7 +39,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Multer errors
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(400).json({
       success: false,
@@ -58,7 +53,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Default error
   const status = err.status || err.statusCode || 500;
   res.status(status).json({
     success: false,

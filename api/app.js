@@ -14,7 +14,6 @@ app.use(compression());
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Cho phép: null (file://), localhost bất kỳ port, 127.0.0.1
       const allowed = !origin || origin === "null" || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
       if (allowed) return callback(null, true);
       return callback(null, false);
@@ -78,6 +77,20 @@ app.use("/api/notifications", require("./routes/notification.routes"));
 app.use("/api/chat", require("./routes/chat.routes"));
 
 app.use("/api/upload", require("./routes/upload.routes"));
+
+app.use("/api/categories", require("./routes/category.routes"));
+
+app.use("/api/service-types", require("./routes/servicetype.routes"));
+
+app.use("/api/payments", require("./routes/payment.routes"));
+
+app.use("/api/addresses", require("./routes/address.routes"));
+
+app.use("/api/grooming-rooms", require("./routes/groomingroom.routes"));
+
+app.use("/api/health-records", require("./routes/healthrecord.routes"));
+
+app.use("/api/import-receipts", require("./routes/importreceipt.routes"));
 
 app.use("*", (req, res) => {
   res.status(404).json({

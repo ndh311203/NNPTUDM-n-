@@ -23,8 +23,12 @@ const server = http.createServer(app);
  */
 const io = new Server(server, {
   cors: {
-    origin: process.env.API_URL || 'http://localhost:3000',
-    methods: ['GET', 'POST']
+    origin: (origin, callback) => {
+      const allowed = !origin || origin === "null" || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+      if (allowed) return callback(null, true);
+      return callback(null, false);
+    },
+    methods: ["GET", "POST"]
   }
 });
 

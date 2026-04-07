@@ -796,7 +796,7 @@
       showLoading();
       try {
         const res = await Upload.multiple(files);
-        const urls = res.data?.urls || res.data?.paths || [];
+        const urls = res.data?.map(f => f.url || f.path) || [];
         const preview = document.getElementById('multi-preview');
         preview.innerHTML = urls.map(u => `
           <img src="${API_UPLOAD}${u}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;" />
