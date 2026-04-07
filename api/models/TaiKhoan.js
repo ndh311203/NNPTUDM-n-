@@ -49,7 +49,6 @@ const taiKhoanSchema = new mongoose.Schema(
 
     providerId: {
       type: String,
-      sparse: true,
     },
 
     ngayTao: {
@@ -92,8 +91,6 @@ const taiKhoanSchema = new mongoose.Schema(
   },
 );
 
-taiKhoanSchema.index({ email: 1 });
-taiKhoanSchema.index({ providerId: 1 });
 taiKhoanSchema.index({ vaiTro: 1 });
 
 taiKhoanSchema.methods.toJSON = function () {

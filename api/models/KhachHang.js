@@ -81,10 +81,6 @@ const khachHangSchema = new mongoose.Schema(
   },
 );
 
-khachHangSchema.index({ soDienThoai: 1 });
-khachHangSchema.index({ email: 1 });
-khachHangSchema.index({ taiKhoanId: 1 });
-
 khachHangSchema.virtual("fullName").get(function () {
   return this.hoTen;
 });

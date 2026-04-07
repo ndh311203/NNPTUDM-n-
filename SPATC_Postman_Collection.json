@@ -1,0 +1,346 @@
+{
+  "info": {
+    "name": "SPATC Pet Shop API",
+    "description": "RESTful API cho ứng dụng SPATC Pet Shop - Node.js/Express/MongoDB/JWT. Base URL: http://localhost:3000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+
+  "item": [
+    {
+      "name": "🟢 AUTH - Xác thực",
+      "item": [
+        {
+          "name": "POST /api/auth/register - Đăng ký",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json();", "if (json.data?.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);", "if (json.data?.accessToken) pm.collectionVariables.set('accessToken', json.data.accessToken);"] } }],
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@spatc.vn\",\n  \"password\": \"Admin123!\",\n  \"hoTen\": \"Admin SPATC\",\n  \"vaiTro\": \"admin\"\n}" }
+          }
+        },
+        {
+          "name": "POST /api/auth/login - Đăng nhập",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json();", "if (json.data?.accessToken) pm.collectionVariables.set('accessToken', json.data.accessToken);", "if (json.data?.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);"] } }],
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@spatc.vn\",\n  \"password\": \"Admin123!\"\n}" }
+          }
+        },
+        {
+          "name": "POST /api/auth/refresh - Làm mới token",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/auth/refresh",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
+          }
+        },
+        {
+          "name": "GET /api/auth/me - Lấy thông tin user hiện tại",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }] },
+            "method": "GET", "url": "{{baseUrl}}/api/auth/me"
+          }
+        },
+        {
+          "name": "POST /api/auth/logout - Đăng xuất",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/api/auth/logout",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🟢 ACCOUNTS - Tài khoản",
+      "item": [
+        { "name": "GET /api/accounts - Danh sách tài khoản", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/accounts" }},
+        { "name": "POST /api/accounts - Tạo tài khoản", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/accounts", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"nhanvien@spatc.vn\",\n  \"password\": \"Staff123!\",\n  \"hoTen\": \"Nguyễn Văn Nhân Viên\",\n  \"vaiTro\": \"nhanvien\"\n}" }}},
+        { "name": "GET /api/accounts/:id - Chi tiết tài khoản", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/accounts/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/accounts/:id - Cập nhật tài khoản", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/accounts/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"hoTen\": \"Nguyễn Văn Nhân Viên - Updated\",\n  \"vaiTro\": \"nhanvien\"\n}" }}},
+        { "name": "DELETE /api/accounts/:id - Xóa tài khoản", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/accounts/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 PETS - Thú cưng",
+      "item": [
+        { "name": "GET /api/pets - Danh sách thú cưng", "request": { "method": "GET", "url": "{{baseUrl}}/api/pets" }},
+        { "name": "POST /api/pets - Tạo thú cưng", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/pets", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tenThuCung\": \"Mèo Mun\",\n  \"loai\": \"Mèo\",\n  \"giong\": \"Mèo ta\",\n  \"tuoi\": 2,\n  \"canNang\": 3.5,\n  \"khachHangId\": \"REPLACE_WITH_KHACHHANG_ID\",\n  \"ghiChuSucKhoe\": \"Khỏe mạnh, đã tiêm phòng đầy đủ\"\n}" }}},
+        { "name": "GET /api/pets/:id - Chi tiết thú cưng", "request": { "method": "GET", "url": "{{baseUrl}}/api/pets/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/pets/:id - Cập nhật thú cưng", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/pets/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tenThuCung\": \"Mèo Mun - Updated\",\n  \"tuoi\": 3,\n  \"canNang\": 4.0\n}" }}},
+        { "name": "DELETE /api/pets/:id - Xóa thú cưng", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/pets/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 PRODUCTS - Sản phẩm",
+      "item": [
+        { "name": "GET /api/products - Danh sách sản phẩm", "request": { "method": "GET", "url": "{{baseUrl}}/api/products" }},
+        { "name": "POST /api/products - Tạo sản phẩm", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/products", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tenSanPham\": \"Thức ăn Royal Canin cho mèo\",\n  \"loaiSanPham\": \"ThucAn\",\n  \"moTa\": \"Thức ăn hạt cao cấp dành cho mèo trưởng thành\",\n  \"gia\": 450000,\n  \"hinhAnh\": \"https://example.com/royal-canin.jpg\",\n  \"soLuongTon\": 50\n}" }}},
+        { "name": "GET /api/products/:id - Chi tiết sản phẩm", "request": { "method": "GET", "url": "{{baseUrl}}/api/products/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/products/:id - Cập nhật sản phẩm", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/products/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"gia\": 420000,\n  \"soLuongTon\": 45\n}" }}},
+        { "name": "DELETE /api/products/:id - Xóa sản phẩm", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/products/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 SERVICES - Dịch vụ",
+      "item": [
+        { "name": "GET /api/services - Danh sách dịch vụ", "request": { "method": "GET", "url": "{{baseUrl}}/api/services" }},
+        { "name": "POST /api/services - Tạo dịch vụ", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/services", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tenDichVu\": \"Tắm rửa toàn thân\",\n  \"moTa\": \"Dịch vụ tắm, sấy, vệ sinh toàn thân cho thú cưng\",\n  \"gia\": 200000,\n  \"thoiGianThucHien\": 60,\n  \"loaiDichVu\": \"Grooming\"\n}" }}},
+        { "name": "GET /api/services/:id - Chi tiết dịch vụ", "request": { "method": "GET", "url": "{{baseUrl}}/api/services/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/services/:id - Cập nhật dịch vụ", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/services/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"gia\": 220000\n}" }}},
+        { "name": "DELETE /api/services/:id - Xóa dịch vụ", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/services/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 BOOKINGS - Đặt lịch",
+      "item": [
+        { "name": "GET /api/bookings - Danh sách đặt lịch", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/bookings" }},
+        { "name": "POST /api/bookings - Tạo đặt lịch", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/bookings", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"thuCungId\": \"REPLACE_WITH_PET_ID\",\n  \"dichVuId\": \"REPLACE_WITH_SERVICE_ID\",\n  \"thoiGianHen\": \"2026-04-15T09:00:00.000Z\",\n  \"ghiChu\": \"Khách hàng yêu cầu dụng cụ riêng\",\n  \"trangThai\": \"Cho\"\n}" }}},
+        { "name": "GET /api/bookings/:id - Chi tiết đặt lịch", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/bookings/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/bookings/:id - Cập nhật đặt lịch", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/bookings/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"trangThai\": \"DangLam\"\n}" }}},
+        { "name": "DELETE /api/bookings/:id - Xóa đặt lịch", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/bookings/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 GROOMING - Dịch vụ Grooming",
+      "item": [
+        { "name": "GET /api/grooming - Danh sách grooming", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/grooming" }},
+        { "name": "POST /api/grooming - Tạo grooming", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/grooming", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"thuCungId\": \"REPLACE_WITH_PET_ID\",\n  \"dichVuGroomingIds\": [\"REPLACE_WITH_GROOMING_TYPE_ID\"],\n  \"thoiGianHen\": \"2026-04-15T10:00:00.000Z\",\n  \"ghiChu\": \"Cắt tỉa lông toàn thân\",\n  \"trangThai\": \"Cho\"\n}" }}},
+        { "name": "GET /api/grooming/:id - Chi tiết grooming", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/grooming/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/grooming/:id - Cập nhật grooming", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/grooming/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"trangThai\": \"DangLam\"\n}" }}},
+        { "name": "DELETE /api/grooming/:id - Xóa grooming", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/grooming/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 HOTEL - Khách sạn thú cưng",
+      "item": [
+        { "name": "GET /api/hotel/rooms - Danh sách phòng", "request": { "method": "GET", "url": "{{baseUrl}}/api/hotel/rooms" }},
+        { "name": "POST /api/hotel/rooms - Tạo phòng", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/hotel/rooms", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tenPhong\": \"Phòng VIP 1\",\n  \"loaiPhong\": \"VIP\",\n  \"giaTheoNgay\": 300000,\n  \"giaTheoGio\": 50000,\n  \"soLuongToiDa\": 2,\n  \"tienNghi\": \"Máy lạnh, camera, nệm mềm\",\n  \"trangThai\": \"Trong\"\n}" }}},
+        { "name": "GET /api/hotel/rooms/:id - Chi tiết phòng", "request": { "method": "GET", "url": "{{baseUrl}}/api/hotel/rooms/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/hotel/rooms/:id - Cập nhật phòng", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/hotel/rooms/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"giaTheoNgay\": 350000\n}" }}},
+        { "name": "DELETE /api/hotel/rooms/:id - Xóa phòng", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/hotel/rooms/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 SHOP ORDERS - Đơn hàng Pet Shop",
+      "item": [
+        { "name": "GET /api/shop-orders - Danh sách đơn hàng", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/shop-orders" }},
+        { "name": "POST /api/shop-orders - Tạo đơn hàng", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/shop-orders", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"khachHangId\": \"REPLACE_WITH_KHACHHANG_ID\",\n  \"items\": [\n    { \"sanPhamId\": \"REPLACE_WITH_PRODUCT_ID\", \"soLuong\": 2 }\n  ],\n  \"tongTien\": 900000,\n  \"diaChiGiaoHang\": \"123 Nguyễn Trãi, Q1, TP.HCM\",\n  \"voucherSuDung\": null\n}" }}},
+        { "name": "GET /api/shop-orders/:id - Chi tiết đơn hàng", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/shop-orders/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/shop-orders/:id - Cập nhật đơn hàng", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/shop-orders/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"trangThaiGiaoHang\": \"DangGiao\"\n}" }}},
+        { "name": "DELETE /api/shop-orders/:id - Xóa đơn hàng", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/shop-orders/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 CART - Giỏ hàng",
+      "item": [
+        { "name": "GET /api/cart/:userId? - Lấy giỏ hàng", "request": { "method": "GET", "url": "{{baseUrl}}/api/cart/REPLACE_WITH_USER_ID" }},
+        { "name": "POST /api/cart/add - Thêm vào giỏ hàng", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/cart/add", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"userId\": \"REPLACE_WITH_USER_ID\",\n  \"sanPhamId\": \"REPLACE_WITH_PRODUCT_ID\",\n  \"soLuong\": 1\n}" }}},
+        { "name": "DELETE /api/cart/:productId/:userId? - Xóa khỏi giỏ", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/cart/REPLACE_WITH_PRODUCT_ID/REPLACE_WITH_USER_ID" }},
+        { "name": "DELETE /api/cart/clear/:userId? - Xóa toàn bộ giỏ", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/cart/clear/REPLACE_WITH_USER_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 VOUCHERS - Mã giảm giá",
+      "item": [
+        { "name": "GET /api/vouchers - Danh sách voucher", "request": { "method": "GET", "url": "{{baseUrl}}/api/vouchers" }},
+        { "name": "POST /api/vouchers - Tạo voucher", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/vouchers", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"mienGiamCode\": \"SUMMER2026\",\n  \"tenVoucher\": \"Giảm 20% mùa hè\",\n  \"moTa\": \"Áp dụng cho đơn từ 500K\",\n  \"loaiGiam\": \"SO_TIEN\",\n  \"giaTriGiam\": 200000,\n  \"donHangToiThieu\": 500000,\n  \"gioiHanSuDung\": 100,\n  \"ngayBatDau\": \"2026-04-01\",\n  \"ngayKetThuc\": \"2026-06-30\"\n}" }}},
+        { "name": "GET /api/vouchers/:id - Chi tiết voucher", "request": { "method": "GET", "url": "{{baseUrl}}/api/vouchers/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/vouchers/:id - Cập nhật voucher", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/vouchers/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"giaTriGiam\": 250000\n}" }}},
+        { "name": "DELETE /api/vouchers/:id - Xóa voucher", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/vouchers/REPLACE_WITH_ID" }},
+        { "name": "POST /api/vouchers/validate - Kiểm tra voucher", "request": { "method": "POST", "url": "{{baseUrl}}/api/vouchers/validate", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"code\": \"SUMMER2026\",\n  \"tongTien\": 900000\n}" } } }
+      ]
+    },
+
+    {
+      "name": "🟢 REVIEWS - Đánh giá",
+      "item": [
+        { "name": "GET /api/reviews - Danh sách đánh giá", "request": { "method": "GET", "url": "{{baseUrl}}/api/reviews" }},
+        { "name": "POST /api/reviews/product - Đánh giá sản phẩm", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/reviews/product", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"sanPhamId\": \"REPLACE_WITH_PRODUCT_ID\",\n  \"khachHangId\": \"REPLACE_WITH_KHACHHANG_ID\",\n  \"danhGia\": 5,\n  \"binhLuan\": \"Sản phẩm rất tốt, thú cưng rất thích!\"\n}" }}},
+        { "name": "POST /api/reviews/service - Đánh giá dịch vụ", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/reviews/service", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"dichVuId\": \"REPLACE_WITH_SERVICE_ID\",\n  \"khachHangId\": \"REPLACE_WITH_KHACHHANG_ID\",\n  \"danhGia\": 4,\n  \"binhLuan\": \"Dịch vụ tốt, nhân viên nhiệt tình\"\n}" }}},
+        { "name": "GET /api/reviews/:id - Chi tiết đánh giá", "request": { "method": "GET", "url": "{{baseUrl}}/api/reviews/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/reviews/:id - Cập nhật đánh giá", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/reviews/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"danhGia\": 5,\n  \"binhLuan\": \"Cập nhật: Sản phẩm tuyệt vời!\"\n}" }}},
+        { "name": "DELETE /api/reviews/:id - Xóa đánh giá", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/reviews/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 NOTIFICATIONS - Thông báo",
+      "item": [
+        { "name": "GET /api/notifications - Danh sách thông báo", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/notifications" }},
+        { "name": "POST /api/notifications - Tạo thông báo", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/notifications", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nguoiNhanId\": \"REPLACE_WITH_USER_ID\",\n  \"tieuDe\": \"Xác nhận đặt lịch thành công\",\n  \"noiDung\": \"Lịch grooming của bạn đã được xác nhận vào ngày mai lúc 9h00\",\n  \"loaiThongBao\": \"DAT_LICH\"\n}" }}},
+        { "name": "PUT /api/notifications/:id/read - Đánh dấu đã đọc", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/notifications/REPLACE_WITH_ID/read" }},
+        { "name": "DELETE /api/notifications/:id - Xóa thông báo", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/notifications/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 CHAT - Nhắn tin",
+      "item": [
+        { "name": "GET /api/chat/messages - Lấy tin nhắn", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/chat/messages?nguoiGuiId=REPLACE_WITH_ID1&nguoiNhanId=REPLACE_WITH_ID2" }},
+        { "name": "POST /api/chat/messages - Gửi tin nhắn", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/chat/messages", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nguoiGuiId\": \"REPLACE_WITH_SENDER_ID\",\n  \"nguoiNhanId\": \"REPLACE_WITH_RECEIVER_ID\",\n  \"noiDung\": \"Xin chào, tôi cần tư vấn về dịch vụ grooming!\"\n}" }}},
+        { "name": "GET /api/chat/conversations - Danh sách hội thoại", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/chat/conversations?nguoiDungId=REPLACE_WITH_USER_ID" }},
+        { "name": "PUT /api/chat/messages/:id - Cập nhật tin nhắn", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/chat/messages/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"noiDung\": \"Nội dung đã chỉnh sửa\"\n}" }}},
+        { "name": "DELETE /api/chat/messages/:id - Xóa tin nhắn", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/chat/messages/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 CATEGORIES - Danh mục sản phẩm",
+      "item": [
+        { "name": "GET /api/categories - Danh sách danh mục", "request": { "method": "GET", "url": "{{baseUrl}}/api/categories" }},
+        { "name": "POST /api/categories - Tạo danh mục", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/categories", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tenDanhMuc\": \"Thức ăn hạt\",\n  \"moTa\": \"Các loại thức ăn hạt cao cấp cho chó và mèo\"\n}" }}},
+        { "name": "GET /api/categories/:id - Chi tiết danh mục", "request": { "method": "GET", "url": "{{baseUrl}}/api/categories/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/categories/:id - Cập nhật danh mục", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/categories/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"moTa\": \"Mô tả đã cập nhật\"\n}" }}},
+        { "name": "DELETE /api/categories/:id - Xóa danh mục", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/categories/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 SERVICE TYPES - Loại dịch vụ",
+      "item": [
+        { "name": "GET /api/service-types - Danh sách loại dịch vụ", "request": { "method": "GET", "url": "{{baseUrl}}/api/service-types" }},
+        { "name": "POST /api/service-types - Tạo loại dịch vụ", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/service-types", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tenLoai\": \"Spa cao cấp\",\n  \"moTa\": \"Gói spa toàn diện: tắm, dưỡng, massage\",\n  \"thoiGianUocTinh\": 120,\n  \"loaiDichVu\": \"Grooming\"\n}" }}},
+        { "name": "GET /api/service-types/:id - Chi tiết loại dịch vụ", "request": { "method": "GET", "url": "{{baseUrl}}/api/service-types/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/service-types/:id - Cập nhật loại dịch vụ", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/service-types/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"thoiGianUocTinh\": 150\n}" }}},
+        { "name": "DELETE /api/service-types/:id - Xóa loại dịch vụ", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/service-types/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 GROOMING ROOMS - Phòng Grooming",
+      "item": [
+        { "name": "GET /api/grooming-rooms - Danh sách phòng", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/grooming-rooms" }},
+        { "name": "POST /api/grooming-rooms - Tạo phòng", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/grooming-rooms", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tenPhong\": \"Phòng Grooming 1\",\n  \"loaiPhong\": \"GROOMING\",\n  \"sucChua\": 2,\n  \"giaTheoGio\": 80000,\n  \"tienNghi\": \"[\\\"may_lanh\\\",\\\"camera\\\",\\\"nen\\\",\\\"den\\\"]\",\n  \"trangThai\": \"TRONG\"\n}" }}},
+        { "name": "GET /api/grooming-rooms/:id - Chi tiết phòng", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/grooming-rooms/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/grooming-rooms/:id - Cập nhật phòng", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/grooming-rooms/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"trangThai\": \"BAO_TRI\"\n}" }}},
+        { "name": "PATCH /api/grooming-rooms/:id/status - Toggle trạng thái phòng", "request": { "auth": { "type": "bearer" }, "method": "PATCH", "url": "{{baseUrl}}/api/grooming-rooms/REPLACE_WITH_ID/status", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"trangThai\": \"DANG_SU_DUNG\"\n}" }}},
+        { "name": "DELETE /api/grooming-rooms/:id - Xóa phòng", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/grooming-rooms/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 PAYMENTS - Thanh toán",
+      "item": [
+        { "name": "GET /api/payments - Danh sách thanh toán", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/payments" }},
+        { "name": "POST /api/payments - Tạo thanh toán", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/payments", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"donHangId\": \"REPLACE_WITH_ORDER_ID\",\n  \"soTien\": 500000,\n  \"phuongThuc\": \"TIEN_MAT\",\n  \"ghiChu\": \"Thanh toán khi nhận hàng\"\n}" }}},
+        { "name": "GET /api/payments/:id - Chi tiết thanh toán", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/payments/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/payments/:id - Cập nhật thanh toán", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/payments/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"trangThai\": \"CHO_XU_LY\"\n}" }}},
+        { "name": "PATCH /api/payments/:id/confirm - Xác nhận thanh toán", "request": { "auth": { "type": "bearer" }, "method": "PATCH", "url": "{{baseUrl}}/api/payments/REPLACE_WITH_ID/confirm" }},
+        { "name": "PATCH /api/payments/:id/refund - Hoàn tiền", "request": { "auth": { "type": "bearer" }, "method": "PATCH", "url": "{{baseUrl}}/api/payments/REPLACE_WITH_ID/refund" }},
+        { "name": "DELETE /api/payments/:id - Xóa thanh toán", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/payments/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 ADDRESSES - Địa chỉ",
+      "item": [
+        { "name": "GET /api/addresses - Danh sách địa chỉ", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/addresses" }},
+        { "name": "POST /api/addresses - Tạo địa chỉ", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/addresses", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"khachHangId\": \"REPLACE_WITH_KHACHHANG_ID\",\n  \"hoTen\": \"Nguyễn Văn A\",\n  \"soDienThoai\": \"0909123456\",\n  \"tinhThanh\": \"TP. Hồ Chí Minh\",\n  \"quanHuyen\": \"Quận 1\",\n  \"phuongXa\": \"Phường Bến Nghé\",\n  \"diaChiCuThe\": \"123 Nguyễn Trãi, P.Bến Nghé\",\n  \"loaiDiaChi\": \"NHA_RIENG\",\n  \"macDinh\": true\n}" }}},
+        { "name": "GET /api/addresses/:id - Chi tiết địa chỉ", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/addresses/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/addresses/:id - Cập nhật địa chỉ", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/addresses/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"soDienThoai\": \"0909999999\"\n}" }}},
+        { "name": "PATCH /api/addresses/:id/set-default - Đặt mặc định", "request": { "auth": { "type": "bearer" }, "method": "PATCH", "url": "{{baseUrl}}/api/addresses/REPLACE_WITH_ID/set-default" }},
+        { "name": "DELETE /api/addresses/:id - Xóa địa chỉ", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/addresses/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 HEALTH RECORDS - Lịch sử sức khỏe",
+      "item": [
+        { "name": "GET /api/health-records - Danh sách lịch sử", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/health-records" }},
+        { "name": "GET /api/health-records/pet/:petId - Lịch sử theo thú cưng", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/health-records/pet/REPLACE_WITH_PET_ID" }},
+        { "name": "POST /api/health-records - Tạo lịch sử", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/health-records", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"thuCungId\": \"REPLACE_WITH_PET_ID\",\n  \"loaiLichSu\": \"TIEM_PHONG\",\n  \"ngayThucHien\": \"2026-04-05\",\n  \"moTa\": \"Tiêm phòng dại lần 2\",\n  \"canNang\": 4.2,\n  \"nhietDo\": 38.5,\n  \"chanDoan\": \"Khỏe mạnh, tiêm phòng thành công\",\n  \"donThuoc\": \"Không cần\",\n  \"chiPhi\": 150000,\n  \"nhanVienThucHien\": \"Bs. Minh\"\n}" }}},
+        { "name": "GET /api/health-records/:id - Chi tiết lịch sử", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/health-records/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/health-records/:id - Cập nhật lịch sử", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/health-records/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"ghiChu\": \"Cập nhật ghi chú\"\n}" }}},
+        { "name": "DELETE /api/health-records/:id - Xóa lịch sử", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/health-records/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 IMPORT RECEIPTS - Phiếu nhập kho",
+      "item": [
+        { "name": "GET /api/import-receipts - Danh sách phiếu nhập", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/import-receipts" }},
+        { "name": "POST /api/import-receipts - Tạo phiếu nhập", "request": { "auth": { "type": "bearer" }, "method": "POST", "url": "{{baseUrl}}/api/import-receipts", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"maPhieu\": \"PN-20260407-001\",\n  \"nhaCungCap\": \"Công ty TNHH Thức ăn Chó Mèo\",\n  \"nguoiTao\": \"REPLACE_WITH_USER_ID\",\n  \"items\": [\n    { \"sanPhamId\": \"REPLACE_WITH_PRODUCT_ID\", \"soLuong\": 20, \"donGiaNhap\": 180000 }\n  ],\n  \"ghiChu\": \"Nhập hàng tháng 4/2026\"\n}" }}},
+        { "name": "GET /api/import-receipts/:id - Chi tiết phiếu nhập", "request": { "auth": { "type": "bearer" }, "method": "GET", "url": "{{baseUrl}}/api/import-receipts/REPLACE_WITH_ID" }},
+        { "name": "PUT /api/import-receipts/:id - Cập nhật phiếu nhập", "request": { "auth": { "type": "bearer" }, "method": "PUT", "url": "{{baseUrl}}/api/import-receipts/REPLACE_WITH_ID", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"ghiChu\": \"Cập nhật ghi chú phiếu nhập\"\n}" }}},
+        { "name": "PATCH /api/import-receipts/:id/status - Cập nhật trạng thái", "request": { "auth": { "type": "bearer" }, "method": "PATCH", "url": "{{baseUrl}}/api/import-receipts/REPLACE_WITH_ID/status", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"trangThai\": \"DA_NHAP\"\n}" }}},
+        { "name": "DELETE /api/import-receipts/:id - Xóa phiếu nhập", "request": { "auth": { "type": "bearer" }, "method": "DELETE", "url": "{{baseUrl}}/api/import-receipts/REPLACE_WITH_ID" }}
+      ]
+    },
+
+    {
+      "name": "🟢 UPLOAD - Tải lên file",
+      "item": [
+        {
+          "name": "POST /api/upload/single - Upload 1 file",
+          "request": {
+            "auth": { "type": "bearer" },
+            "method": "POST",
+            "url": "{{baseUrl}}/api/upload/single",
+            "header": [{ "key": "Content-Type", "value": "multipart/form-data" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" },
+                { "key": "type", "value": "images", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /api/upload/multiple - Upload nhiều file",
+          "request": {
+            "auth": { "type": "bearer" },
+            "method": "POST",
+            "url": "{{baseUrl}}/api/upload/multiple",
+            "header": [{ "key": "Content-Type", "value": "multipart/form-data" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "files", "type": "file", "src": "" },
+                { "key": "type", "value": "images", "type": "text" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /api/upload - Xóa file đã upload",
+          "request": {
+            "auth": { "type": "bearer" },
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/upload",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"url\": \"/uploads/images/abc123.jpg\"\n}" }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "⚙️ HEALTH CHECK",
+      "item": [
+        { "name": "GET /health - Kiểm tra server", "request": { "method": "GET", "url": "{{baseUrl}}/health" }}
+      ]
+    }
+  ]
+}
